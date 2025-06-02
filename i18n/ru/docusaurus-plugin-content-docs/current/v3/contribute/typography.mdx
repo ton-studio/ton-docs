@@ -1,124 +1,160 @@
-# Типографика
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Typography
 
-## Введение
+## Introduction
 
-Этот стандарт обеспечивает единообразный и профессиональный стиль в документации TON. 
+This standard ensures a consistent and professional style across TON documentation. 
 
-Следуя этим рекомендациям, вы помогаете поддерживать ясность, улучшаете читаемость и поддерживаете легкую навигацию на сайте документации и любых связанных меню.
+Following these guidelines, you help maintain clarity, enhance readability, and support easy navigation in the documentation site and any associated menus.
 
 ---
 
-## Имена файлов
+## File names
 
-- **Соглашение об именовании:** используйте **kebab-case** — все строчные буквы, слова разделены дефисами.
-- **Пример:** `kebab-case-file-name.md`
-- **Цель:** Kebab-case дружелюбен к SEO, легко читается и помогает избежать конфликтов имен или проблем в файловых системах, чувствительных к регистру.
+- **Naming convention:** Use **kebab-case** - all lowercase, words separated by hyphens.
+- **Example:** `kebab-case-file-name.md`
+- **Purpose:** Kebab-case is SEO-friendly, easy to read, and helps avoid naming conflicts or issues in case-sensitive file systems.
 
 ---
 
-## Типографика документов
+## Documents typography
 
-### Общий стиль текста
+### General text style
 
-- Пишите краткие, понятные предложения.
-- Используйте простой, прямой язык, подходящий как для новых, так и для опытных пользователей.
-- Избегайте слишком сложных структур; стремитесь к ясности и краткости.
-- Избегайте чрезмерного использования жирного или курсивного начертания.
-- Все графические элементы, содержащие текст, должны использовать шрифт [Inter](https://rsms.me/inter/) или аналогичный совместимый шрифт.
+- Write concise, clear sentences.
+- Use simple, direct language suitable for both new and experienced users.
+- Avoid overly complex structures; aim for clarity and brevity.
+- Avoid excessive use of bold or italic styles.
+- All graphic elements containing text should use the [Inter](https://rsms.me/inter/) or a similarly compatible font.
 
-### Сокращения
+### Acronyms
 
-При введении незнакомого сокращения напишите весь термин и заключите сокращение в скобки. Выделите как полный термин, так и сокращение жирным шрифтом.
+When introducing an unfamiliar acronym, spell the entire term and put the abbreviation in parentheses. Put both the full term and acronym in bold.
 
-**Пример:**
+**Example:**
 
-**The Open Network (TON)** — это децентрализованная и открытая интернет-платформа...
+**The Open Network (TON)** is a decentralized and open internet platform...
 
-### Заголовки
+### Headers
 
-#### Иерархия заголовков:
+#### Header hierarchy:
 
-1. **H1 (`#`)** — Название документа
-2. **H2 (`##`)** — Основные разделы
-3. . **H3 (`###`)** — Подразделы в H2
-4. **H4 (`####`)** и ниже — Используйте экономно для более мелких деталей
+1. **H1 (`#`)** – Document title
+2. **H2 (`##`)** – Major sections
+3. **H3 (`###`)** – Subsections under H2
+4. **H4 (`####`)** and below – Use sparingly for finer detail
 
-#### Стиль заглавных букв в заголовках:
+#### Header capitalization style:
 
-- **H1, H2, H3 и H4:** **Регистр предложений**
-  - Пример: `# Это предложение в заглавных буквах`
-  - Пример: `## Это предложение в заглавных буквах`
-  - Пример: `## Это предложение в заглавных буквах`
-  - Пример: `### Это предложение в заглавных буквах`
+- **H1, H2, H3 and H4:** **Sentence case**
+  - Example: `# This sentence is in sentence case`
+  - Example: `## This sentence is in sentence case`
+  - Example: `### This sentence is in sentence case`
+  - Example: `### This sentence is in sentence case`
 
-- **Исключение**: **Специальные термины**.
-  Несмотря на общее правило _падежа предложения_,
-  определенные слова или фразы — ключевые концепции или определенные термины в документации — всегда должны форматироваться
-  с использованием заглавного регистра.
-  - Пример: `# Используйте американский английский`
-  - Пример: `# Запустите службу TON Center`
+- **Exception**: **Special terms**.
+  Despite the overall _sentence case_ rule,
+    certain words or phrases—key concepts or defined terms within the documentation—must always be formatted
+    using the title case.
+  - Example: `## Use American English`
+  - Example: `# Run the TON Center service`
 
-#### Согласованность заголовков:
+#### Header consistency:
 
-- Избегайте повторения одних и тех же слов в последовательных заголовках.
+- Avoid repeating the exact words in consecutive headers.
 
-#### Термины в заголовках пишутся с заглавной буквы
+#### Header formatting:
 
-Иногда вы можете столкнуться с определенными заглавными буквами, которые пишутся с заглавной буквы в соответствии с правилами американского английского.
+Use plain text for all headers.
+Avoid using any formatting styles in headings:
 
-- Стандарт использования заглавных букв для определенных терминов:
-- Пример: `## Use American English`
-- Пример: `### Date Format`
+- No code formatting `backticks` (\`\`)
+- No bold **text**
+- No italics _text_
+- No quotation marks (“ ” or " ")
+- No ALL CAPS (unless it's an acronym)
 
-Дата и формат являются специальными терминами и должны быть написаны с заглавной буквы, независимо от общего правила написания предложений.
+Keep headers clean and consistent. Use formatting only in body text.
 
-### Заголовки меню навигации
+**Correct:**
 
-Меню навигации должны оставаться минималистичными как в левой боковой панели, так и в верхнем меню. Для согласованности и ясности все заголовки меню должны использовать Sentence case.
+- Run the TON Center service
+- How the smart contract works
 
-#### Меню левой боковой панели:
+**Incorrect:**
 
-- Избегайте длинных описаний.
-- Используйте короткие, понятные надписи из двух-трех слов.
+- _Run the TON Center service_
+- How the `smart contract` works
+- “Run the TON Center service”
+- HOW THE SMART CONTRACT WORKS
+
+#### Capitalized terms in headers
+
+Sometimes, you can face specific capitalization defined as capitalized according to American English rules.
+
+- Capitalization standard for specific terms:
+- Example: `## Use American English`
+- Example: `### Date Format`
+
+Date and Format are special terms and should be capitalized, regardless of the overall Sentence Case rule.
+
+### Avoid "quotation marks"
+
+Do not use "quotation marks" to highlight terms, variables, or functions. Instead, apply **bold** for terms and `code formatting` for code references.
+
+**Correct usage:**
+
+- Use **get_wallet_address** when introducing a term.
+- Use `get_wallet_address` when referencing a code variable or function.
+
+**Incorrect usage:**
+
+- Do not use "get_wallet_address" for a term, code variable, or function.
+
+### Navigation menu headings
+
+The navigation menus should remain minimalistic in both the left sidebar and the top menu. For consistency and clarity, all menu headings must use Sentence case.
+
+#### Left sidebar menu:
+
+- Avoid lengthy descriptions.
+- Use short, clear labels of two or three words.
 
 :::info
-Укажите левое боковое меню с помощью файлов конфигурации [боковой панели](https://github.com/ton-community/ton-docs/tree/main/sidebars).
+Specify the left side menu with [sidebars](https://github.com/ton-community/ton-docs/tree/main/sidebars) configuration files.
 :::
 
-#### Меню панели навигации:
+#### Navigation bar menu:
 
-- Установите в этом меню только страницы иерархии высокого уровня.
-- Используйте широкие, описательные термины для категоризации контента, чтобы пользователи могли быстро определить нужный им основной раздел.
+- Set only high-level hierarchy pages in this menu.
+- Use broad, descriptive terms to categorize content, ensuring users can quickly identify the main section they need.
 
 :::info
-Укажите меню панели навигации с помощью файла конфигурации [navbar.js](https://github.com/ton-community/ton-docs/blob/main/navbar.js).
+Specify the navigation bar menu with the [navbar.js](https://github.com/ton-community/ton-docs/blob/main/navbar.js) configuration file.
 :::
 
-#### Согласованность между меню и заголовками на странице
+#### Consistency between menu and in-page headers
 
-- Сопоставьте текст заголовка, используемый в оглавлении или боковом меню, с текстом заголовка в статье, чтобы читатели знали, что они находятся на нужной странице или в нужном разделе.
-
----
-
-## Объединяем все это вместе
-
-1. **Создайте новый файл документации**, используя соглашение об именовании в стиле kebab-case
-   - Пример: `getting-started-guide.md`.
-2. **Откройте файл** и установите заголовок H1 в sentence case
-   - Пример: `# Руководство по началу работы`.
-3. **Организуйте контент** с помощью заголовков H2 по основным темам. 
-   - Пример: `## Шаги установки`, также в sentence case.
-4. **Используйте заголовки H3** для более подробных подтем в sentence case 
-   - Пример: `### Установка на Linux`.
-5. **Поддерживайте согласованность ** в любых боковых меню или оглавлениях, сопоставляя текст заголовка с текстом документа.
+- Match the header text used in the table of contents or side menu with the header text in the article, ensuring readers know they're on the correct page or section.
 
 ---
 
-## Пример структуры
+## Putting it all together
+
+1. **Create your new documentation file** using the kebab-case naming convention
+   - Example:`getting-started-guide.md`.
+2. **Open the file** and set an H1 heading in sentence case
+   - Example: `# Getting started guide`.
+3. **Organize content** with H2 headings for main topics 
+   - Example:`## Installation steps`, also in sentence case.
+4. **Use H3 headings** for more detailed subtopics in sentence case 
+   - Example: `### Installing on Linux`).
+5. **Maintain consistency** in any side menus or tables of contents by matching the header text from within the document.
+
+---
+
+## Example structure
 
 ```md title="getting-started-with-ton.md"
 # Getting started with TON
@@ -149,9 +185,11 @@ The content goes here.
 - [How to contribute](/v3/contribute/)
 ```
 
-## См. также
+## See also
 
-- [Как внести свой вклад](/v3/contribute/)
-- [Стандартизация контента](/v3/contribute/content-standardization/)
-- [Типографика](/v3/contribute/typography/)
-- [Программа локализации](/v3/contribute/localization-program/overview/)
+- [How to contribute](/v3/contribute/)
+- [Content standardization](/v3/contribute/content-standardization/)
+- [Typography](/v3/contribute/typography/)
+- [Localization program](/v3/contribute/localization-program/overview/)
+
+<Feedback />
