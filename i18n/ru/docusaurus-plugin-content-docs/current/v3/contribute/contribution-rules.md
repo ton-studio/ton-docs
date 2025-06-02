@@ -1,20 +1,18 @@
-# Руководство по внесению вклада
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Contribution Guidelines
 
 :::danger
-Эта страница устарела и скоро будет удалена.
-См. [Как внести вклад](/v3/contribute/).
+This page is outdated and will be deleted soon.
+See the [How to contribute](/v3/contribute/).
 :::
 
-Перед добавлением любой страницы на docs.ton.org, пожалуйста, ознакомьтесь со следующим списком общих и важных требований, чтобы гарантировать качественную работу.
+Before contributing any docs.ton.org page, please review the following list of general and important requirements to guarantee a smooth experience.
 
-## Название
+## Naming
 
-- Необходимо обеспечить правильное использование *THE* в документации TON. *TON Blockchain* и *TON Ecosystem* - термины, написанные с заглавной буквы, и поэтому они не требуют использования *THE*.
-- Мы пишем *TON* с обычными существительными, и если по английской грамматике требуется артикль *THE*, мы используем его. Например: "*The* TON Connect *protocol* is a..."
+- It is essential to ensure the correct use of _THE_ in the TON documentation. _TON Blockchain_ and _TON Ecosystem_ are capitalized terms, and therefore, do not require _THE_ in their usage.
+- We write _TON_ with regular nouns, and if it requires _THE_ according to English grammar, we use it. For instance: "_The_ TON Connect _protocol_ is a..."
 
 :::info
 TON Blockchain...
@@ -24,11 +22,11 @@ TON Ecosystem...
 The TON Connect protocol...
 :::
 
-Пожалуйста, ознакомьтесь с актуальными brand assets TON [здесь](https://ton.org/en/brand-assets).
+Please refer to the actual TON brand assets [here](https://ton.org/en/brand-assets).
 
-## Ссылки в документации
+## Documentation References
 
-Каждая страница в документации TON должна заканчиваться разделом "См. также". Разместите там страницу, которая, по вашему мнению, относится к текущей странице без дополнительного описания.
+Every page in TON documentation should be finished with See Also section. Place there page, you think relates to current page without additional description.
 
 :::info
 
@@ -40,14 +38,17 @@ The TON Connect protocol...
 
 :::
 
-## Полезные источники на английском языке
+## English Helpful Sources
 
-Экосистема TON создается для всего мира, поэтому крайне важно, чтобы она была понятна всем на Земле. Здесь мы предоставляем материалы, которые будут полезны для начинающих технических писателей, желающих улучшить свои навыки английского языка.
+The TON Ecosystem is being built for the entire world, so it's crucial that it's understandable for everyone on Earth. Here, we provide materials that are helpful for junior tech writers who want to improve their English skills.
 
 - [Plural Nouns](https://www.grammarly.com/blog/plural-nouns/)
 - [Articles: A versus An](https://owl.purdue.edu/owl/general_writing/grammar/articles_a_versus_an.html)
 
-## См. также
+## See Also
 
-- [Руководство по внесению вклада в TON](/v3/contribute/contribution-rules/)
-- [Рекомендации по оформлению руководств](/v3/contribute/tutorials/guidelines/)
+- [TON Contribution Guidelines](/v3/contribute/contribution-rules/)
+- [Tutorial Styling Guidelines](/v3/contribute/tutorials/guidelines/)
+
+<Feedback />
+
