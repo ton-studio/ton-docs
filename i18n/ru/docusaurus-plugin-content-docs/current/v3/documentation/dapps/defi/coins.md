@@ -1,33 +1,34 @@
-# Собственный токен: Toncoin
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Native token: Toncoin
 
-Собственная криптовалюта блокчейна TON — **Toncoin**.
+The native cryptocurrency of TON Blockchain is **Toncoin**.
 
-Комиссии за транзакции, платежи за газ (т. е. сборы за обработку сообщений смарт-контракта) и платежи за постоянное хранение оплачиваются в Toncoin.
+Transaction fees, gas payments (i.e., smart contract message processing fees), and persistent storage payments are collected in Toncoin.
 
-Toncoin используется для внесения депозитов, необходимых для того, чтобы стать валидатором блокчейна.
+Toncoin is used to make the deposits required to become a blockchain validator.
 
-Процесс осуществления платежей в Toncoin описан в [соответствующем разделе](/v3/guidelines/dapps/asset-processing/payments-processing).
+The process of making Toncoin payments is described in the [corresponding section](/v3/guidelines/dapps/asset-processing/payments-processing).
 
-Вы можете узнать, где купить или обменять Toncoin на [веб-сайте](https://ton.org/coin).
+You can find out where to buy or exchange Toncoin on the [website](https://ton.org/coin).
 
-## Дополнительные валюты
+## Extra currencies
 
-Блокчейн TON поддерживает до 2^32 встроенных дополнительных валют.
+TON Blockchain supports up to 2^32 built-in extra currencies.
 
-Балансы дополнительных валют могут храниться на каждом блокчейн-аккаунте и автоматически переводиться на другие аккаунты (во внутреннем сообщении от одного смарт-контракта к другому можно указать хэш-карту значений дополнительных валют в дополнение к количеству Toncoin).
+Extra currency balances can be stored on each blockchain account and transferred to other accounts natively (in an internal message from one smart contract to another, you can specify a hashmap of the extra currency amounts in addition to the Toncoin amount).
 
-TLB: `extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32)) = ExtraCurrencyCollection;` - хэш-карта идентификатора валюты и суммы.
+TLB: `extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32)) = ExtraCurrencyCollection;` - hashmap of currency ID and amount.
 
-Однако дополнительные валюты могут только храниться и передаваться (как Toncoin) и не имеют собственного произвольного кода или функциональности.
+However, extra currencies can only be stored and transferred (like Toncoin) and do not have their own arbitrary code or functionality.
 
-Обратите внимание, что если будет создано большое количество дополнительных валют, аккаунты "раздуются", поскольку им нужно будет хранить их.
+Note that if there are a large number of extra currencies created, the accounts will "swell" because they need to store them.
 
-Таким образом, дополнительные валюты лучше всего использовать для известных децентрализованных валют (например, Wrapped Bitcoin или Ether), и создание такой дополнительной валюты должно быть довольно дорогим.
+Thus, extra currencies are best used for well-known decentralized currencies (for example, Wrapped Bitcoin or Ether), and creating such an extra currency should be quite expensive.
 
-[Жетоны](/v3/documentation/dapps/defi/tokens#jettons-fungible-tokens) подходят для других задач.
+[Jettons](/v3/documentation/dapps/defi/tokens#jettons-fungible-tokens) are suitable for other tasks.
 
-На данный момент на блокчейне TON не создано дополнительных валют. Блокчейн TON имеет полную поддержку дополнительных валют для аккаунтов и сообщений, но контракт системы minter для их создания еще не создан.
+At the moment, no extra currency has been created on TON Blockchain. TON Blockchain has full support for extra currencies by accounts and messages, but the minter system contract for their creation has not yet been created.
+
+<Feedback />
+
