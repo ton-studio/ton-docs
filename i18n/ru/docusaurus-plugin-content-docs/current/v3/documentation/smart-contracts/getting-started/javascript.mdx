@@ -1,18 +1,16 @@
+import Feedback from '@site/src/components/Feedback';
+
 import Button from '@site/src/components/button'
 
-# SDK Blueprint
-
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Blueprint
 
 ![Blueprint](/img/blueprint/logo.svg)
 
-Среда разработки TON для написания, тестирования и развертывания смарт-контрактов.
+A development environment for TON for writing, testing, and deploying smart contracts.
 
-## Быстрый старт 🚀
+## Quick start
 
-Запустите следующее в терминале, чтобы создать новый проект, и следуйте инструкциям на экране:
+Run the following in terminal to create a new project and follow the on-screen instructions:
 
 ```bash
 npm create ton@latest
@@ -20,42 +18,47 @@ npm create ton@latest
 
 <Button href="https://www.youtube.com/watch?v=7omBDfSqGfA&list=PLtUBO1QNEKwtO_zSyLj-axPzc9O9rkmYa" colorType={'secondary'} sizeType={'sm'}>
 
-Посмотреть видеоуроки
+Watch video tutorials
 
 </Button>
 
-### Основные функции
+### Core features
 
-- Упрощенный рабочий процесс для создания, тестирования и развертывания смарт-контрактов
-- Очень простое развертывание в основной сети/тестовой сети с использованием вашего любимого кошелька (например, Tonkeeper)
-- Невероятно быстрое тестирование нескольких смарт-контрактов в изолированном блокчейне, запущенном в процессе работы
+- Streamlined workflow for building, testing and deploying smart contracts
+- Dead simple deployment to mainnet/testnet using your favorite wallet (eg. Tonkeeper)
+- Blazing fast testing of multiple smart contracts in an isolated blockchain running in-process
 
-### Технический стек
+### Tech stack
 
-- Компиляция FunC с https://github.com/ton-community/func-js (без cli)
-- Тестирование смарт-контрактов с помощью https://github.com/ton-org/sandbox
-- Развертывание смарт-контрактов с помощью кошельков, совместимых с TON Connect 2.0 или deeplink `ton://`
+- Compiling FunC with https://github.com/ton-community/func-js (no cli)
+- Compiling Tact with https://github.com/tact-lang/tact
+- Testing smart contracts with https://github.com/ton-org/sandbox
+- Deploying smart contracts with TON Connect 2.0 compatible wallets or a `ton://` deeplink
 
-### Требования
+### Requirements
 
-- [Node.js](https://nodejs.org/) с последней версией, например v18, проверьте версию с помощью `node -v`
-- IDE с поддержкой TypeScript и FunC, например [Visual Studio Code](https://code.visualstudio.com/) с [плагином FunC](https://marketplace.visualstudio.com/items?itemName=tonwhales.func-vscode)
+- [Node.js](https://nodejs.org/) with a recent version like v18, verify version with `node -v`
+- IDE with TypeScript and TON support:
+  - [Visual Studio Code](https://code.visualstudio.com/) with the [FunC plugin](https://marketplace.visualstudio.com/items?itemName=tonwhales.func-vscode) or [Tact plugin](https://marketplace.visualstudio.com/items?itemName=tonstudio.vscode-tact)
+  - [IntelliJ IDEA](https://www.jetbrains.com/idea/) with the [TON Development plugin](https://plugins.jetbrains.com/plugin/23382-ton)
 
-## Ссылки
+## References
 
 ### GitHub
 
 - https://github.com/ton-org/blueprint
 
-### Материалы
+### Materials
 
-- [Использование Blueprint на стриме DoraHacks](https://www.youtube.com/watch?v=5ROXVM-Fojo)
-- [Создание нового проекта](https://github.com/ton-org/blueprint#create-a-new-project)
-- [Разработка нового смарт-контракта](https://github.com/ton-org/blueprint#develop-a-new-contract)
-- [[YouTube] Func with Blueprint EN](https://www.youtube.com/watch?v=7omBDfSqGfA&list=PLtUBO1QNEKwtO_zSyLj-axPzc9O9rkmYa) ([RU версия](https://youtube.com/playlist?list=PLyDBPwv9EPsA5vcUM2vzjQOomf264IdUZ))
+- [Blueprint using on DoraHacks stream](https://www.youtube.com/watch?v=5ROXVM-Fojo)
+- [Create a new project](https://github.com/ton-org/blueprint#create-a-new-project)
+- [Develop a new smart contract](https://github.com/ton-org/blueprint#develop-a-new-contract)
+- [[YouTube] Func with Blueprint EN](https://www.youtube.com/watch?v=7omBDfSqGfA&list=PLtUBO1QNEKwtO_zSyLj-axPzc9O9rkmYa) ([RU version](https://youtube.com/playlist?list=PLyDBPwv9EPsA5vcUM2vzjQOomf264IdUZ))
 
-## См. также
+## See also
 
-- [Введение в разработку смарт-контракта](/v3/documentation/smart-contracts/overview)
-- [Как работать со смарт-контрактами кошелька](/v3/guidelines/smart-contracts/howto/wallet)
-- [SDK](/v3/guidelines/dapps/apis-sdks/sdk)
+- [Develop Smart Contract Introduction](/v3/documentation/smart-contracts/overview)
+- [How to work with wallet smart contracts](/v3/guidelines/smart-contracts/howto/wallet)
+- [SDKs](/v3/guidelines/dapps/apis-sdks/sdk)
+
+<Feedback />
