@@ -1,46 +1,45 @@
+import Feedback from '@site/src/components/Feedback';
+
 import Button from '@site/src/components/button'
 
-# TON Connect для Telegram ботов
+# TON Connect for Telegram Bots
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
+:::warning deprecated
+This guide explains an outdated method of integrating TON Connect with Telegram bots. For a more secure and modern approach, consider using [Telegram Mini Apps](/v3/guidelines/dapps/tma/overview) for a more modern and secure integration.
 :::
 
-:::warning устаревшее
-В этом руководстве описан устаревший метод интеграции TON Connect с ботами Telegram. Для более безопасного и актуального способа рекомендуется использовать [Telegram Mini Apps](/v3/guidelines/dapps/tma/overview для более современной и безопасной интеграции.
-:::
-
-В этом руководстве мы создадим пример Telegram-бота с использованием JavaScript TON Connect SDK, поддерживающего аутентификацию TON Connect 2.0. Мы рассмотрим подключение кошельков, отправку транзакций, получение информации о кошельках и отключение кошельков.
+In this tutorial, we will develop a sample Telegram bot using the JavaScript TON Connect SDK, supporting TON Connect 2.0 authentication.
+This guide covers wallet connections, sending transactions, retrieving wallet information, and disconnecting wallets.
 
 <Button href="https://t.me/ton_connect_example_bot" colorType={'primary'} sizeType={'sm'}>
 
-Открыть демо-бот
+Open Demo Bot
 
 </Button>
 
 <Button href="https://github.com/ton-connect/demo-telegram-bot" colorType={'secondary'} sizeType={'sm'}>
 
-Ознакомиться с GitHub
+Check out GitHub
 
 </Button>
 
-## Ссылки на документацию
+## Documentation links
 
-- [Документация TON Connect SDK] (https://www.npmjs.com/package/@tonconnect/sdk)
+- [TON Connect SDK documentation](https://www.npmjs.com/package/@tonconnect/sdk)
 
-## Необходимые компоненты
+## Prerequisites
 
-- Вам нужно создать Telegram-бота с помощью [@BotFather](https://t.me/BotFather) и сохранить его токен.
-- Необходимо установить Node JS (в этом руководстве используется версия 18.1.0).
-- Необходимо установить Docker.
+- You need to create a telegram bot using [@BotFather](https://t.me/BotFather) and save its token.
+- Node JS should be installed (we use version 18.1.0 in this tutorial).
+- Docker should be installed.
 
-## Создание проекта
+## Creating project
 
-### Настройка зависимостей
+### Setting up dependencies
 
-Начнем с создания проекта Node.js. Мы будем использовать TypeScript и библиотеку [node-telegram-bot-api](https://www.npmjs.com/package/node-telegram-bot-api), хотя вы можете выбрать другую библиотеку по своему усмотрению. Также мы будем использовать библиотеку [qrcode](https://www.npmjs.com/package/qrcode) для генерации QR-кодов,  но вы можете заменить её любой другой аналогичной библиотекой.
+Start by creating a Node.js project. We will use TypeScript and the [node-telegram-bot-api](https://www.npmjs.com/package/node-telegram-bot-api) library, though you can choose an alternative library if preferred. Also, we will use [qrcode](https://www.npmjs.com/package/qrcode) library for QR codes generation, but you can replace it with any other same library.
 
-Давайте создадим директорию `ton-connect-bot`. Добавьте в нее следующий файл package.json:
+Let's create a directory `ton-connect-bot`. Add the following package.json file there:
 
 ```json
 {
@@ -65,14 +64,14 @@ import Button from '@site/src/components/button'
 }
 ```
 
-Запустите `npm i`, чтобы установить зависимости.
+Run `npm i` to install dependencies.
 
-### Добавление файла tsconfig.json
+### Add a tsconfig.json
 
-Создайте файл `tsconfig.json`:
+Create a `tsconfig.json`:
 
 <details>
-<summary>Код tsconfig.json</summary>
+<summary>tsconfig.json code</summary>
 
 ```json
 {
@@ -115,13 +114,13 @@ import Button from '@site/src/components/button'
 
 </details>
 
-[Подробнее о tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+[Read more about tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
 
-### Добавление простого кода бота
+### Add simple bot code
 
-Создайте файл `.env` и добавьте туда токен вашего бота, манифест DApp и список кошельков, которые будут кэшироваться в это время:
+Create a `.env` file and add your bot token, DAppmanifest and wallets list cache time to live there:
 
-[Подробнее о tonconnect-manifes.json] (https://github.com/ton-connect/sdk/tree/main/packages/sdk#add-the-tonconnect-manifest)
+[See more about tonconnect-manifes.json](https://github.com/ton-connect/sdk/tree/main/packages/sdk#add-the-tonconnect-manifest)
 
 ```dotenv
 # .env
@@ -131,7 +130,7 @@ MANIFEST_URL=https://raw.githubusercontent.com/ton-connect/demo-telegram-bot/mas
 WALLETS_LIST_CACHE_TTL_MS=86400000
 ```
 
-Создайте директорию `src` и файл `bot.ts` внутри. Давайте создадим там экземпляр TelegramBot:
+Create directory `src` and file `bot.ts` inside. Let's create a TelegramBot instance there:
 
 ```ts
 // src/bot.ts
@@ -144,7 +143,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN!;
 export const bot = new TelegramBot(token, { polling: true });
 ```
 
-Теперь мы можем создать входной файл `main.ts` в директории `src`:
+Now we can create an entrypoint file `main.ts` inside the `src` directory:
 
 ```ts
 // src/main.ts
@@ -160,9 +159,9 @@ bot.on('message', msg => {
 });
 ```
 
-Все готово. Вы можете запустить `npm run compile` и `npm run start`, и отправить любое сообщение вашему боту. Бот ответит: "Received your message". Мы готовы к интеграции с TonConnect.
+Here we go. You can run `npm run compile` and `npm run start`, and send any message to your bot. Bot will reply "Received your message". We are ready for the TonConnect integration.
 
-На данный момент у нас следующая структура файлов:
+At the moment we have the following files structure:
 
 ```text
 ton-connect-bot
@@ -175,13 +174,13 @@ ton-connect-bot
 └── tsconfig.json
 ```
 
-## Подключение кошелька
+## Connecting a wallet
 
-После установки `@tonconnect/sdk` мы можем начать с его импорта для инициализации подключений кошелька.
+After installing the  `@tonconnect/sdk`, we can begin by importing it to initialize wallet connections.
 
-Мы начнем с получения списка кошельков. Нам нужны только кошельки, совместимые с http-bridge. Создайте папку `ton-connect` в `src` и добавьте туда файл `wallets.ts`:
-Мы также определим функцию `getWalletInfo`, которая запрашивает подробную информацию о кошельке по его `appName`.
-Разница между `name` и `appName` заключается в том, что `name` - это читаемое название кошелька, а `appName` - это уникальный идентификатор кошелька.
+We will start with getting wallets list. We need only http-bridge-compatible wallets. Create a folder `ton-connect` into `src` and add `wallets.ts` file there:
+We also define function `getWalletInfo` that queries detailed wallet info by its `appName`.
+The difference between `name` and `appName` is that `name` is a human-readable label of the wallet, and `appName` is the wallet's uniq identifier.
 
 ```ts
 // src/ton-connect/wallets.ts
@@ -203,11 +202,11 @@ export async function getWalletInfo(walletAppName: string): Promise<WalletInfo |
 }
 ```
 
-Теперь нам нужно определить хранилище TonConnect. TonConnect использует `localStorage` для сохранения данных о подключении при работе в браузере, однако в среде NodeJS `localStorage` отсутствует. Поэтому нам нужно добавить собственную простую реализацию хранилища.
+Now we need to define a TonConnect storage. TonConnect uses `localStorage` to save connection details when running in the browser, however there is no `localStorage` in NodeJS environment. That's why we should add a custom simple storage implementation.
 
-[Подробнее о хранилище TonConnect](https://github.com/ton-connect/sdk/tree/main/packages/sdk#init-connector)
+[See details about TonConnect storage](https://github.com/ton-connect/sdk/tree/main/packages/sdk#init-connector)
 
-Создайте файл `storage.ts` в директории `ton-connect`:
+Create `storage.ts` inside `ton-connect` directory:
 
 ```ts
 // src/ton-connect/storage.ts
@@ -237,8 +236,8 @@ export class TonConnectStorage implements IStorage {
 }
 ```
 
-Мы переходим к реализации подключения кошелька.
-Измените `src/main.ts` и добавьте команду `connect`. Подключение кошелька будет реализовано в обработчике этой команды.
+We are moving on implementing a wallet connection.
+Modify `src/main.ts` and add `connect` command. We are going to implement a wallet connection in this command handler.
 
 ```ts
 import dotenv from 'dotenv';
@@ -277,13 +276,13 @@ bot.onText(/\/connect/, async msg => {
 });
 ```
 
-Давайте разберемся, что мы делаем. Сначала мы получаем список кошельков и создаем экземпляр TonConnect.
-Затем подписываемся на изменение кошелька. Когда пользователь подключит кошелек, бот отправит сообщение `${wallet.device.appName} wallet connected!`.
-Далее мы находим кошелек Tonkeeper и создаем ссылку для подключения. В завершение мы генерируем QR-код со ссылкой и отправляем его пользователю в виде фотографии.
+Let's analyze what we are doing here. Firstly we fetch the wallets list and create a TonConnect instance.
+After that we subscribe to wallet change. When user connects a wallet, bot will send a message `${wallet.device.appName} wallet connected!`.
+Next we find the Tonkeeper wallet and create connection link. In the end we generate a QR code with the link and send it as a photo to the user.
 
-Теперь вы можете запустить бота (`npm run compile` и `npm run start`), а затем отправить боту сообщение `/connect`. Бот должен ответить QR-кодом. Отсканируйте его кошельком Tonkeeper. В чате появится сообщение `Tonkeeper wallet connected!`.
+Now you can run the bot (`npm run compile` and `npm run start` then) and send `/connect` message to the bot. Bot should reply with the QR. Scan it with the Tonkeeper wallet. You will see a message `Tonkeeper wallet connected!` in the chat.
 
-Мы будем использовать коннектор во многих местах, поэтому давайте перенесем код его создания в отдельный файл:
+We will use connector in many places, so let's move connector creating code to a separate file:
 
 ```ts
 // src/ton-connect/connector.ts
@@ -300,7 +299,7 @@ export function getConnector(chatId: number): TonConnect {
 }
 ```
 
-И импортируем его в `src/main.ts`
+And import it in the `src/main.ts`
 
 ```ts
 // src/main.ts
@@ -337,7 +336,7 @@ bot.onText(/\/connect/, async msg => {
 });
 ```
 
-На данный момент у нас следующая структура файлов:
+At the moment we have the following files structure:
 
 ```text
 bot-demo
@@ -354,15 +353,15 @@ bot-demo
 └── tsconfig.json
 ```
 
-## Создание меню подключения кошелька
+## Creating connect wallet menu
 
-### Добавление инлайн-клавиатуры
+### Add inline keyboard
 
-Мы реализовали подключение кошелька Tonkeeper. Однако мы не добавили возможность подключения через универсальный QR-код для всех кошельков и не дали пользователю выбрать подходящий кошелёк. Давайте исправим это сейчас.
+We've done the Tonkeeper wallet connection. But we didn't implement connection via universal QR code for all wallets, and didn't allow the user to choose suitable wallet. Let's cover it now.
 
-Для улучшения UX мы будем использовать функции Telegram `callback_query` и `inline_keyboard`. Если вы не знакомы с ними, вы можете прочитать об этом подробнее [здесь](https://core.telegram.org/bots/api#callbackquery).
+For better UX we are going to use `callback_query` and `inline_keyboard` Telegram features. If you don't fill familiar with that, you can read more about it [here](https://core.telegram.org/bots/api#callbackquery).
 
-Мы реализуем следующий UX для подключения кошелька:
+We will implement following UX for wallet connection:
 
 ```text
 First screen:
@@ -380,7 +379,7 @@ Third screen:
 <Open selected wallet link>
 ```
 
-Давайте начнем с добавления инлайн-клавиатуры в обработчик команды `/connect` в файле `main.ts`
+Let's start with adding inline keyboard to the `/connect` command handler in the `main.ts`
 
 ```ts
 // src/main.ts
@@ -422,18 +421,18 @@ bot.onText(/\/connect/, async msg => {
 });
 ```
 
-Нам нужно обернуть диплинк TonConnect как https://ton-connect.github.io/open-tc?connect=${encodeURIComponent(link)}, так как Telegram позволяет использовать в инлайн-клавиатуре только ссылки формата `http`.
-Сайт https://ton-connect.github.io/open-tc просто перенаправляет пользователя на ссылку, переданную в параметре `connect` запроса, что является временным решением для открытия ссылок `tc://` в Telegram.
+We need to wrap TonConnect deeplink as https://ton-connect.github.io/open-tc?connect=${encodeURIComponent(link)} because only `http` links are allowed in the Telegram inline keyboard.
+Website https://ton-connect.github.io/open-tc just redirects user to link passed in the `connect` query param, so it's only workaround to open `tc://` link in the Telegram.
 
-Обратите внимание, что мы изменили аргументы вызова `connector.connect`. Теперь мы генерируем универсальную ссылку для всех кошельков.
+Note that we replaced `connector.connect` call arguments. Now we are generating a unified link for all wallets.
 
-Далее мы указываем Telegram вызвать обработчик `callback_query` со значением `{"method": "chose_wallet" }`, когда пользователь нажимает кнопку `Choose a Wallet`.
+Next we tell Telegram to call `callback_query` handler with `{ "method": "chose_wallet" }` value when user clicks to the `Choose a Wallet` button.
 
-### Добавление обработчика кнопки "Choose a Wallet"
+### Add Choose a Wallet button handler
 
-Создайте файл `src/connect-wallet-menu.ts`.
+Create a file `src/connect-wallet-menu.ts`.
 
-Давайте добавим туда обработчик нажатия кнопки 'Choose a Wallet':
+Let's add 'Choose a Wallet' button click handler there:
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -466,9 +465,9 @@ async function onChooseWalletClick(query: CallbackQuery, _: string): Promise<voi
 }
 ```
 
-Здесь мы заменяем инлайн-клавиатуру сообщения на новую, которая содержит кликабельный список кошельков и кнопку `Back`.
+Here we are replacing the message inline keyboard with a new one that contains clickable list of wallets and 'Back' button.
 
-Теперь мы добавим глобальный обработчик `callback_query` и зарегистрируем `onChooseWalletClick`:
+Now we will add global `callback_query` handler and register `onChooseWalletClick` there:
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -480,7 +479,7 @@ export const walletMenuCallbacks = { // Define buttons callbacks
     chose_wallet: onChooseWalletClick
 };
 
-bot.on('callback_query', query => { // Parse callback data and execute corresponing function
+bot.on('callback_query', query => { // Parse callback data and execute corresponding function
     if (!query.data) {
         return;
     }
@@ -504,10 +503,10 @@ bot.on('callback_query', query => { // Parse callback data and execute correspon
 async function onChooseWalletClick ...
 ```
 
-Здесь мы определяем список обработчиков кнопок и парсер `callback_query`. К сожалению, колбек-данные всегда строковые, поэтому мы передаем JSON в `callback_data` и парсим его позже в обработчике `callback_query`.
-Затем мы ищем запрашиваемый метод и вызываем его с переданными параметрами.
+Here we define buttons handlers list and `callback_query` parser. Unfortunately callback data is always string, so we have to pass JSON to the `callback_data` and parse it later in the `callback_query` handler.
+Then we are looking for the requested method and call it with passed parameters.
 
-Теперь мы должны добавить импорт `connect-wallet-menu.ts` в `main.ts`.
+Now we should add `connect-wallet-menu.ts` import to the `main.ts`
 
 ```ts
 // src/main.ts
@@ -519,13 +518,13 @@ import './connect-wallet-menu';
 // ... other code
 ```
 
-Скомпилируйте и запустите бота. Вы можете нажать на кнопку "Choose a wallet ", и бот заменит кнопки инлайн-клавиатуры!
+Compile and run the bot. You can click to the Choose a wallet button and bot will replace inline keyboard buttons!
 
-### Добавление обработчиков других кнопок
+### Add other buttons handlers
 
-Давайте завершим создание меню и добавим обработчики оставшихся команд.
+Let's complete this menu and add rest commands handlers.
 
-Для начала мы создадим служебную функцию `editQR`. Редактирование медиафайлов сообщения (QR-изображения) - задача непростая. Нам нужно сохранить изображение в файл и отправить его на сервер Telegram. Затем мы можем удалить этот файл.
+Firstly we will create a utility function `editQR`. Editing message media (QR image) is a bit tricky. We need to store image to the file and send it to the Telegram server. Then we can remove this file.
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -553,7 +552,7 @@ async function editQR(message: TelegramBot.Message, link: string): Promise<void>
 }
 ```
 
-В обработчике `onOpenUniversalQRClick` мы просто регенерируем QR-код и диплинк и изменяем сообщение:
+In `onOpenUniversalQRClick` handler we just regenerate a QR and deeplink and modify the message:
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -603,7 +602,7 @@ async function onOpenUniversalQRClick(query: CallbackQuery, _: string): Promise<
 // ... other code
 ```
 
-В обработчике `onWalletClick` мы создаем специальный QR-код и универсальную ссылку только для выбранного кошелька и изменяем сообщение.
+In `onWalletClick` handler we are creating special QR and universal link for selected wallet only, and modify the message.
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -657,7 +656,7 @@ async function onWalletClick(query: CallbackQuery, data: string): Promise<void> 
 // ... other code
 ```
 
-Теперь нам нужно зарегистрировать эти функции как колбек (`walletMenuCallbacks`):
+Now we have to register this functions as callbacks (`walletMenuCallbacks`):
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -678,7 +677,7 @@ export const walletMenuCallbacks = {
 ```
 
 <details>
-<summary>На данный момент src/connect-wallet-menu.ts выглядит следующим образом</summary>
+<summary>Currently src/connect-wallet-menu.ts looks like that</summary>
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -696,7 +695,7 @@ export const walletMenuCallbacks = {
     universal_qr: onOpenUniversalQRClick
 };
 
-bot.on('callback_query', query => { // Parse callback data and execute corresponing function
+bot.on('callback_query', query => { // Parse callback data and execute corresponding function
     if (!query.data) {
         return;
     }
@@ -850,11 +849,11 @@ async function editQR(message: TelegramBot.Message, link: string): Promise<void>
 
 </details>
 
-Скомпилируйте и запустите бота, чтобы проверить, как теперь работает подключение к кошельку.
+Compile and run the bot to check how wallet connection works now.
 
-Вы могли заметить, что мы пока не рассматривали истечение срока действия QR-кода и остановку работы коннекторов. Мы займёмся этим позже.
+You may note that we haven't considered QR code expiration and stopping connectors yet. We will handle it later.
 
-На данный момент у нас есть следующая структура файлов:
+At the moment we have the following files structure:
 
 ```text
 bot-demo
@@ -872,9 +871,9 @@ bot-demo
 └── tsconfig.json
 ```
 
-## Реализация отправки транзакций
+## Implement transaction sending
 
-Прежде чем писать новый код для отправки транзакций, давайте оптимизируем существующий. Мы создадим новый файл для обработчиков команд бота ('/connect', '/send_tx', ...)
+Before write new code that sends a transaction, let's clean up the code. We're going to create a new file for bot commands handlers ('/connect', '/send_tx', ...)
 
 ```ts
 // src/commands-handlers.ts
@@ -921,7 +920,7 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
 }
 ```
 
-Давайте импортируем его в `main.ts`, а также переместим точку входа для `callback_query` из `connect-wallet-menu.ts` в `main.ts`:
+Let's import that in the `main.ts` and also move `callback_query` entrypoint from `connect-wallet-menu.ts` to the `main.ts`:
 
 ```ts
 // src/main.ts
@@ -978,7 +977,7 @@ async function onChooseWalletClick(query: CallbackQuery, _: string): Promise<voi
 // ... other code
 ```
 
-Теперь мы можем добавить обработчик команды `send_tx`:
+Now we can add `send_tx` command handler:
 
 ```ts
 // src/commands-handlers.ts
@@ -1044,11 +1043,11 @@ export async function handleSendTXCommand(msg: TelegramBot.Message): Promise<voi
 }
 ```
 
-Здесь мы проверяем, подключен ли кошелек пользователя, и обрабатываем отправку транзакции.
-Затем мы отправляем пользователю сообщение с кнопкой, которая открывает его кошелек (универсальная ссылка на кошелек без дополнительных параметров).
-Обратите внимание, что эта кнопка содержит пустой диплинк. Это означает, что данные запроса на отправку транзакции проходят через http-мост, и транзакция появится в кошельке пользователя, даже если он просто откроет приложение кошелька, не нажимая кнопку.
+Here we check if user's wallet is connected and process sending transaction.
+Then we send a message to the user with a button that opens user's wallet (wallet universal link without additional parameters).
+Note that this button contains an empty deeplink. It means that send transaction request data goes through the http-bridge, and transaction will appear it the user's wallet even if he just open the wallet app without clicking to this button.
 
-Давайте зарегистрируем этот обработчик:
+Let's register this handler:
 
 ```ts
 // src/main.ts
@@ -1060,9 +1059,9 @@ bot.onText(/\/connect/, handleConnectCommand);
 bot.onText(/\/send_tx/, handleSendTXCommand);
 ```
 
-Скомпилируйте и запустите бота, чтобы проверить, правильно ли работает отправка транзакций.
+Compile and run the bot to check that transaction sending works correctly.
 
-На данный момент у нас следующая структура файлов:
+At the moment we have the following files structure:
 
 ```text
 bot-demo
@@ -1081,9 +1080,9 @@ bot-demo
 └── tsconfig.json
 ```
 
-## Добавление отключения и отображение команд подключенного кошелька
+## Add disconnect and show connected wallet commands
 
-Реализация этих команд достаточно проста:
+This commands implementation is simple enough:
 
 ```ts
 // src/commands-handlers.ts
@@ -1132,7 +1131,7 @@ export async function handleShowMyWalletCommand(msg: TelegramBot.Message): Promi
 }
 ```
 
-И зарегистрируем эти команды:
+And register this commands:
 
 ```ts
 // src/main.ts
@@ -1145,17 +1144,17 @@ bot.onText(/\/disconnect/, handleDisconnectCommand);
 bot.onText(/\/my_wallet/, handleShowMyWalletCommand);
 ```
 
-Скомпилируйте и запустите бота, чтобы проверить, правильно ли работают эти команды.
+Compile and run the bot to check that commands above works correctly.
 
-## Оптимизация
+## Optimisation
 
-Мы реализовали все базовые команды. Но важно помнить, что каждый коннектор поддерживает открытое соединение SSE до тех пор, пока оно не будет приостановлено.
-Кроме того, мы не рассмотрели случай, когда пользователь вызывает `/connect` несколько раз, или вызывает `/connect` или `/send_tx` и не сканирует QR-код. Нам необходимо установить таймаут и закрывать соединение, чтобы экономить серверные ресурсы.
-Также нужно уведомлять пользователя, что срок действия QR-кода или запроса транзакции истек.
+We've done all basic commands. But it is important to keep in mind that each connector keeps SSE connection opened until it is paused.
+Also, we didn't handle case when user calls `/connect` multiple times, or calls `/connect` or `/send_tx` and doesn't scan the QR. We should set a timeout and close the connection to save server resources.
+Then we should notify user that QR / transaction request is expired.
 
-### Оптимизация отправки транзакций
+### Send transaction optimisation
 
-Давайте создадим служебную функцию, которая оборачивает промис и отклоняет его после заданного таймаута:
+Let's create a utility function that wraps a promise and rejects it after the specified timeout:
 
 ```ts
 // src/utils.ts
@@ -1175,9 +1174,9 @@ export function pTimeout<T>(
 }
 ```
 
-Вы можете использовать этот код или выбрать библиотеку, которая вам больше нравится.
+You can use this code or pick a library you like.
 
-Давайте добавим значение параметра таймаута в `.env`
+Let's add a timeout parameter value to the `.env`
 
 ```dotenv
 # .env
@@ -1187,7 +1186,7 @@ WALLETS_LIST_CACHE_TTL_MS=86400000
 DELETE_SEND_TX_MESSAGE_TIMEOUT_MS=600000
 ```
 
-Теперь улучшим функцию `handleSendTXCommand` и перенести отправку tx в `pTimeout`
+Now we are going to improve `handleSendTXCommand` function and wrap tx sending to the `pTimeout`
 
 ```ts
 // src/commands-handlers.ts
@@ -1230,7 +1229,7 @@ pTimeout(
 ```
 
 <details>
-<summary>Полный код handleSendTXCommand</summary>
+<summary>Full handleSendTXCommand code</summary>
 
 ```ts
 export async function handleSendTXCommand(msg: TelegramBot.Message): Promise<void> {
@@ -1303,17 +1302,18 @@ export async function handleSendTXCommand(msg: TelegramBot.Message): Promise<voi
 
 </details>
 
-Если пользователь не подтвердит транзакцию в течение `DELETE_SEND_TX_MESSAGE_TIMEOUT_MS` (10 минут), транзакция будет отменена, а бот отправит сообщение `Transaction was not confirmed`.
+If user doesn't confirm the transaction during `DELETE_SEND_TX_MESSAGE_TIMEOUT_MS` (10min), the transaction will be cancelled and bot will send a message `Transaction was not confirmed`.
 
-Вы можете установить этот параметр на `5000`, скомпилировать и перезапустить бота, чтобы протестировать его поведение.
+You can set this parameter to `5000` compile and rerun the bot and test its behaviour.
 
-### Оптимизация процесса подключения кошелька
+### Wallet connect flow optimisation
 
-В данный момент мы создаем новый коннектор на каждом шаге навигации через меню подключения кошелька.
-Это неэффективно, так как мы не закрываем соединение предыдущих коннекторов при создании новых. Давайте улучшим это поведение и создадим кэш-карту для коннекторов пользователей.
+At this moment we create a new connector on the every navigation through the wallet connection menu step.
+That is poorly because we don't close previous connectors connection when create new connectors.
+Let's improve this behaviour and create a cache-mapping for users connectors.
 
 <details>
-<summary>Код src/ton-connect/connector.ts</summary>
+<summary>src/ton-connect/connector.ts code</summary>
 
 ```ts
 // src/ton-connect/connector.ts
@@ -1368,13 +1368,13 @@ export function getConnector(
 
 </details>
 
-Этот код может показаться немного запутанным, но давайте разберемся.
-Здесь мы сохраняем коннектор, тайм-аут для его очистки и список колбеков, которые должны быть выполнены после истечения тайм-аута для каждого пользователя.
+This code may look a little tricky, but here we go.
+Here we store a connector, it's cleaning timeout and list of callback that should be executed after the timeout for each user.
 
-При вызове `getConnector` мы проверяем, есть ли в кэше существующий коннектор для данного `chatId` (пользователя). Если он существует, мы сбрасываем таймаут очистки и возвращаем коннектор.
-Это позволяет сохранять активные коннекторы пользователей в кэше. Если в кэше нет коннектора, мы создаем новый, регистрируем функцию очистки по таймауту и возвращаем этот коннектор.
+When `getConnector` is called we check if there is an existing connector for this `chatId` (user) it the cache. If it exists we reset the cleaning timeout and return the connector.
+That allows keep active users connectors in cache. It there is no connector in the cache we create a new one, register a timeout clean function and return this connector.
 
-Чтобы это работало, необходимо добавить новый параметр в `.env`
+To make it works we have to add a new parameter to the `.env`
 
 ```dotenv
 # .env
@@ -1385,10 +1385,10 @@ DELETE_SEND_TX_MESSAGE_TIMEOUT_MS=600000
 CONNECTOR_TTL_MS=600000
 ```
 
-Теперь давайте используем его в handelConnectCommand
+Now let's use it in the handelConnectCommand
 
 <details>
-<summary>Код src/commands-handlers.ts</summary>
+<summary>src/commands-handlers.ts code</summary>
 
 ```ts
 // src/commands-handlers.ts
@@ -1494,14 +1494,15 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
 
 </details>
 
-Мы определили `newConnectRequestListenersMap` для хранения колбека очистки последнего запроса подключения для каждого пользователя.
-Если пользователь вызывает `/connect` несколько раз, бот удалит предыдущее сообщение с QR-кодом.
-Кроме того, мы настроили время ожидания подключения, чтобы удалять сообщение с QR-кодом по истечении срока его действия.
+We defined `newConnectRequestListenersMap` to store cleanup callback for the last connect request for each user.
+If user calls `/connect` multiple times, bot will delete previous message with QR.
+Also, we subscribed to the connector expiration timeout to delete the QR-code message when it is expired.
 
-Теперь мы должны удалить подписку `connector.onStatusChange` из функций `connect-wallet-menu.ts`, так как они используют один и тот же экземпляр коннектора, а одной подписки в `handleConnectCommand` достаточно.
+Now we should remove `connector.onStatusChange` subscription from the `connect-wallet-menu.ts` functions,
+because they use the same connector instance and one subscription in the `handleConnectCommand` in enough.
 
 <details>
-<summary>Код src/connect-wallet-menu.ts</summary>
+<summary>src/connect-wallet-menu.ts code</summary>
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -1587,14 +1588,14 @@ async function onWalletClick(query: CallbackQuery, data: string): Promise<void> 
 
 </details>
 
-Вот и все! Скомпилируйте и запустите бота и попробуйте вызвать `/connect` дважды.
+That's it! Compile and run the bot and try to call `/connect` twice.
 
-### Улучшение взаимодействия с @wallet
+### Improve interaction with @wallet
 
-Начиная с версии 3 TonConnect поддерживает подключение к кошелькам TWA, таким как @wallet. На данный момент в руководстве бот может быть подключен к @wallet.
-Однако следует улучшить стратегию перенаправления для повышения удобства UX. Кроме того, давайте добавим кнопку `Connect @wallet` на первый экран ("Универсальный QR").
+Starting from v3 TonConnect supports connection to TWA wallets like @wallet. At the moment in the tutorial the bot could be connected to the @wallet.
+However, we should improve redirection strategy to provide better UX. Moreover, let's add `Connect @wallet` button to the first ("Universal QR") screen.
 
-Для начала давайте создадим несколько служебных функций:
+First, let's create some utility functions:
 
 ```ts
 // src/utils.ts
@@ -1627,10 +1628,10 @@ export function convertDeeplinkToUniversalLink(link: string, walletUniversalLink
 }
 ```
 
-Параметры TonConnect в ссылках Telegram должны быть закодированы особым образом, поэтому мы используем `encodeTelegramUrlParameters` для кодирования параметра стратегии возврата.
-Мы будем использовать `addTGReturnStrategy`, для предоставления правильного URL-адреса возврата демо-боту для @wallet.
+TonConnect parameters in Telegram links have to be encoded in special way, that's why we use `encodeTelegramUrlParameters` to encode return strategy parameter.
+We will use `addTGReturnStrategy` to provide correct return url to the demo bot for @wallet.
 
-Поскольку мы используем универсальный код создания QR-страниц в двух местах, мы выносим его в отдельную функцию:
+Since we use Universal QR page creation code in two places, we are moving it to the separate function:
 
 ```ts
 // src/utils.ts
@@ -1671,11 +1672,11 @@ export async function buildUniversalKeyboard(
 }
 ```
 
-Здесь мы добавляем отдельную кнопку для @wallet на первый экран (Универсальный QR-экран). Осталось только использовать эту функцию в
-connect-wallet-menu и command-handlers:
+Here we are adding separate button for @wallet to the First screen (Universal QR screen). All that remains is to use this function in
+connect-wallet-menu and command-handlers:
 
 <details>
-<summary>Код src/connect-wallet-menu.ts</summary>
+<summary>src/connect-wallet-menu.ts code</summary>
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -1711,7 +1712,7 @@ async function onOpenUniversalQRClick(query: CallbackQuery, _: string): Promise<
 </details>
 
 <details>
-<summary>Код src/commands-handlers.ts</summary>
+<summary>src/commands-handlers.ts code</summary>
 
 ```ts
 // src/commands-handlers.ts
@@ -1792,10 +1793,10 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
 
 </details>
 
-Теперь мы будем корректно обрабатывать TG-ссылки, когда пользователь нажимает на кнопку кошелька на втором экране (Выбор кошелька):
+Now we are going to handle TG links properly when user clicks to a wallet button on the second Screen (Choosing a wallet):
 
 <details>
-<summary>Код src/connect-wallet-menu.ts</summary>
+<summary>src/connect-wallet-menu.ts code</summary>
 
 ```ts
 // src/connect-wallet-menu.ts
@@ -1853,12 +1854,13 @@ async function onWalletClick(query: CallbackQuery, data: string): Promise<void> 
 
 </details>
 
-Обратите внимание, что для QR-кода и кнопки-ссылки (`qrLink` и `buttonLink`) используются разные ссылки, так как перенаправление не требуется, если пользователь сканирует QR-код через @wallet. Однако оно необходимо, если пользователь подключается к @wallet через кнопку-ссылку.
+Note that we place different links to the QR and button-link (`qrLink` and `buttonLink`),
+because we don't need redirection when user scans QR by @wallet, and at the same time we need redirect back to the bot when user connects @wallet using button-link.
 
-Теперь давайте добавим стратегию возврата для TG-ссылок в обработчик `send transaction`:
+Now let's add return strategy for TG links in `send transaction` handler:
 
 <details>
-<summary>Код src/commands-handlers.ts</summary>
+<summary>src/commands-handlers.ts code</summary>
 
 ```ts
 // src/commands-handlers.ts
@@ -1943,23 +1945,23 @@ export async function handleSendTXCommand(msg: TelegramBot.Message): Promise<voi
 
 </details>
 
-Вот и все. Теперь пользователь может подключить @wallet с помощью специальной кнопки на главном экране, а также мы обеспечили корректную стратегию возврата для TG-ссылок.
+That is it. Now user is able to connect @wallet using special button on the main screen, also we have provided proper return strategy for TG links.
 
-## Добавление постоянного хранилища
+## Add a permanent storage
 
-В данный момент мы сохраняем сессии TonConnect в объекте Map. Однако вы можете сохранить их в базе данных или другом постоянном хранилище, чтобы не терять их при перезапуске сервера.
-Мы будем использовать для этого Redis, но вы можете выбрать любое постоянное хранилище.
+At this moment we store TonConnect sessions in the Map object. But you may want to store it to the database or other permanent storage to save the sessions when you restart the server.
+We will use Redis for that, but you can pick any permanent storage.
 
-### Настройка redis
+### Set up redis
 
-Для начала запустите `npm i redis`.
+Firstly run `npm i redis`.
 
-[Смотрите подробности о пакете](https://www.npmjs.com/package/redis)
+[See package details](https://www.npmjs.com/package/redis)
 
-Для работы с redis необходимо запустить сервер redis. Мы будем использовать образ Docker:
+To work with redis you have to start redis server. We will use the Docker image:
 `docker run -p 6379:6379 -it redis/redis-stack-server:latest`
 
-Теперь добавьте параметр подключения redis в `.env`. Url-адрес redis по умолчанию - `redis://127.0.0.1:6379`.
+Now add redis connection parameter to the `.env`. Default redis url is `redis://127.0.0.1:6379`.
 
 ```dotenv
 # .env
@@ -1971,7 +1973,7 @@ CONNECTOR_TTL_MS=600000
 REDIS_URL=redis://127.0.0.1:6379
 ```
 
-Давайте интегрируем redis в `TonConnectStorage`:
+Let's integrate redis to the `TonConnectStorage`:
 
 ```ts
 // src/ton-connect/storage.ts
@@ -2007,7 +2009,7 @@ export class TonConnectStorage implements IStorage {
 }
 ```
 
-Чтобы это работало, необходимо дождаться инициализации Redis в `main.ts`. Давайте обернем код в этом файле в асинхронную функцию:
+To make it work we have to wait for the redis initialisation in the `main.ts`. Let's wrap code in this file to an async function:
 
 ```ts
 // src/main.ts
@@ -2052,14 +2054,16 @@ async function main(): Promise<void> {
 main();
 ```
 
-## Заключение
+## Summary
 
-Что дальше?
+What is next?
 
-- Если вы хотите запустить бота в продакшене, вам стоит установить и использовать менеджер процессов, такой как [pm2](https://pm2.keymetrics.io/).
-- Вы можете улучшить обработку ошибок в боте.
+- If you want to run the bot in production you may want to install and use a process manager like [pm2](https://pm2.keymetrics.io/).
+- You can add better errors handling in the bot.
 
-## См. также
+## See Also
 
-- [Отправка сообщений](/v3/guidelines/ton-connect/guidelines/sending-messages)
-- [Руководство по интеграции](/v3/guidelines/ton-connect/guidelines/integration-with-javascript-sdk)
+- [Sending messages](/v3/guidelines/ton-connect/guidelines/sending-messages)
+- [Integration Manual](/v3/guidelines/ton-connect/guidelines/integration-with-javascript-sdk)
+
+<Feedback />
