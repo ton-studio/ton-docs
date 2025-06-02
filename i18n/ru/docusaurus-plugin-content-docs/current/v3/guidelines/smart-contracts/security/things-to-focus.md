@@ -1,101 +1,102 @@
-# На что следует обратить внимание при работе с TON Blockchain
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Things to focus on while working with TON Blockchain
 
-В этой статье мы рассмотрим и обсудим элементы, которые необходимо учитывать тем, кто хочет разрабатывать приложения TON.
+In this article, we will review and discuss the elements to consider for those who want to develop TON applications.
 
-## Чек-лист
+## Checklist
 
-### 1. Коллизии имен
+### 1. Name collisions
 
-Переменные и функции Func могут содержать практически любой допустимый символ. Т.е. `var++`, `~bits`, `foo-bar+baz`, включая запятые, являются допустимыми именами переменных и функций.
+Func variables and functions may contain almost any legit character. I.e. `var++`, `~bits`, `foo-bar+baz` including commas are valid variables and functions names.
 
-При написании и проверке кода Func следует использовать Linter.
+When writing and inspecting a Func code, Linter should be used.
 
-- [Плагины IDE](/v3/documentation/smart-contracts/getting-started/ide-plugins/)
+- [IDE plugins](/v3/documentation/smart-contracts/getting-started/ide-plugins/)
 
-### 2. Проверьте значения выбросов
+### 2. Check the throw values
 
-Каждый раз, когда выполнение TVM завершается нормально, оно останавливается с кодами выхода `0` или `1`. Хотя это происходит автоматически, выполнение TVM может быть прервано неожиданным образом, если коды выхода `0` и `1` будут выброшены непосредственно командой `throw(0)` или `throw(1)`.
+Each time the TVM execution stops normally, it stops with exit codes `0` or `1`. Although it is done automatically, TVM execution can be interrupted directly in an unexpected way if exit codes `0` and `1` are thrown directly by either `throw(0)` or `throw(1)` command.
 
-- [Как обрабатывать ошибки](/v3/documentation/smart-contracts/func/docs/builtins#throwing-exceptions)
-- [Коды выхода из TVM](/v3/documentation/tvm/tvm-exit-codes)
+- [How to handle errors](/v3/documentation/smart-contracts/func/docs/builtins#throwing-exceptions)
+- [TVM exit codes](/v3/documentation/tvm/tvm-exit-codes)
 
-### 3. Func - строго типизированный язык, в структурах данных которого хранится именно то, что они должны хранить
+### 3. Func is a strictly typed language with data structures holding exactly what they are supposed to store
 
-Очень важно следить за тем, что делает код и что он может вернуть. Помните, что компилятор учитывает только сам код и только в его начальное состояние. После выполнения определенных операций сохраненные значения некоторых переменных могут измениться.
+It is crucial to keep track of what the code does and what it may return. Keep in mind that the compiler cares only about the code and only in its initial state. After certain operations stored values of some variables can change.
 
-Чтение неожиданных значений переменных и вызов методов для типво данных, которые не должны иметь таких методов (или их возвращаемые значения сохраняются неправильно), являются ошибками и не пропускаются как "предупреждения" или "уведомления", а приводят к недостижимому коду. Помните, что сохранение неожиданного значения может быть допустимым, однако его чтение может вызвать проблемы, например, код ошибки 5 (целое число вне ожидаемого диапазона) может быть выброшен для целочисленной переменной.
+Reading unexpected variables values and calling methods on data types that are not supposed to have such methods (or their return values are not stored properly) are errors and are not skipped as "warnings" or "notices" but lead to unreachable code. Keep in mind that storing an unexpected value may be okay, however, reading it may cause problems e.g. error code 5 (integer out of expected range) may be thrown for an integer variable.
 
-### 4. Сообщения имеют режимы
+### 4. Messages have modes
 
-Необходимо проверять режим сообщения, в частности, его взаимодействие с предыдущими отправленными сообщениями и платой за хранение. Возможной проблемой может быть неучет платы за хранение, в этом случае у контракта может закончиться TON, что приведет к неожиданным сбоям при отправке исходящих сообщений. Вы можете просмотреть режимы сообщений [здесь](/v3/documentation/smart-contracts/message-management/sending-messages#message-modes).
+It is essential to check the message mode, in particular its interaction with previous messages sent and fees. A possible failure is not accounting for storage fees, in which case contract may run out of TON leading to unexpected failures when sending outgoing messages. You can view the message modes [here](/v3/documentation/smart-contracts/message-management/sending-messages#message-modes).
 
-### 5. TON полностью реализует модель акторов
+### 5. Replay protection {#replay-protection}
 
-Это означает, что код контракта может быть изменен. Его можно изменить либо постоянно, используя директиву TVM [`SETCODE`](/v3/documentation/smart-contracts/func/docs/stdlib#set_code), либо во время выполнения, устанавливая в реестре TVM кода новое значение ячейки до окончания выполнения.
+There are two custom solutions for wallets (smart contracts that store user funds): `seqno-based` (using a counter to prevent processing the same message twice) and `high-load` (storing processed identifiers and their expiration times).
 
-### 6. Блокчейн TON имеет несколько фаз транзакций: фаза вычислений, фаза действий и фаза отскока.
+- [Seqno-based wallets](/v3/guidelines/dapps/asset-processing/payments-processing/#seqno-based-wallets)
+- [High-load wallets](/v3/guidelines/dapps/asset-processing/payments-processing/#high-load-wallets)
 
-На вычислительной фазе выполняется код смарт-контрактов, и только после этого производятся действия (отправка сообщений, модификация кода, изменение библиотек и другие). Поэтому, в отличие от блокчейнов на базе Ethereum, Вы не увидите код завершеия вычислительной фазы, если ожидаете, что отправленное сообщение завершится неудачно, так как это происходит не в вычислительной фазе, а позже, в фазе выполнения действий.
+For `seqno`, refer to [this section](/v3/documentation/smart-contracts/message-management/sending-messages#mode3) for details on possible replay scenarios.
 
-- [Транзакции и фазы](/v3/documentation/tvm/tvm-overview#transactions-and-phases)
+### 6. TON fully implements the actor model
 
-### 7. Контракты TON являются автономными
+It means the code of the contract can be changed. It can either be changed permanently, using [`SETCODE`](/v3/documentation/smart-contracts/func/docs/stdlib#set_code) TVM directive, or in runtime, setting the TVM code registry to a new cell value until the end of execution.
 
-Контракты в блокчейне могут находиться в отдельных шардах, обрабатываемых другим набором валидаторов, а это значит, что разработчик не может получить данные из других контрактов по запросу. Таким образом, любая коммуникация осуществляется асинхронно, путем отправки сообщений.
+### 7. TON Blockchain has several transaction phases: computational phase, actions phase, and a bounce phase among them
 
-- [Отправка сообщений из смарт-контракта](/v3/documentation/smart-contracts/message-management/sending-messages)
-- [Отправка сообщений из DApp](/v3/guidelines/ton-connect/guidelines/sending-messages)
+The computational phase executes the code of smart contracts and only then the actions are performed (sending messages, code modification, changing libraries, and others). So, unlike on Ethereum-based blockchains, you won't see the computational phase exit code if you expected the sent message to fail, as it was performed not in the computational phase, but later, during the action phase.
 
-### 8. В отличие от других блокчейнов, TON не содержит сообщений о возврате, только коды выхода
+- [Transactions and phases](/v3/documentation/tvm/tvm-overview#transactions-and-phases)
 
-Прежде чем приступить к программированию смарт-контракта TON, следует продумать дорожную карту кодов выхода для потока кода (и задокументировать ее).
+### 8. TON contracts are autonomous
 
-### 9. Функции Func, имеющие идентификаторы method_id, имеют идентификаторы методов
+Contracts in the blockchain can reside in separate shards, processed by other set of validators, meaning that developer cannot pull data from other contracts on demand. Thus, any communication is asynchronous and done by sending messages.
 
-Они могут быть заданы либо явно `"method_id(5)"`, либо неявно компилятором func. В этом случае их можно найти среди объявлений методов в файле ассемблера .fift. Два из них предопределены: один для приема сообщений внутри блокчейна `(0)`, обычно называемый `recv_internal`, и другой для приема сообщений извне `(-1)`, `recv_external`.
+- [Sending messages from smart-contract](/v3/documentation/smart-contracts/message-management/sending-messages)
+- [Sending messages from DApp](/v3/guidelines/ton-connect/guidelines/sending-messages)
 
-### 10. Криптоадрес TON может не содержать ни монет, ни кода
+### 9. Unlike other blockchains, TON does not contain revert messages, only exit codes
 
-Адреса смарт-контрактов в блокчейне TON детерминированы и могут быть предварительно вычислены. TON-аккаунты, связанные с адресами, могут даже не содержать кода, что означает, что они не инициализированы (если не были развернуты) или заморожены, не имея больше ни хранилища, ни монет TON, если было отправлено сообщение со специальными флагами.
+It is helpful to think through the roadmap of exit codes for the code flow (and have it documented) before starting programming your TON smart contract.
 
-### 11. Адреса TON могут иметь три представления
+### 10. Func functions that have method_id identifiers have method IDs
 
-Адреса TON могут иметь три представления.
-Полное представление может быть либо "сырым" (`workchain:address`), либо "user-friendly". С последним чаще всего сталкиваются пользователи. Оно содержит байт метки, указывающий на то, является ли адрес `bounceable ` или `not bounceable`, и байт идентификатора воркчейна. Эту информацию следует учитывать.
+They can be either set explicitly `"method_id(5)"`, or implicitly by a func compiler. In this case, they can be found among methods declarations in the .fift assembly file. Two of them are predefined: one for receiving messages inside of blockchain `(0)`, commonly named `recv_internal`, and one for receiving messages from outside `(-1)`, `recv_external`.
 
-- [Сырые и User-Friendly адреса](/v3/documentation/smart-contracts/addresses#raw-and-user-friendly-addresses)
+### 11. TON crypto address may not have any coins or code
 
-### 12. Отслеживайте недостатки в выполнении кода
+Smart contracts addresses in TON blockchain are deterministic and can be precomputed. Ton Accounts, associated with addresses may even contain no code which means they are uninitialized (if not deployed) or frozen while having no more storage or TON coins if the message with special flags was sent.
 
-В отличие от Solidity, где видимость методов настраивается вами, в случае с Func видимость ограничивается более сложным способом - либо с помощью отображения ошибок, либо через условия `if`.
+### 12. TON addresses may have three representations
 
-### 13. Следите за газом перед отправкой bounced-сообщений
+TON addresses may have three representations.
+A full representation can either be "raw" (`workchain:address`) or "user-friendly". The last one is the one users encounter most often. It contains a tag byte, indicating whether the address is `bounceable` or `not bounceable`, and a workchain id byte. This information should be noted.
 
-В случае, если смарт-контракт отправляет отскочившие сообщения со значением, указанным пользователем, убедитесь, что соответствующая плата за газ вычтена из возвращенной суммы, чтобы избежать потери средств.
+- [Raw and user-friendly addresses](/v3/documentation/smart-contracts/addresses#raw-and-user-friendly-addresses)
 
-### 14. Отслеживайте обратные вызовы и их сбои
+### 13. Keep track of the flaws in code execution
 
-Блокчейн TON является асинхронным. Это означает, что сообщения необязательно должны приходить последовательно. Например, когда приходит уведомление о неудачном выполнении действия, оно должно быть обработано корректно.
+Unlike Solidity where it's up to you to set methods visibility, in the case of Func, the visibility is restricted in a more intricate way either by showing errors or by `if` statements.
 
-### 15. Проверьте, был ли отправлен флаг отскока при получении внутренних сообщений
+### 14. Keep an eye on gas before sending bounced messages
 
-Вы можете получать отскакивающие сообщения (уведомления об ошибках), которые следует обработать.
+In case the smart contract sends the bounced messages with the value, provided by a user, make sure that the corresponding gas fees are subtracted from the returned amount not to be drained.
 
-- [Обработка стандартных ответных сообщений](/v3/documentation/smart-contracts/message-management/internal-messages#handling-of-standard-response-messages)
+### 15. Monitor the callbacks and their failures
 
-### 16. Напишите защиту от повторной отправки для внешних сообщений:
+TON blockchain is asynchronous. That means the messages do not have to arrive successively. e.g. when a fail notification of an action arrives, it should be handled properly.
 
-Существует два пользовательских решения для кошельков (смарт-контрактов, хранящих деньги пользователей): `seqno-based` (проверка счетчика, чтобы не обрабатывать сообщение дважды) и `high-load` (хранение идентификаторов процессов и сроков их действия).
+### 16. Check if the bounced flag was sent receiving internal messages
 
-- [Seqno-based кошельки](/v3/guidelines/dapps/asset-processing/payments-processing/#seqno-based-wallets)
-- [High-load кошельки](/v3/guidelines/dapps/asset-processing/payments-processing/#high-load-wallets)
+You may receive bounced messages (error notifications), which should be handled.
 
-## Ссылки
+- [Handling of standard response messages](/v3/documentation/smart-contracts/message-management/internal-messages#handling-of-standard-response-messages)
 
-Автор оригинальной статьи: 0xguard
+## References
 
-- [Оригинальная статья](https://0xguard.com/things_to_focus_on_while_working_with_ton_blockchain)
+- [Original article](https://0xguard.com/things_to_focus_on_while_working_with_ton_blockchain) - _0xguard_
+
+<Feedback />
+
