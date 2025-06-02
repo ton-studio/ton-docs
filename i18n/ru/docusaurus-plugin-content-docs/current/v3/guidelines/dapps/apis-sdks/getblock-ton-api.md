@@ -1,122 +1,111 @@
-# TON API от GetBlock
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# HTTP API by GetBlock
 
-:::tip Состояние инфраструктуры TON
+:::tip TON infrastructure status
 
-- [status.toncenter](https://status.toncenter.com/) - различная статистика активности узлов за последний час.
-- [Tonstat.us](https://tonstat.us/) - Графана в реальном времени, обновляется каждые 5 минут
+- [status.toncenter](https://status.toncenter.com/) - Provides various statistics of node activity in the last hour.
+- [Tonstat.us](https://tonstat.us/) - A real-time Grafana dashboard that updates every 5 minutes.
   :::
 
-Это руководство охватит основные шаги получения и использования приватных конечных точек RPC от GetBlock для доступа к блокчейну TON.
+This guide covers essential steps in acquiring and using private RPC endpoints by GetBlock to access TON Blockchain.
 
 :::info
-[GetBlock](https://getblock.io/) - это поставщик Web3 инфраструктуры, предлагающий конечные точки API на основе HTTP для взаимодействия клиентов с различными блокчейн-сетями, включая TON.
+[GetBlock](https://getblock.io/) is a Web3 infrastructure provider that offers HTTP-based API endpoints for clients to interact with multiple blockchain networks, including TON.
 :::
 
-## Как получить доступ к конечным точкам блокчейна TON
+## How to access TON Blockchain endpoints
 
-Чтобы начать использовать конечные точки GetBlock, пользователи должны войти в свой аккаунт, получить URL-адрес для конечной точки TON и все готово к работе. Далее приведены более подробные инструкции.
+To start using GetBlock’s endpoints, users need to log in to their accounts, and retrieve a TON endpoint URL. Follow these instructions:
 
-### 1. Создайте учетную запись GetBlock
+### 1. Create a GetBlock account
 
-Посетите [веб-сайт] GetBlock (https://getblock.io/?utm_source=external&utm_medium=article&utm_campaign=ton_docs) и найдите на главной странице кнопку "Get Started for Free". Зарегистрируйте аккаунт, используя адрес электронной почты или подключив кошелек MetaMask.
+Visit the GetBlock website and click on the "Get Started for Free" button. Sign up using your email address or by connecting your MetaMask wallet.
 
-![GetBlock.io\_main\_page](/img/docs/getblock-img/unnamed-2.png?=RAW)
+![GetBlock.io_main_page](/img/docs/getblock-img/unnamed-2.png?=RAW)
 
-### 2. Выберите блокчейн TON
+### 2. Select TON Blockchain
 
-После входа вы будете перенаправлены на панель управления. Найдите раздел, называемый "My Endpoints", и выберите "TON" в выпадающем меню "Protocols".
+After signing in, go to the "My Endpoints" section. Choose TON from the "Protocols" dropdown menu and select the desired network and API type (JSON-RPC or JSON-RPC(v2)).
 
-Выберите желаемую сеть и тип API (JSON-RPC или JSON-RPC(v2)).
+![GetBlock_account__dashboard](/img/docs/getblock-img/unnamed-4.png)
 
-![GetBlock\account\\_dashboard](/img/docs/getblock-img/unnamed-4.png)
+### 3. Generate your endpoint URL
 
-### 3. Сгенерируйте URL конечной точки
+Click the **Get** button to generate your TON Blockchain endpoint URL. The structure of the endpoint will be: `https://go.getblock.io/[ACCESS TOKEN]/`.
 
-Нажмите на кнопку "Get", чтобы сгенерировать URL-адрес вашей конечной точки блокчейна TON.
+Access tokens act as unique identifiers for your requests, eliminating the need for separate API keys or authorization headers.
 
-Все конечные точки в GetBlock API имеют последовательную структуру: `https://go.getblock.io/[ACCESS TOKEN]/`.
+Users have the flexibility to generate multiple endpoints, roll tokens if compromised, or delete unused endpoints.
 
-Эти токены доступа служат уникальными идентификаторами для каждого пользователя или приложения и содержат информацию, необходимую для маршрутизации запросов к соответствующим конечным точкам без раскрытия чувствительных данных. Они в конечном итоге заменяют необходимость отдельных заголовков авторизации или API-ключей.
+![GetBlock_account_endpoints](/img/docs/getblock-img/unnamed-3.png)
 
-Пользователи имеют возможность генерировать несколько конечных точек, заменять токены, если они скомпрометированы и удалять неиспользуемые конечные точки.
+Now, you can use these URLs to interact with TON Blockchain, query data, send transactions, and build decentralized applications without the hassle of infrastructure setup and maintenance.
 
-![GetBlock\_account\_endpoints](/img/docs/getblock-img/unnamed-3.png)
+### Free requests and user limits
 
-Теперь вы можете использовать эти URL-адреса для взаимодействия с блокчейном TON, запрашивать данные, отправлять транзакции и создавать децентрализованные приложения без необходимости настройки и поддержания инфраструктуры.
+Each registered user receives 40,000 free requests per day, with a cap of 60 requests per second (RPS). This balance is renewed daily and can be used for any supported blockchain.
 
-### Бесплатные запросы и ограничения для пользователей
+### Shared nodes
 
-Обратите внимание, что каждому зарегистрированному пользователю GetBlock предоставляется до 40 000 бесплатных запросов, ограниченных 60 запросами в секунду (RPS). Баланс запросов обновляется ежедневно и может использоваться на любых общих конечных точках для поддерживаемых блокчейн-сетей.
+- Entry-level opportunity where same nodes are utilized by several clients simultaneously;
+- Rate limit increased to 200 RPS;
+- Well-suited for individual use or for applications that have lower transaction volumes and resource requirements compared to fully-scaled production applications;
+- A more affordable option for individual developers or small teams with limited budgets.
 
-Для получения расширенных функций и возможностей пользователи могут воспользоваться платными опциями, которые будут описаны ниже.
+Shared nodes provide a cost-effective solution for accessing TON Blockchain infrastructure without the need for significant upfront investment or commitment.
 
-GetBlock.io предлагает два типа тарифных планов: Общие узлы и Выделенные узлы. Клиенты могут выбрать тариф, исходя из своих требований и бюджета.
+As developers scale their applications and require additional resources, they can easily upgrade their subscription plans or transition to dedicated nodes if necessary.
 
-### Общие узлы
+### Dedicated nodes
 
-- Уровень доступа, где одни и те же узлы используются несколькими клиентами одновременно;
-- Ограничение скорости увеличено до 200 RPS;
-- Подходит для индивидуального использования или для приложений с меньшими объемами транзакций и требованиями к ресурсам по сравнению с полностью масштабированными производственными приложениями;
-- Более доступный вариант для индивидуальных разработчиков или небольших команд с ограниченным бюджетом.
+- One node is exclusively allocated to a single client;
+- No request limits;
+- Opens access to archive nodes, a variety of server locations, and custom settings;
+- Guarantees premium-level service and support to clients.
 
-Общие узлы предлагают экономически эффективное решение для доступа к инфраструктуре блокчейна TON без необходимости значительных первоначальных инвестиций или обязательств.
+This is a next-level solution for developers and decentralized applications (dApps) that require enhanced throughput, higher speed of node connection, and guaranteed resources as they scale.
 
-По мере того как разработчики будут масштабировать свои приложения и нуждаться в дополнительных ресурсах, они смогут легко обновить свои планы подписки или перейти на выделенные узлы, если это будет необходимо.
+## How to use TON HTTP API by GetBlock
 
-### Выделенные узлы
+In this section, we delve into the practical usage of the TON HTTP API provided by GetBlock. We explore the examples to showcase how to effectively utilize the generated endpoints for your blockchain interactions.
 
-- Один узел выделяется исключительно для одного клиента;
-  Нет ограничений на запросы;
-- Открывает доступ к архивным узлам, различным местоположениям серверов и пользовательским настройкам;
-- Гарантирует клиентам обслуживание и поддержку на высшем уровне.
+### Examples of common API calls
 
-Это следующий уровень решения для разработчиков и децентрализованных приложений (dApps), требующих улучшенной пропускной способности, более высокой скорости подключения к узлам и гарантированных ресурсов при масштабировании.
-
-## Как использовать TON HTTP API от GetBlock
-
-В этом разделе мы погрузимся в практическое использование TON HTTP API, предоставленного GetBlock. Мы рассмотрим примеры, чтобы продемонстрировать, как эффективно использовать сгенерированные конечные точки для вашего взаимодействия с блокчейном.
-
-### Примеры обычных вызовов API
-
-Давайте начнем с простого примера, используя метод '/getAddressBalance' для получения баланса конкретного адреса с помощью команды curl.
+You can use the `/getAddressBalance` method to get the balance for a specific TON address:
 
 ```
-curl --location --request GET 'https://go.getblock.io/[ACCESS-TOKEN]/getAddressBalance?address=EQDXZ2c5LnA12Eum-DlguTmfYkMOvNeFCh4rBD0tgmwjcFI-' \
-
---header 'Content-Type: application/json'
+curl --location --request GET 'https://go.getblock.io/[ACCESS-TOKEN]/getAddressBalance?address=EQDXZ2c5LnA12Eum-DlguTmfYkMOvNeFCh4rBD0tgmwjcFI-' \    
+--header 'Content-Type: application/json' 
 ```
 
-Не забудьте заменить `ACCESS-TOKEN` на ваш реальный токен доступа, предоставленный GetBlock.
+Make sure to replace `ACCESS-TOKEN` with your actual access token provided by GetBlock.
 
-Это выведет баланс в nanotons.
+This will output the balance in nanotons.
 
-![getAddressBalance\_response\_on\_TON\_blockchain](/img/docs/getblock-img/unnamed-2.png)
+![getAddressBalance_response_on_TON_Blockchain](/img/docs/getblock-img/unnamed-2.png)
 
-Некоторые другие доступные методы для запросов к блокчейну TON:
+Some other available methods to query the TON blockchain:
 
-| # | Метод | Конечная точка     | Описание                                                                                                           |
-| - | ----- | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| 1 | GET   | getAddressState    | возвращает текущий статус (uninitialized, active, или frozen) указанного адреса в блокчейне TON |
-| 2 | GET   | getMasterchainInfo | Получает информацию о состоянии masterchain                                                                        |
-| 3 | GET   | getTokenData       | Получает подробные сведения об NFT или Jetton, связанных с указанным аккаунтом в сети TON                          |
-| 4 | GET   | packAddress        | Преобразует адрес TON из raw формата в удобный для чтения                                                          |
-| 5 | POST  | sendBoc            | Отправляет сериализованные файлы BOC вместе с внешними сообщениями в блокчейн для выполнения                       |
+| # | Method | Endpoint           | Description                                                                                                             |
+| - | ------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| 1 | GET    | getAddressState    | Returns the current state of a specified address (uninitialized, active, or frozen). |
+| 2 | GET    | getMasterchainInfo | Fetches the state of the masterchain.                                                                   |
+| 3 | GET    | getTokenData       | Retrieves details about an NFT or jetton associated with the address.                                   |
+| 4 | GET    | packAddress        | Converts a TON address from raw format to human-readable format.                                        |
+| 5 | POST   | sendBoc            | Sends serialized BOC files with external messages for blockchain execution.                             |
 
-Пожалуйста, обратитесь к [документации] GetBlock (https://getblock.io/docs/ton/json-rpc/ton_jsonrpc/), чтобы получить подробную справочную информацию об API с примерами и списком дополнительных методов.
+For a comprehensive list of methods and detailed API documentation, please refer to GetBlock's [documentation](https://getblock.io/docs/ton/json-rpc/ton_jsonrpc/).
 
-### Развертывание умных контрактов
+### Deploying smart contracts
 
-Разработчики могут использовать те же URL-адреса конечных точек для непрерывного развертывания контрактов на блокчейне TON с использованием библиотеки TON.
+Developers can utilize the TON library to deploy and interact with contracts. The library will initialize a client to connect to the network via the GetBlock HTTP API endpoints.
 
-Библиотека инициализирует клиент для подключения к сети через конечные точки HTTP API GetBlock.
+![Image from TON Blueprint IDE](/img/docs/getblock-img/unnamed-6.png)
 
-![Изображение из TON Blueprint IDE](/img/docs/getblock-img/unnamed-6.png)
+By following this guide, developers can easily access TON Blockchain using GetBlock's infrastructure. Whether you're working on decentralized applications (dApps) or simply querying data, GetBlock simplifies the process by offering ready-to-use HTTP API endpoints with various features.
 
-Этот руководство должно предоставить подробный обзор для разработчиков, которые хотят эффективно использовать API GetBlock с блокчейном TON.
+Feel free to learn more at the website or drop a line to GetBlock’s support via live chat, Telegram, or a website form.
 
-Не стесняйтесь узнать больше на веб-сайте или написать в службу поддержки GetBlock через чат, Telegram или форму на сайте.
+<Feedback />
 
