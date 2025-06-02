@@ -1,304 +1,330 @@
-# Часто задаваемые вопросы
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# FAQ
 
-В этом разделе рассматриваются самые популярные вопросы о блокчейне TON.
+This section answers the most popular questions about the TON Blockchain.
 
-## Общие сведения
+## Overview
 
-### Не могли бы вы поделиться кратким обзором TON?
+### Could you share a brief overview of TON?
 
-- [Введение в The Open Network](/v3/concepts/dive-into-ton/introduction)
-- [Блокчейн TON основан на консенсусе PoS](https://blog.ton.org/the-ton-blockchain-is-based-on-pos-consensus)
-- [Технические документы TON](/v3/documentation/whitepapers/overview)
+- [Introduction to The Open Network](/v3/concepts/dive-into-ton/introduction)
+- [The TON Blockchain is based on PoS consensus](https://blog.ton.org/the-ton-blockchain-is-based-on-pos-consensus)
+- [TON Whitepapers](/v3/documentation/whitepapers/overview)
 
-### Каковы некоторые из основных сходств и различий с блокчейнами EVM?
+### What are some of the main similarities and differences to EVM blockchains?
 
-- [TVM и EVM](/v3/concepts/dive-into-ton/go-from-ethereum/tvm-vs-evm)
-- [Сравнение TON, Solana и Ethereum 2.0](https://ton.org/comparison_of_blockchains.pdf)
+- [Ethereum to TON](/v3/concepts/dive-into-ton/go-from-ethereum/tvm-vs-evm)
+- [Comparison of TON, Solana and Ethereum 2.0](https://ton.org/comparison_of_blockchains.pdf)
 
-### Есть ли у TON тестовая среда?
+### Does TON have a test environment?
 
-- [Тестовая сеть](/v3/documentation/smart-contracts/getting-started/testnet)
+- [Testnet](/v3/documentation/smart-contracts/getting-started/testnet)
 
-## TON и L2
+## TON and L2
 
-### Почему воркчейны лучше, чем L1 → L2?
+### Why are workchains better than L1 → L2?
 
-Воркчейны в TON предлагают ряд преимуществ по сравнению с традиционной архитектурой слоев L1 и L2.
+Workchains in TON offer several advantages over traditional L1 and L2 layer architecture:
 
-1. Одним из ключевых преимуществ блокчейна является мгновенная обработка транзакций. В традиционных решениях L2 могут быть задержки при перемещении активов между слоями. Воркчейны устраняют эту проблему, обеспечивая бесперебойные и мгновенные транзакции между различными частями сети. Это особенно важно для приложений, требующих высокой скорости и низкой задержки.
-2. Воркчейны поддерживают кросс-шардовую активность, что означает, что пользователи могут взаимодействовать между различными шард-цепочками или воркчейнами в пределах одной сети. В текущих решениях L2 кросс-шардовые операции часто сложны и требуют дополнительных мостов или решений по обеспечению совместимости. Например, в TON пользователи могут легко обмениваться токенами или выполнять другие транзакции между различными шардчейнами без сложных процедур.
-3. Масштабируемость является одной из основных проблем для современных блокчейн-систем. В традиционных решениях L2 масштабируемость ограничена емкостью секвенсора. Если TPS (транзакций в секунду) на L2 превышает емкость секвенсора, это может привести к проблемам. В воркчейнах в TON эта проблема решается путем разделения шарда. Когда нагрузка на шард превышает его емкость, шард автоматически делится на два или более шардов, что позволяет системе масштабироваться практически без ограничений.
+1. **Instantaneous transactions**
 
-### Есть ли необходимость в L2 на TON?
+One of blockchain's key advantages is the instantaneous processing of transactions. In traditional L2 solutions, there can be delays in moving assets between layers. WorkChains eliminate this problem by providing seamless and instantaneous transactions across the network. This is especially important for applications requiring high speed and low latency.
 
-При любой стоимости транзакции всегда будут приложения, которые не смогут выдержать такую ​​плату, но могут работать с гораздо более низкой стоимостью. Аналогично, независимо от достигнутой задержки, всегда будут приложения, которым требуется еще более низкая задержка. Поэтому вполне возможно, что в конечном итоге может возникнуть необходимость в решениях L2 на платформе TON для удовлетворения этих конкретных требований.
+2. **Cross-shard activity**
 
-## Максимальная извлекаемая ценность (MEV - Maximal Extractable Value)
+WorkChains support cross-shard activity, allowing users to interact between different ShardChains or WorkChains within the same network. In current L2 solutions, cross-shard operations are complex and often require additional bridges or interoperability solutions. In TON, users can easily exchange tokens or perform other transactions between different ShardChains without complicated procedures.
 
-### Возможен ли опережающий запуск в TON?
+3. **Scalability**
 
-В блокчейне TON детерминированный порядок транзакций играет ключевую роль в предотвращении опережающего запуска. Это означает, что порядок транзакций в блокчейне предопределен и детерминирован. Ни один участник не может изменить этот порядок после того, как транзакции попали в пул. Эта система исключает возможность манипулирования порядком транзакций для получения прибыли, что отличает TON от других блокчейнов, таких как Ethereum, где валидаторы могут изменять порядок транзакций в блоке, создавая возможности для MEV (максимальной извлекаемой ценности).
+Scalability is a significant challenge for modern blockchain systems. In traditional L2 solutions, scalability is limited by the capacity of the sequencer. If the transactions per second (TPS) on L2 exceed the sequencer's capacity, it can cause problems. In TON, WorkChains solve this problem by dividing a shard when the load exceeds its capacity. This allows the system to scale almost without limits.
 
-Кроме того, в текущей архитектуре TON отсутствует рыночный механизм определения комиссий за транзакции. Комиссии фиксированы и не подлежат изменению в зависимости от приоритетов транзакций, что делает опережение менее привлекательным. Из-за фиксированных комиссий и детерминированного порядка транзакций осуществлять опережение в TON нетривиально.
+### Is there a need for L2 on the TON?
 
-## Блок
+While the TON platform offers highly optimized transaction fees and low latency, some applications may require lower transaction costs or further reduced latency. L2 solutions may be needed to meet specific application requirements in such cases. Thus, the need for L2 on TON could arise.
 
-### Какой метод RPC используется для получения информации о блоках?
+## MEV (Maximum Extractable Value)
 
-Блоки, созданные валидаторами. Существующие блоки доступны через Liteservers. Liteservers доступны через Lite Clients. На основе Lite Client созданы сторонние инструменты, такие как кошельки, обозреватели, dapps и т. д.
+### Is front-running possible in TON?
 
-- Чтобы получить доступ к ядру Lite Client, ознакомьтесь с этим разделом нашего GitHub: [ton-blockchain/tonlib](https://github.com/ton-blockchain/ton/tree/master/tonlib)
+In the TON Blockchain, deterministic transaction ordering is critical to prevent front-running. Once transactions enter the pool, their order is predetermined and cannot be altered by any participant. This system ensures that no one can manipulate the order of transactions for profit.
+Unlike blockchains such as Ethereum, where validators can change the order of transactions within a block, creating opportunities for MEV, TON’s architecture eliminates this possibility.
 
-Кроме того, вот три высокоуровневых сторонних обозревателя блоков:
+Additionally, TON does not rely on a market-based mechanism to determine transaction fees. Commissions are fixed and do not fluctuate based on transaction priority. This lack of fee variability further reduces the incentive and feasibility of front-running.
+Due to the combination of fixed fees and deterministic transaction ordering,front-running in TON is not a trivial task.
 
-- https://explorer.toncoin.org/last
-- https://toncenter.com/
-- https://tonwhales.com/explorer
+## Block
 
-Подробнее читайте в разделе [Обозреватели в TON](/v3/concepts/dive-into-ton/ton-ecosystem/explorers-in-ton) нашей документации.
+### What is the RPC method used to retrieve block information?
 
-### Время блока
+Validators produce blocks, and existing blocks can be accessed via liteservers, which are available through lite clients. Additionally, third-party tools like wallets, explorers, and dApps are built on top of lite clients.
 
-*2-5 сек.*
+To access the core lite client, visit our GitHub repository:
+
+[ton-blockchain/tonlib](https://github.com/ton-blockchain/ton/tree/master/tonlib)
+
+Here are three popular third-party block explorers:
+
+- [TON Explorer](https://explorer.toncoin.org/last)
+- [TON Center](https://toncenter.com/)
+- [TON Whales Explorer](https://tonwhales.com/explorer)
+
+For more information, refer to our documentation's [Explorers in TON](/v3/concepts/dive-into-ton/ton-ecosystem/explorers-in-ton) section.
+
+### Block time
+
+_Block time: 2-5 seconds_
 
 :::info
-Compare TON's on-chain metrics, including block time and time-to-finality, to Solana and Ethereum by reading our analysis at:
+You can compare TON's on-chain metrics, including block time and time-to-finality, with Solana and Ethereum by reading our analysis at:
 
-- [Документ о сравнении блокчейнов](https://ton.org/comparison_of_blockchains.pdf)
-- [Таблица сравнения блокчейнов (гораздо менее информативна, чем в документе, но более наглядна)](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-comparison)
+- [Comparison of Blockchains document](https://ton.org/comparison_of_blockchains.pdf)
+- [Comparison of Blockchains table (much less informative than the document, but more visual)](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-comparison)
   :::
 
-### Время до завершения
+### Time-to-finality
 
-*Менее 6 сек.*
-
+_Time-to-finality: under 6 seconds_
 :::info
-Compare TON's on-chain metrics, including block time and time-to-finality, to Solana and Ethereum by reading our analysis at:
+Compare TON's on-chain metrics, including block time and time-to-finality, with Solana and Ethereum by reading our analysis at:
 
-- [Документ о сравнении блокчейнов](https://ton.org/comparison_of_blockchains.pdf)
-- [Таблица сравнения блокчейнов (гораздо менее информативна, чем в документе, но более наглядна)](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-comparison)
+- [Comparison of Blockchains document](https://ton.org/comparison_of_blockchains.pdf)
+- [Comparison of Blockchains table (much less informative than the document, but more visual)](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-comparison)
   :::
 
-### Средний размер блока
+### Average block size
 
 ```bash
 max block size param 29
 max_block_bytes:2097152
 ```
 
-:::info:::
-
-### Какова структура блоков в TON?
-
-Подробные пояснения по каждому полю макета:
-
-- [Расположение блоков](/v3/documentation/data-formats/tlb/block-layout)
-
-## Транзакции
-
-### Метод RPC для получения данных транзакций
-
-- [см. ответ выше](/v3/documentation/faq#are-there-any-standardized-protocols-for-minting-burning-and-transferring-fungible-and-non-fungible-tokens-in-transactions)
-
-### Является ли транзакция TON асинхронной или синхронной? Можно ли получить доступ к документации, которая показывает, как работает эта система?
-
-Асинхронные сообщения блокчейна TON:
-
-- отправитель подготавливает тело транзакции (сообщение boc) и транслирует его через Lite Client (или инструмент более высокого уровня)
-- Lite Client возвращает статус трансляции, а не результат выполнения транзакции
-- отправитель проверяет желаемый результат, прослушивая состояние целевого аккаунта (адреса) или состояние всего блокчейна
-
-Объяснение того, как работает асинхронный обмен сообщениями TON, приводится на примере, связанном со смарт-контрактами кошелька:
-
-- [Как работают кошельки TON и как получить к ним доступ с помощью JavaScript](https://blog.ton.org/how-ton-wallets-work-and-how-to-access-them-from-javascript#1b-sending-a-transfer)
-
-Пример передачи контракта кошелька (низкоуровневый):
-
-- https://github.com/xssnick/tonutils-go/blob/master/example/wallet/main.go
-
-### Можно ли определить, завершена ли транзакция на 100%? Достаточно ли запроса данных уровня транзакции для получения этой информации?
-
-**Короткий ответ:** Чтобы убедиться, что транзакция завершена, необходимо проверить аккаунт получателя.
-
-Чтобы узнать больше о проверке транзакций, см. следующие примеры:
-
-- Go: [Пример кошелька](https://github.com/xssnick/tonutils-go/blob/master/example/wallet/main.go)
-- Python: [Бот витрины с платежами в TON](/v3/guidelines/dapps/tutorials/telegram-bot-examples/accept-payments-in-a-telegram-bot)
-- JavaScript: [Бот для продажи пельменей](/v3/guidelines/dapps/tutorials/telegram-bot-examples/accept-payments-in-a-telegram-bot-js)
-
-### Какова структура транзакции в TON?
-
-Подробные пояснения по каждому полю макета:
-
-- [Макет транзакции](/v3/documentation/data-formats/tlb/transaction-layout)
-
-### Возможна ли пакетная обработка транзакций?
-
-Да, пакетная обработка транзакций в TON может быть выполнена двумя различными способами:
-
-- Используя асинхронную природу TON, т. е. отправляя независимые транзакции в сеть
-- Используя смарт-контракты, которые получают задачу и выполняют ее как пакет
-
-Пример использования пакетного контракта (high-load wallet):
-
-- https://github.com/tonuniverse/highload-wallet-api
-
-Кошельки по умолчанию (v3/v4) также поддерживают отправку нескольких сообщений (до 4) в одной транзакции.
-
-## Стандарты
-
-### Какая точность валют доступна для TON?
-
-*9 цифр*
-
 :::info
-Количество десятичных знаков, поддерживаемых основной сетью: 9 цифр.
+For more up-to-date parameters, refer to the [Network configs](/v3/documentation/network/configs/network-configs) section.
 :::
 
-### Существуют ли стандартизированные протоколы для выпуска, сжигания и передачи взаимозаменяемых и невзаимозаменяемых токенов в транзакциях?
+### What is the layout of blocks on TON?
 
-Невзаимозаменяемые токены (NFT):
+For detailed explanations of each field in the block layout, visit the [Block layout](/v3/documentation/data-formats/tlb/block-layout).
 
-- [TEP-62: стандарт NFT](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md)
-- [Документация NFT](/v3/documentation/dapps/defi/tokens#nft)
+## Transactions
 
-Жетоны (токены):
+### RPC method to get transactions data
 
-- [TEP-74: Стандарт Жетонов](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md)
-- [Обзор распределенных токенов](https://telegra.ph/Scalable-DeFi-in-TON-03-30)
-- [Документация по взаимозаменяемым токенам (Жетонам)](/v3/documentation/dapps/defi/tokens#jettons-fungible-tokens)
+For details, please refer to the previous answer:
 
-Другие стандарты:
+- [See answer above](/v3/documentation/faq#are-there-any-standardized-protocols-for-minting-burning-and-transferring-fungible-and-non-fungible-tokens-in-transactions)
 
-- https://github.com/ton-blockchain/TEPs
+### Is the TON transaction asynchronous or synchronous? Can I access documentation that shows how this system works?
 
-### Есть ли примеры разбора событий с Жетонами (токенами) и NFT?
+TON Blockchain messages are **asynchronous**:
 
-В TON все данные передаются как boc-сообщения. Это означает, что использование NFT в транзакциях не является исключительным событием. Скорее, это обычное сообщение, которое отправляется или принимается из (NFT- или Wallet-)контракта, что очень похоже на транзакцию с использованием стандартного кошелька.
+- The sender prepares the transaction body (message BoC) and broadcasts it via the lite client (or a higher-level tool).
+- The lite client returns the status of the broadcast, not the result of executing the transaction.
+- To check the desired result, the sender must monitor the state of the target account (address) or the overall blockchain state.
 
-Однако некоторые API индексаторы позволяют просматривать все сообщения, отправленные в контракт или из него, и фильтровать их в соответствии с вашими конкретными требованиями.
+An explanation of how TON asynchronous messaging works is provided in the context of **wallet smart contracts**:
 
-- https://docs.tonconsole.com/tonapi/rest-api
+- [How TON wallets work and how to access them using JavaScript](https://blog.ton.org/how-ton-wallets-work-and-how-to-access-them-from-javascript#1b-sending-a-transfer)
 
-Чтобы лучше понять, как работает этот процесс, см. раздел [Обработка платежей](/v3/guidelines/dapps/asset-processing/payments-processing).
+Example for wallet contract transfer (low-level):
 
-## Структура аккаунтов
+- [Wallet transfer example](https://github.com/xssnick/tonutils-go/blob/master/example/wallet/main.go)
 
-### Каков формат адреса?
+### Can a transaction be determined to be 100% finalized? Is querying the transaction-level data sufficient to obtain this information?
 
-- [Адрес смарт-контракта](/v3/documentation/smart-contracts/addresses)
+**Short answer:**
+The receiver's account must be checked to ensure a transaction is finalized.
+For more details on transaction verification, refer to the following examples:
 
-### Возможно ли владеть именным аккаунтом, похожим на ENS
+- Go: [Wallet example](https://github.com/xssnick/tonutils-go/blob/master/example/wallet/main.go)
+- Python: [Storefront bot with payments in TON](/v3/guidelines/dapps/tutorials/telegram-bot-examples/accept-payments-in-a-telegram-bot)
+- JavaScript: [Bot being used for dumpling sales](/v3/guidelines/dapps/tutorials/telegram-bot-examples/accept-payments-in-a-telegram-bot-js)
 
-Да, используйте TON DNS:
+### What is the layout of a transaction in TON?
 
-- [TON DNS и домены](/v3/guidelines/web3/ton-dns/dns)
+Detailed explanations of each field in the transaction layout can be found here:
 
-### Как отличить обычный аккаунт от смарт-контракта?
+- [Transaction layout](/v3/documentation/data-formats/tlb/transaction-layout)
 
-- [Все есть смарт-контракт](/v3/documentation/smart-contracts/addresses#everything-is-a-smart-contract)
+### Is transaction batching possible?
 
-### Как узнать, является ли адрес адресом токена?
+Yes, transaction batching is possible in TON and can be achieved in two ways:
 
-Для **жетонов** контракт должен реализовывать [стандартный интерфейс](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md) и возвращать данные с помощью методов *get_wallet_data()* или *get_jetton_data()*.
+1. **Asynchronous transactions:** by sending independent transactions to the network.
+2. **Using smart contracts:** smart contracts can receive tasks and execute them in batches.
 
-### Существуют ли какие-либо специальные аккаунты (например, аккаунты, принадлежащие сети), которые имеют правила или методы, отличные от остальных?
+Example of using batch-featured contract (high-load wallet):
 
-Внутри TON есть специальный главный блокчейн, называемый Мастерчейн. Он состоит из общесетевых контрактов с сетевой конфигурацией, контрактов, связанных с валидатором, и т. д.:
+- [High-load wallet API example](https://github.com/tonuniverse/highload-wallet-api)
+
+Default wallets (v3/v4) also support sending multiple messages (up to 4) in a single transaction.
+
+## Standards
+
+### What currency accuracy is available for TON?
+
+_9 digits_
 
 :::info
-Подробнее о мастерчейне, воркчейнах и шардчейнах читайте в обзорной статье с блокчейне TON: [Блокчейн Блокчейнов](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains).
+Mainnet supports a 9-digit accuracy for currencies.
 :::
 
-Хорошим примером является смарт-контракт управления, который является частью мастерчейна:
+### Are there any standardized protocols for minting, burning, and transferring fungible and non-fungible tokens in transactions?
 
-- [Контракты управления](/v3/documentation/smart-contracts/contracts-specs/governance)
+Non-fungible tokens (NFTs):
 
-## Смарт-контракты
+- [TEP-62: NFT standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md)
+- [NFT documentation](/v3/documentation/dapps/defi/tokens#nft)
 
-### Можно ли обнаружить события развертывания контракта в TON?
+Jettons (tokens):
 
-[Все в TON является смарт-контрактом](/v3/documentation/smart-contracts/addresses#everything-is-a-smart-contract).
+- [TEP-74: Jettons standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md)
+- [Distributed tokens overview](https://telegra.ph/Scalable-DeFi-in-TON-03-30)
+- [Fungible token documentation (Jettons)](/v3/documentation/dapps/defi/tokens#jettons-fungible-tokens)
 
-Адрес аккаунта генерируется детерминированн из его *начального состояния*, которое включает *начальный код* и *начальные данные* (для кошельков начальные данные включают открытый ключ среди других параметров).
-При изменении любого компонента адрес изменяется соответствующим образом.
+Other standards:
 
-Смарт-контракт может существовать в неинициализированном состоянии, что означает, что его состояние недоступно в блокчейне, но контракт имеет ненулевой баланс. Первоначальное состояние может быть отправлено в сеть позже с помощью внутреннего или внешнего сообщения, чтобы их можно было отслеживать для обнаружения развертывания контракта.
+- [TON TEPs repository](https://github.com/ton-blockchain/TEPs)
 
-Чтобы защитить цепочки сообщений от остановки на несуществующих контрактах, TON использует функцию «bounce». Подробнее читайте в этих статьях:
+### Are there examples of parsing events with Jettons (Tokens) and NFTs?
 
-- [Развертывание кошелька через TonLib](/v3/guidelines/dapps/asset-processing/payments-processing#wallet-deployment)
-- [Оплата обработки запросов и отправка ответов](/v3/documentation/smart-contracts/transaction-fees/forward-fees)
+On TON, all data is transmitted as BOC (Binary Object Container) messages. Using NFTs in transactions is treated as a regular message, similar to a transaction involving a standard wallet.
 
-### Представляет ли возможность обновления смарт-контракта угрозу для его пользователей?
+Certain indexed APIs allow you to view all messages sent to or from a contract and filter them based on your needs.
 
-В настоящее время возможность обновления смарт-контрактов является обычной практикой и широко используется в большинстве современных протоколов. Это связано с тем, что возможность обновления позволяет исправлять ошибки, добавлять новые функции и повышать безопасность.
+- [TON API (REST)](https://docs.tonconsole.com/tonapi/rest-api)
 
-Как снизить риски:
+To understand this process better, refer to the [Payments processing](/v3/guidelines/dapps/asset-processing/payments-processing) section.
 
-1. Обращайте внимание на проекты с хорошей репутацией и известными командами разработчиков.
-2. Авторитетные проекты всегда проводят независимые аудиты кода, чтобы убедиться, что код безопасен и надежен. Ищите проекты, которые прошли несколько аудитов от авторитетных аудиторских фирм.
-3. Активное сообщество и положительные отзывы могут служить дополнительным показателем надежности проекта.
-4. Изучите, как именно проект реализует процесс обновления. Чем прозрачнее и децентрализованнее процесс, тем меньше риск для пользователей.
+## Account Structure
 
-### Как пользователи могут быть уверены, что владелец контракта не изменит определенные условия (через обновление)?
+### What is the address format?
 
-Контракт должен быть проверен, это позволяет вам проверить исходный код и убедиться, что нет логики обновления, чтобы гарантировать, что он останется неизменным. Если в контракте действительно отсутствуют механизмы для изменения кода, условия контракта останутся неизменными после развертывания.
+- [Smart contract address](/v3/documentation/smart-contracts/addresses)
 
-Иногда логика обновления может существовать, но права на изменение кода могут быть перемещены на "нулевой" адрес, что также исключает изменения.
+### Is it possible to have a named account similar to ENS
 
-### Возможно ли повторно развернуть код на существующий адрес или его нужно развернуть как новый контракт?
+Yes, use TON DNS:
 
-Да, это возможно. Если смарт-контракт выполняет определенные инструкции (`set_code()`), его код может быть обновлен, а адрес останется прежним.
+- [TON DNS & domains](/v3/guidelines/web3/ton-dns/dns)
 
-Если контракт изначально не может выполнить `set_code()` (через свой код или выполнение другого кода, поступающего извне), то его код не может быть изменен никогда. Никто не сможет повторно развернуть контракт с другим кодом по тому же адресу.
+### How to distinguish between a normal account and a smart contract?
 
-### Можно ли удалить смарт-контракт?
+- [Everything is a smart contract](/v3/documentation/smart-contracts/addresses#everything-is-a-smart-contract)
 
-Да, либо в результате накопления платы за хранение (контракт должен достичь баланса -1 TON, чтобы быть удаленным), либо путем отправки сообщения с [режимом 160](/v3/documentation/smart-contracts/message-management/sending-messages#message-modes).
+### How to tell if an address is a token contract?
 
-### Чувствительны ли адреса смарт-контрактов к регистру?
+To identify a **Jetton** contract:
 
-Да, адреса смарт-контрактов чувствительны к регистру, поскольку они генерируются с использованием [алгоритма base64](https://en.wikipedia.org/wiki/Base64). Узнать больше об адресах смарт-контрактов можно [здесь](/v3/documentation/smart-contracts/addresses).
+- It must implement the [Jetton standard interface (TEP-74)](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md)
+- It should respond to:
+  - `get_wallet_data()` — for Jetton wallet contracts
+  - `get_jetton_data()` —  for the main Jetton master contract
 
-### Совместима ли Ton Virtual Machin (TVM) с EVM?
+### Are there any special accounts (e.g. accounts owned by the network) that have different rules or methods from the rest?
 
-TVM несовместима с виртуальной машиной Ethereum (EVM), поскольку TON использует совершенно другую архитектуру (TON асинхронный, а Ethereum синхронный).
+Yes. TON includes a special master blockchain called the **MasterChain**, which holds contracts critical for network operations, including network-wide contracts with network configuration, validator-related contracts, etc.
 
-[Подробнее об асинхронных смарт-контрактах](https://telegra.ph/Its-time-to-try-something-new-Asynchronous-smart-contracts-03-25).
+:::info
+Read more about MasterChain, WorkChains and ShardChains in TON Blockchain overview article: [Blockchain of blockchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains).
+:::
 
-### Можно ли писать на Solidity для TON?
+A good example is a smart governance contract, which is a part of MasterChain:
 
-В связи с этим экосистема TON не поддерживает разработку на языке программирования Solidity от Ethereum.
+- [Governance contracts](/v3/documentation/smart-contracts/contracts-specs/governance)
 
-Но если добавить асинхронные сообщения к синтаксису Solidity и возможность взаимодействия с данными на низком уровне, то получится FunC. FunC имеет синтаксис, который является общим для большинства современных языков программирования и разработан специально для разработки на TON.
+## Smart contracts
 
-## Удаленные вызовы процедур (RPC)
+### Is it possible to detect contract deployment events on TON?
 
-### Рекомендуемые поставщики узлов для извлечения данных включают:
+[Everything in TON is a smart contract](/v3/documentation/smart-contracts/addresses#everything-is-a-smart-contract).
 
-Типы API:
+An account address in TON is deterministically derived from its _initial state_, consisting of the _initial code_  and _initial data_. For wallets, the initial data typically includes a public key and other parameters.
+If any part of the initial state changes, the resulting address will also change.
 
-- Подробнее о различных [типах API](/v3/guidelines/dapps/apis-sdks/api-types) (индексированные, HTTP и ADNL)
+A smart contract can exist in an _uninitialized state_, meaning it is not yet deployed on the blockchain but may still hold a non-zero balance. The initial state can be submitted to the network later via internal or external messages—these messages can be monitored to detect when a contract is deployed.
 
-Партнеры-поставщики узлов:
+To prevent message chains from getting stuck due to missing contracts, TON uses a "bounce" feature. You can read more about it in the following articles:
 
-- https://toncenter.com/api/v2/
-- [getblock.io](https://getblock.io/)
-- https://www.orbs.com/ton-access/
-- [toncenter/ton-http-api](https://github.com/toncenter/ton-http-api)
-- [nownodes.io](https://nownodes.io/nodes)
-- https://dton.io/graphql
+- [Deploying wallet via TonLib](/v3/guidelines/dapps/asset-processing/payments-processing#wallet-deployment)
+- [Paying for processing queries and sending responses](/v3/documentation/smart-contracts/transaction-fees/forward-fees)
 
-Каталог с проектами сообщества TON:
+### Does the upgradability of a smart-contract pose a threat to its users?
+
+The ability to upgrade smart contracts is currently a common practice and widely adopted across modern protocols. Upgradability allows developers to fix bugs, add new features, and enhance security over time.
+
+How to mitigate the risks:
+
+1. Choose projects with strong reputations and well-known development teams.
+2. Reputable projects typically undergo independent code audits to ensure the smart contract is secure and reliable. Look for multiple completed audits from trusted auditing firms.
+3. An active community and positive user feedback can serve as additional indicators of a project’s trustworthiness.
+4. Review how the project handles updates. The more transparent and decentralized the upgrade process is, the lower the risk for users.
+
+### How can users be sure that the contract owner will not change certain conditions via an update?
+
+The contract must be verified, which means its source code is publicly available for inspection. This allows users to confirm whether any upgrade logic is present. If the contract contains no mechanisms for modification, its behavior and terms are guaranteed to remain unchanged after deployment.
+
+In some cases, upgrade logic may exist, but control over it can be transferred to an "empty" or null address. This effectively removes the ability to make future changes.
+
+### Is it possible to redeploy code to an existing address, or must it be deployed as a new contract?
+
+Yes, updating a contract's code at the same address is possible if the smart contract includes logic—typically through the `set_code()` instruction.
+
+However, if a contract is not designed to execute `set_code()` internally or via external code, it is immutable. In this case, the contract's code cannot be changed, and it is impossible to redeploy a different contract to the same address.
+
+### Can smart contract be deleted?
+
+Yes. A smart contract can be deleted in one of two ways:
+
+- Through storage fee accumulation—if the contract’s balance drops to -1 TON, it will be automatically deleted.
+- By sending a message with [mode 160](/v3/documentation/smart-contracts/message-management/sending-messages#message-modes).
+
+### Are smart contract addresses case-sensitive?
+
+Yes, smart contract addresses are case-sensitive because they are encoded using the [base64 algorithm](https://en.wikipedia.org/wiki/Base64). You can learn more about how smart contract addresses work [here](/v3/documentation/smart-contracts/addresses).
+
+### Is the Ton Virtual Machine (TVM) EVM-compatible?
+
+No, the TON Virtual Machine (TVM) is incompatible with the Ethereum Virtual Machine (EVM).
+TON uses an entirely different architecture: **asynchronous**, while Ethereum operates synchronously.
+
+[Read more on asynchronous smart contracts](https://telegra.ph/Its-time-to-try-something-new-Asynchronous-smart-contracts-03-25).
+
+### Can smart contracts be written in Solidity on TON?
+
+Relatedly, the TON ecosystem doesn't support development using Ethereum's Solidity language.
+
+However, extending Solidity with asynchronous messaging and low-level data access would end up with something like FunC.
+
+FunC is TON's native smart contract language. It features a syntax similar to many modern programming languages and was explicitly built for TON's architecture.
+
+## Remote Procedure Calls (RPCs)
+
+### Recommended node providers for data extraction
+
+API types:
+
+Learn more about the different [API Types](/v3/guidelines/dapps/apis-sdks/api-types) available in TON, including Indexed, HTTP, and ADNL.
+
+Node providers partners:
+
+- [TON Center API (v2)](https://toncenter.com/api/v2/)
+- [GetBlock](https://getblock.io/)
+- [TON Access by Orbs](https://www.orbs.com/ton-access/)
+- [TON API by TON Center](https://github.com/toncenter/ton-http-api)
+- [NOWNodes](https://nownodes.io/nodes)
+- [DTON GraphQL API](https://dton.io/graphql)
+
+**TON Directory**
+Explore a wide range of TON-related projects and tools curated by the community:
 
 - [ton.app](https://ton.app/)
 
-### Ниже приведены два основных ресурса, используемых для получения информации, связанной с конечными точками публичных узлов в блокчейне TON (как для TON Mainnet, так и для TON Testnet).
+### Below are two primary resources for accessing information about public node endpoints on the TON Blockchain, including both Mainnet and Testnet.
 
-- [Конфигурации сети](/v3/documentation/network/configs/network-configs)
-- [Примеры и руководства](/v3/guidelines/dapps/overview#tutorials-and-examples)
+- [Network configs](/v3/documentation/network/configs/network-configs)
+- [Examples and tutorials](/v3/guidelines/dapps/overview#tutorials-and-examples)
+
+<Feedback />
+
