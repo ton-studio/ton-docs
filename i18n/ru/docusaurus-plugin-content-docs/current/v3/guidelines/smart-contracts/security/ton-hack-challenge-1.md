@@ -1,23 +1,21 @@
-# Подведение итогов TON Hack Challenge
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
+# Drawing conclusions from TON Hack Challenge
+
+The TON Hack Challenge was held on October 23.
+There were several smart contracts deployed to the TON mainnet with synthetic security breaches. Every contract had a balance of 3000 or 5000 TON, allowing participant to hack it and get rewards immediately.
+
+Source code and contest rules were hosted on GitHub [here](https://github.com/ton-blockchain/hack-challenge-1).
+
+## Contracts
+
+### 1. Mutual fund
+
+:::note SECURITY RULE
+Always check functions for [`impure`](/v3/documentation/smart-contracts/func/docs/functions#impure-specifier) modifier.
 :::
 
-TON Hack Challenge был проведен 23 октября.
-В TON mainnet было развернуто несколько смарт-контрактов с искусственно созданными уязвимостями. Каждый контракт имел баланс 3000 или 5000 TON, что позволяло участникам взломать его и немедленно получить вознаграждение.
-
-Исходный код и правила контеста были размещены на GitHub [здесь] (https://github.com/ton-blockchain/hack-challenge-1).
-
-## Контракты
-
-### 1. Паевой инвестиционный фонд
-
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Всегда проверяйте функции на наличие модификатора [`impure`](/v3/documentation/smart-contracts/func/docs/functions#impure-specifier).
-:::
-
-Первая задача была очень простой. Злоумышленник мог обнаружить, что функция `authorize` не является `impure `. Отсутствие этого модификатора позволяет компилятору пропускать вызовы этой функции, если она ничего не возвращает или возвращаемое значение не используется.
+The first task was very simple. The attacker could find that `authorize` function was not `impure`. The absence of this modifier allows a compiler to skip calls to that function if it returns nothing or the return value is unused.
 
 ```func
 () authorize (sender) inline {
@@ -25,13 +23,13 @@ TON Hack Challenge был проведен 23 октября.
 }
 ```
 
-### 2. Банк
+### 2. Bank
 
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Всегда проверяйте наличие [изменяющих/не изменяющих](/v3/documentation/smart-contracts/func/docs/statements#methods-calls) методов.
+:::note SECURITY RULE
+Always check for [modifying/non-modifying](/v3/documentation/smart-contracts/func/docs/statements#methods-calls) methods.
 :::
 
-`udict_delete_get?` вызывался с `.` вместо `~`, поэтому реальный словарь остался нетронутым.
+`udict_delete_get?` was called with `.` instead `~`, so the real dict was untouched.
 
 ```func
 (_, slice old_balance_slice, int found?) = accounts.udict_delete_get?(256, sender);
@@ -39,11 +37,11 @@ TON Hack Challenge был проведен 23 октября.
 
 ### 3. DAO
 
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Используйте знаковые целые числа, если вам это действительно необходимо.
+:::note SECURITY RULE
+Use signed integers if you really need it.
 :::
 
-Вес голоса хранился в сообщении как целое число. Злоумышленник мог отправить отрицательное значение при передаче веса голоса и получить бесконечное количество голосов.
+Voting power was stored in message as an integer. So the attacker could send a negative value during power transfer and get infinite voting power.
 
 ```func
 (cell,()) transfer_voting_power (cell votes, slice from, slice to, int amount) impure {
@@ -62,13 +60,13 @@ TON Hack Challenge был проведен 23 октября.
 }
 ```
 
-### 4. Лотерея
+### 4. Lottery
 
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Всегда рандомизируйте начальное значение перед выполнением [`rand()`](/v3/documentation/smart-contracts/func/docs/stdlib#rand)
+:::note SECURITY RULE
+Always randomize seed before doing [`rand()`](/v3/documentation/smart-contracts/func/docs/stdlib#rand)
 :::
 
-Начальное значение было получено из логического времени транзакции, и хакер может выиграть, применяя перебор логического времени в текущем блоке (потому что lt последовательно в пределах одного блока).
+Seed was brought from logical time of the transaction, and a hacker can win by bruteforcing the logical time in the current block (cause lt is sequential in the borders of one block).
 
 ```func
 int seed = cur_lt();
@@ -86,23 +84,23 @@ if(balance > 5000 * 1000000000) {
 if(rand(10000) == 7777) { ...send reward... }
 ```
 
-### 5. Кошелек
+### 5. Wallet
 
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Помните, что все хранится в блокчейне.
+:::note SECURITY RULE
+Remember that everything is stored in the blockchain.
 :::
 
-Кошелек был защищен паролем, его хеш был сохранен в данных контракта. Однако блокчейн помнит все - пароль был в истории транзакций.
+The wallet was protected with password, it's hash was stored in contract data. However, the blockchain remembers everything—the password was in the transaction history.
 
-### 6. Сейф
+### 6. Vault
 
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Всегда проверяйте [отскочившие](/v3/documentation/smart-contracts/message-management/non-bounceable-messages) сообщения.
-Не забывайте об ошибках, вызванных [стандартными](/v3/documentation/smart-contracts/func/docs/stdlib/) функциями.
-Сделайте свои условия максимально строгими.
+:::note SECURITY RULE
+Always check for [bounced](/v3/documentation/smart-contracts/message-management/non-bounceable-messages) messages.
+Don't forget about errors caused by [standard](/v3/documentation/smart-contracts/func/docs/stdlib/) functions.
+Make your conditions as strict as possible.
 :::
 
-В сейфе есть следующий код в обработчике сообщений базы данных:
+The vault has the following code in the database message handler:
 
 ```func
 int mode = null();
@@ -115,23 +113,23 @@ if (op == op_not_winner) {
 }
 ```
 
-В сейфе нет обработчика отскоков или прокси-сообщений в базу данных, если пользователь отправляет "check". В базе данных можно установить `msg_addr_none` как адрес награды, поскольку `load_msg_address` позволяет это сделать. Мы запрашиваем проверку из сейфа, база данных пытается разобрать `msg_addr_none`, используя [`parse_std_addr`](/v3/documentation/smart-contracts/func/docs/stdlib#parse_std_addr), но это не удается. Сообщение отскакивает в сейф из базы данных, а операция не является `op_not_winner`.
+Vault does not have a bounce handler or proxy message to the database if the user sends “check”. In the database we can set `msg_addr_none` as an award address because `load_msg_address` allows it. We are requesting a check from the vault, database tries to parse `msg_addr_none` using [`parse_std_addr`](/v3/documentation/smart-contracts/func/docs/stdlib#parse_std_addr), and fails. Message bounces to the vault from the database and op is not `op_not_winner`.
 
-### 7. Улучшенный банк
+### 7. Better bank
 
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Никогда не уничтожайте аккаунт ради забавы.
-Используйте [`raw_reserve`](/v3/documentation/smart-contracts/func/docs/stdlib#raw_reserve) вместо того, чтобы отправлять деньги самому себе.
-Подумайте о возможных условиях гонки.
-Будьте осторожны с расходом газа при работе с hashmap.
+:::note SECURITY RULE
+Never destroy account for fun.
+Make [`raw_reserve`](/v3/documentation/smart-contracts/func/docs/stdlib#raw_reserve) instead of sending money to yourself.
+Think about possible race conditions.
+Be careful with hashmap gas consumption.
 :::
 
-В контракте были условия гонки: вы могли внести деньги, а затем попытаться вывести их дважды с помощью параллельных сообщений. Нет гарантии, что сообщение с зарезервированными средствами будет обработано, поэтому банк может закрыться после второго вывода. После этого контракт мог быть развернут заново, и любой мог бы вывести невостребованные средства.
+There were race conditions in the contract: you could deposit money, then try to withdraw it twice in concurrent messages. There is no guarantee that a message with reserved money will be processed, so the bank can shut down after a second withdrawal. After that, the contract could be redeployed and anybody could withdraw unclaimed money.
 
 ### 8. Dehasher
 
-:::note ПРАВИЛО БЕЗОПАСНОСТИ
-Избегайте выполнения стороннего кода в Вашем контракте.
+:::note SECURITY RULE
+Avoid executing third-party code in your contract.
 :::
 
 ```func
@@ -151,15 +149,16 @@ slice safe_execute(int image, (int -> slice) dehasher) inline {
 }
 ```
 
-Не существует способа безопасно выполнить сторонний код в контракте, поскольку исключение [`out of gas`](/v3/documentation/tvm/tvm-exit-codes#standard-exit-codes) не может быть обработано `CATCH`. Злоумышленник просто может использовать [`COMMIT`](/v3/documentation/tvm/instructions#F80F) для любого состояния контракта и поднять `out of gas`.
+There is no way to safe execute a third-party code in the contract, because [`out of gas`](/v3/documentation/tvm/tvm-exit-codes#standard-exit-codes) exception cannot be handled by `CATCH`. The attacker simply can [`COMMIT`](/v3/documentation/tvm/instructions#F80F) any state of contract and raise `out of gas`.
 
-## Заключение
+## Conclusion
 
-Надеемся, эта статья прояснила некоторые неочевидные правила для разработчиков FunC.
+Hope this article has shed some light on the non-obvious rules for FunC developers.
 
-## Ссылки
+## References
 
-Автор оригинальной статьи: Dan Volkov
+- [dvlkv on GitHub](https://github.com/dvlkv) - _Dan Volkov_
+- [Original article](https://dev.to/dvlkv/drawing-conclusions-from-ton-hack-challenge-1aep) - _Dan Volkov_
 
-- [dvlkv на GitHub](https://github.com/dvlkv)
-- [Оригинальная статья](https://dev.to/dvlkv/drawing-conclusions-from-ton-hack-challenge-1aep)
+<Feedback />
+
