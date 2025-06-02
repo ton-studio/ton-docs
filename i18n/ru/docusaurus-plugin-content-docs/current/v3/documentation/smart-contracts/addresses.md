@@ -1,224 +1,224 @@
-# Документация по адресам смарт-контрактов
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
+# Smart contract addresses
+
+This section describes the specifics of smart contract addresses on the TON Blockchain. It also explains how actors are synonymous with smart contracts on TON.
+
+## Everything is a smart contract
+
+On TON, smart contracts are built using the [Actor model](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#single-actor). In fact, actors on TON are technically represented as smart contracts. This means that even your wallet is a simple actor (and a smart contract).
+
+Typically, actors process incoming messages, change their internal states, and generate outbound messages as a result. That's why every actor (i.e., smart contract) on TON Blockchain must have an address, so it can receive messages from other actors.
+
+:::info EVM EXPERIENCE
+On the Ethereum Virtual Machine (EVM), addresses are completely separate from smart contracts. Feel free to learn more about the differences by reading our article ["Six unique aspects of TON Blockchain that will surprise Solidity developers"](https://blog.ton.org/six-unique-aspects-of-ton-blockchain-that-will-surprise-solidity-developers) - _Tal Kol_.
 :::
 
-В этом разделе описываются особенности адресов смарт-контрактов в блокчейне TON. Он также объясняет, как акторы являются синонимами смарт-контрактов в TON.
+## Address of smart contract
 
-## Всё является смарт-контрактом
+Smart contract addresses on TON typically consist of two main components:
 
-В TON смарт-контракты создаются с использованием [акторной модели](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#single-actor). Фактически, акторы в TON технически представлены как смарт-контракты. Это означает, что даже ваш кошелек является простым актором (и смарт-контрактом).
+- **(workchain_id)**: Denotes the workchain ID (a signed 32-bit integer)
 
-Обычно акторы обрабатывают входящие сообщения, изменяют свои внутренние состояния и в результате генерируют исходящие сообщения. Вот почему каждый субъект (т. е. актор-контракт) в блокчейне TON должен иметь адрес, чтобы он мог получать сообщения от других акторов.
+- **(account_id)** Denotes the address of the account (64-512 bits, depending on the workchain)
 
-:::info ОПЫТ EVM
-В виртуальной машине Ethereum (EVM) адреса полностью отделены от смарт-контрактов. Не стесняйтесь узнать больше о различиях, прочитав нашу статью ["Шесть уникальных аспектов блокчейна TON, которые удивят разработчиков Solidity"](https://blog.ton.org/six-unique-aspects-of-ton-blockchain-that-will-surprise-solidity-developers) от Тала Кола.
-:::
+In the raw address overview section of this documentation, we'll discuss how  **(workchain_id, account_id)** pairs are presented.
 
-## Адрес смарт-контракта
+### WorkChain ID and Account ID
 
-Адреса смарт-контрактов в TON обычно состоят из двух основных компонентов:
+#### Workchain ID
 
-- **(workchain_id)**: Обозначает идентификатор воркчейна (подписанное 32-битное целое число)
+[As we've seen before](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#workchain-blockchain-with-your-own-rules), it is possible to create as many as `2^32` workchains operating on TON Blockchain. We also noted how 32-bit prefix smart contract addresses identify and are linked to smart contract addresses within different workchains. This allows smart contracts to send and receive messages to and from different workchains on TON Blockchain.
 
-- **(account_id)** Обозначает адрес аккаунта (64-512 бит, в зависимости от воркчейна)
+Nowadays, only the Masterchain (workchain_id=-1) and occasionally the basic workchain (workchain_id=0) are running in TON Blockchain.
 
-В разделе обзора необработанных адресов этой документации мы обсудим, как представлены пары **(workchain_id, account_id)**.
+Both of them have 256-bit addresses, therefore, we assume that the workchain_id is either 0 or -1, and the address within the workchain is precisely 256 bits.
 
-### Идентификатор воркчейна и идентификатор аккаунта
+#### Account ID
 
-#### Идентификатор воркчейна
+All account IDs on TON use 256-bit addresses on the Masterchain and Basechain (also referred to as the basic workchain).
 
-[Как мы уже видели ранее](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#workchain-blockchain-with-your-own-rules), можно создать до `2^32` воркчейнов, работающих на блокчейне TON. Мы также отметили, как 32-битные префиксные адреса смарт-контрактов идентифицируют и связываются с адресами смарт-контрактов в разных воркчейнов. Это позволяет смарт-контрактам отправлять и получать сообщения в разные воркчейны на блокчейне TON и из них.
+In fact, an Account ID (**account_id**) is defined as the result of applying a hash function (specifically SHA-256) to a smart contract object. Every smart contract operating on the TON Blockchain stores two main components:
 
-В настоящее время в блокчейне TON работают только Мастерчейн (workchain_id=-1) и иногда базовый воркчейн (workchain_id=0).
+1. _Compiled code_. The logic of the smart contract, compiled into bytecode.
+2. _Initial state_. The contract's values at the moment it is deployed on-chain.
 
-Оба имеют 256-битные адреса, поэтому мы предполагаем, что workchain_id равен 0 или -1, а адрес внутри воркчейна равен ровно 256 битам.
+To derive the contract's address, you calculate the hash of the **(Initial code, Initial state)** pair. We won’t explore how the [TVM](/v3/documentation/tvm/tvm-overview) works at this time, but it is important to understand that account IDs on TON follow this formula:
 
-#### Идентификатор аккаунта
+**account_id = hash(initial code, initial state)**
 
-Все идентификаторы аккаунтов в TON используют 256-битные адреса в мастерчейне и бейстчейне (также называемым базовым воркчейном).
+Later in this documentation, we will dive deeper into the technical specifications of the TVM and TL-B scheme. Now that we are familiar with how the **account_id** is generated and how it interacts with smart contract addresses on TON, let’s discuss Raw and User-Friendly addresses.
 
-Фактически, идентификатор учетной записи (**account_id**) определяется как результат применения хэш-функции (в частности, SHA-256) к объекту смарт-контракта. Каждый смарт-контракт, работающий на блокчейне TON, хранит два основных компонента:
+## Addresses state
 
-1. *Скомпилированный код*. Логика смарт-контракта, скомпилированная в байт-код.
-2. *Начальное состояние*. Значения контракта на момент его развертывания в цепочке.
+Each address can be in one of possible states:
 
-Чтобы получить адрес контракта, вы вычисляете хэш пары **(Начальный код, Начальное состояние)**. Мы не будем сейчас изучать, как работает [TVM](/v3/documentation/tvm/tvm-overview), но важно понимать, что идентификаторы аккаунтов в TON следуют этой формуле:
+- `nonexist` - there were no accepted transactions on this address, so it doesn't have any data (or the contract was deleted). We can say that initially all 2<sup>256</sup> address are in this state.
+- `uninit` - address has some data, which contains balance and meta info. At this state address doesn't have any smart contract code/persistent data yet. An address enters this state, for example, when it was in a nonexist state, and another address sent tokens to it.
+- `active` - address has smart contract code, persistent data and balance. At this state it can perform some logic during the transaction and change its persistent data. An address enters this state when it was `uninit` and there was an incoming message with state_init param (note, that to be able to deploy this address, hash of `state_init` and `code` must be equal to address).
+- `frozen` - address cannot perform any operations, this state contains only two hashes of the previous state (code and state cells respectively). When an address's storage charge exceeds its balance, it goes into this state. To unfreeze it, you can send an internal message with `state_init` and `code` which store the hashes described earlier and some Toncoin. It can be difficult to recover it, so you should not allow this situation. There is a project to unfreeze the address, which you can find [here](https://unfreezer.ton.org/).
 
-**account_id = хэш(начальный код, начальное состояние)**
+## Raw and user-friendly addresses
 
-Далее в этой документации мы более подробно рассмотрим технические характеристики схемы TVM и TL-B. Теперь, когда мы знакомы с тем, как генерируется **account_id** и как он взаимодействует с адресами смарт-контрактов в TON, давайте обсудим необработанные и удобные для пользователя адреса.
+After providing a brief overview of how smart contract addresses on TON leverage workchains and account IDs (for the Masterchain and Basechain specifically), it is important to understand that these addresses are expressed in two main formats:
 
-## Состояние адресов
+- **Raw addresses**: Original full representation of smart contract addresses.
+- **User-friendly addresses**: User-friendly addresses are an enhanced format of raw address that employ better security and ease of use.
 
-Каждый адрес может находиться в одном из возможных состояний:
+Below, we’ll explain more about the differences between these two address types and dive deeper into why user-friendly addresses are used on TON.
 
-- `nonexist` - по этому адресу не было принятых транзакций, поэтому на нем нет никаких данных (или контракт был удален). Можно сказать, что изначально все 2<sup>256</sup> адреса находятся в этом состоянии.
-- `uninit` - адрес имеет некоторые данные, которые содержат баланс и метаданные. В этом состоянии адрес еще не имеет кода смарт-контракта/постоянных данных. Адрес переходит в это состояние, например, когда он был в несуществующем состоянии, а другой адрес отправлял ему токены.
-- `active` - адрес имеет код смарт-контракта, постоянные данные и баланс. В этом состоянии он может выполнять некоторую логику во время транзакции и изменять свои постоянные данные. Адрес переходит в это состояние, когда он был `uninit` и было входящее сообщение с параметром state_init (обратите внимание, что для возможности развертывания этого адреса хэш `state_init` и `code` должен быть равен адресу).
-- `frozen` - адрес не может выполнять никаких операций, это состояние содержит только два хеша предыдущего состояния (ячейки кода и состояния соответственно). Когда стоимость хранения адреса превышает его баланс, он переходит в это состояние. Чтобы разморозить его, вы можете отправить внутреннее сообщение с `state_init` и `code`, в которых хранятся хэши, описанные ранее, и немного Toncoin. Восстановить его может быть сложно, поэтому вы не должны допускать такой ситуации. Существует проект по разморозке адреса, который вы можете найти [здесь](https://unfreezer.ton.org/).
+### Raw address
 
-## Необработанные и удобные для пользователя адреса
+Raw smart contract addresses consist of a workchain ID and account ID _(workchain_id, account_id)_ and are displayed in the following format:
 
-После краткого обзора того, как адреса смарт-контрактов в TON используют воркчейны и идентификаторы аккаунтов (в частности, для мастерчейна и бейсчейна), важно понимать, что эти адреса выражаются в двух основных форматах:
+- [decimal workchain_id\]:[64 hexadecimal digits with account_id\]
 
-- **Необработанные адреса**: Исходное полное представление адресов смарт-контрактов.
-- **Удобные для пользователя адреса**: Удобные для пользователя адреса — это расширенный формат необработанных адресов, которые обеспечивают лучшую безопасность и простоту использования.
-
-Ниже мы подробнее объясним различия между этими двумя типами адресов и подробнее рассмотрим, почему удобные для пользователя адреса используются в TON.
-
-### Необработанные адреса
-
-Исходные адреса смарт-контрактов состоят из идентификатора воркчейна и идентификатора аккаунта *(workchain_id, account_id)* и отображаются в следующем формате:
-
-- [десятичный workchain_id\]:[64 шестнадцатеричных цифры с account_id\]
-
-Ниже представлен пример необработанного адреса смарт-контракта, использующего идентификатор воркчейна и идентификатор аккаунта вместе (выраженный как **workchain_id** и **account_id**):
+Provided below, is an example of a raw smart contract address using a  workchain ID and account ID together (expressed as **workchain_id** and **account_id**):
 
 `-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260`
 
-Обратите внимание на `-1` в начале строки адреса, который обозначает *workchain_id*, принадлежащий мастерчейну.
+Notice the `-1` at the start of the address string, which denotes a _workchain_id_ that belongs to the Masterchain.
 
 :::note
-В строках адресов можно использовать заглавные буквы (такие как 'A', 'B', 'C', 'D' и т. д.) вместо строчных букв (например, 'a', 'b', 'c', 'd' и т. д.).
+Uppercase letters (such as 'A', 'B', 'C', 'D' etc.) may be used in address strings instead of their lowercase counterparts (such as 'a', 'b', 'c', 'd' etc.).
 :::
 
-#### Проблемы с необработанными адресами
+#### Issues with raw addresses
 
-Использование формы необработанного адреса создает две основные проблемы:
+Using the Raw Address form presents two main issues:
 
-1. При использовании формата необработанного адреса невозможно проверить адреса для устранения ошибок перед отправкой транзакции.
-   Это означает, что если вы случайно добавите или удалите символы в адресной строке до отправки транзакции, ваша транзакция будет отправлена ​​по неправильному адресу, что приведет к потере средств.
-2. При использовании формата необработанного адреса невозможно добавлять специальные флаги, подобные тем, которые используются при отправке транзакций с использованием удобных для пользователя адресов.
-   Чтобы помочь вам лучше понять эту концепцию, мы объясним ниже, какие флаги можно использовать.
+1. When using the raw address format, it's not possible to verify addresses to eliminate errors prior to sending a transaction.
+   This means that if you accidentally add or remove characters in the address string prior to sending the transaction, your transaction will be sent to the wrong destination, resulting in loss of funds.
+2. When using the raw address format, it's impossible to add special flags like those used when sending transactions that employ user-friendly addresses.
+   To help you better understand this concept, we’ll explain which flags can be used below.
 
-### Удобные для пользователя адреса
+### User-friendly address
 
-Удобные для пользователя адреса были разработаны для защиты и упрощения опыта для пользователей TON, которые делятся адресами в Интернете (например, на публичных платформах обмена сообщениями или через своих поставщиков услуг электронной почты), а также в реальном мире.
+User-friendly addresses were developed to secure and simplify the experience for TON users who share addresses on the internet (for example, on public messaging platforms or via their email service providers), as well as in the real world.
 
-#### Удобная для пользователя структура адресов
+#### User-friendly address structure
 
-Удобные для пользователя адреса состоят из 36 байтов в общей сложности и получаются путем генерации следующих компонентов в следующем порядке:
+User-friendly addresses are made up of 36 bytes in total and are obtained by generating the following components in order:
 
-1. *[флаги - 1 байт]* — Флаги, закрепленные за адресами, изменяют способ реакции смарт-контрактов на полученное сообщение.
-   Типы флагов, которые используют удобный для пользователя формат адреса, включают:
+1. _[flags - 1 byte]_ — Flags that are pinned to addresses change the way smart contracts react to the received message.
+   Flags types that employ the user-friendly address format include:
 
-   - isBounceable. Обозначает тип адреса, допускающий или не допускающий отклонений. (*0x11* для "отклоняемого", *0x51* для "не отклоняемого")
-   - isTestnetOnly. Обозначает тип адреса, используемый только для целей тестовой сети. Адреса, начинающиеся с *0x80*, не должны приниматься программным обеспечением, работающим в рабочей сети
-   - isUrlSafe. Обозначает устаревший флаг, который определен как безопасный для URL для адреса. Все адреса затем считаются безопасными для URL.
-2. *\[workchain_id - 1 байт]* — идентификатор воркчейна (*workchain_id*) определяется 8-битным целым числом со знаком *workchain_id*.
-   (*0x00* для Бейсчейна, *0xff* для Мастерчейна)
-3. *\[account_id - 32 байта]* — идентификатор аккаунта состоит ([от большего к меньшему](https://www.freecodecamp.org/news/what-is-endianness-big-endian-vs-little-endian/)) 256-битного адреса в воркчейне.
-4. *\[проверка адреса - 2 байта]* — В удобных для пользователя адресах проверка адреса состоит из подписи CRC16-CCITT из предыдущих 34 байтов. ([Пример](https://github.com/andreypfau/ton-kotlin/blob/ce9595ec9e2ad0eb311351c8a270ef1bd2f4363e/ton-kotlin-crypto/common/src/crc32.kt))
-   Фактически, идея, касающаяся проверки удобных для пользователя адресов, очень похожа на [алгоритм Луна](https://en.wikipedia.org/wiki/Luhn_algorithm), который используется на всех кредитных картах, чтобы пользователи не вводили по ошибке несуществующие номера карт.
+   - isBounceable. Denotes a bounceable or non-bounceable address type. (_0x11_ for "bounceable", _0x51_ for "non-bounceable")
+   - isTestnetOnly. Denotes an address type used for testnet purposes only. Addresses beginning with _0x80_ should not be accepted by software running on the production network
+   - isUrlSafe. Denotes a deprecated flag that is defined as URL-safe for an address. All addresses are then considered URL-safe.
+2. _\[workchain_id - 1 byte]_ — The workchain ID (_workchain_id_) is defined by a signed 8-bit integer _workchain_id_.\
+   (_0x00_ for the BaseChain, _0xff_ for the MasterChain)
+3. _\[account_id - 32 byte]_ — The account ID is made up of a ([big-endian](https://www.freecodecamp.org/news/what-is-endianness-big-endian-vs-little-endian/)) 256-bit address in the workchain.
+4. _\[address verification - 2 bytes]_ —  In user-friendly addresses, address verification is composed of a CRC16-CCITT signature from the previous 34 bytes. ([Example](https://github.com/andreypfau/ton-kotlin/blob/ce9595ec9e2ad0eb311351c8a270ef1bd2f4363e/ton-kotlin-crypto/common/src/crc32.kt))
+   In fact, the idea pertaining to verification for user-friendly addresses is quite similar to the [Luhn algorithm](https://en.wikipedia.org/wiki/Luhn_algorithm), which is used on all credit cards to prevent users from entering non-existing card numbers by mistake.
 
-Добавление этих 4 основных компонентов означает, что: `1 + 1 + 32 + 2 = 36` байтов в общей сложности (на удобный для пользователя адрес).
+The addition of these 4 main components means that: `1 + 1 + 32 + 2 = 36` bytes in total (per user-friendly address).
 
-Чтобы сгенерировать удобный для пользователя адрес, разработчик должен закодировать все 36 байтов, используя либо:
+To generate a user-friendly address, the developer must encode all 36 bytes using either:
 
-- *base64* (т. е. с цифрами, заглавными и строчными латинскими буквами, '/' и '+')
-- *base64url* (с '_' и '-' вместо '/' и '+')
+- _base64_ (i.e., with digits, upper and lowercase Latin letters, '/' and '+')
+- _base64url_ (with '_' and '-' instead of '/' and '+')
 
-После завершения этого процесса завершается генерация удобного для пользователя адреса длиной 48 неразделенных символов.
+After this process is complete, the generation of a user-friendly address with a length of 48 non-spaced characters is finalized.
 
-:::info ФЛАГИ DNS-АДРЕСОВ
-В TON DNS-адреса, такие как mywallet.ton, иногда используются вместо необработанных и удобных для пользователя адресов. DNS-адреса состоят из удобных для пользователя адресов и включают все необходимые флаги, которые позволяют разработчикам получать доступ ко всем флагам из записи DNS в домене TON.
+:::info DNS ADDRESS FLAGS
+On TON, DNS addresses such as mywallet.ton are sometimes used instead of raw and user-friendly addresses. DNS addresses are made up of user-friendly addresses and include all the required flags that allow developers to access all the flags from the DNS record within the TON domain.
 :::
 
-#### Примеры кодировки адресов, удобных для пользователя
+#### User-friendly address encoding examples
 
-Например, смарт-контракт "test giver" (специальный смарт-контракт, находящийся в тестовой сети мастерчейна, который отправляет 2 тестовых токена всем, кто их запрашивает) использует следующий необработанный адрес:
+For example, the "test giver" smart contract (a special smart contract residing in the testnet masterchain that sends 2 test tokens to anyone who requests them) makes use of the following raw address:
 
 `-1:fcb91a3a3816d0f7b8c2c76108b8a9bc5a6b7a55bd79f8ab101c52db29232260`
 
-Вышеуказанный необработанный адрес "test giver" необходимо преобразовать в удобную для пользователя форму адреса. Это достигается с помощью форм base64 или base64url (которые мы представили ранее) следующим образом:
+The above "test giver" raw address must be converted into the user-friendly address form. This is obtained using either the base64 or base64url forms (that we introduced previously) as follows:
 
 - `kf/8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15+KsQHFLbKSMiYIny` (base64)
 - `kf_8uRo6OBbQ97jCx2EIuKm8Wmt6Vb15-KsQHFLbKSMiYIny` (base64url)
 
 :::info
-Обратите внимание, что обе формы (*base64* и *base64url*) являются допустимыми и должны быть приняты!
+Notice that both forms (_base64_ and _base64url_) are valid and must be accepted!
 :::
 
-#### Адреса с возможностью отклонения и без него
+#### Bounceable vs non-bounceable addresses
 
-Основная идея флага адреса с возможностью отклонений — безопасность средств отправителя.
+The core idea behind the bounceable address flag is sender's funds security.
 
-Например, если целевой смарт-контракт не существует или если во время транзакции возникнет проблема, сообщение будет"отклонено" обратно отправителю и составит остаток от исходной стоимости транзакции (за вычетом всех комиссий за перевод и газ).
-Что касается адресов с возможностью отклонений, в частности:
+For example, if the destination smart contract does not exist, or if an issue happens during the transaction, the message will be "bounced" back to the sender and constitute the remainder of the original value of the transaction (minus all transfer and gas fees).
+In relation to bounceable addresses specifically:
 
-1. Флаг **bounceable=false** обычно означает, что получатель — это кошелек.
-2. Флаг **bounceable=true** обычно обозначает пользовательский смарт-контракт с собственной логикой приложения (например, DEX). В этом примере невозвратные сообщения не должны отправляться из соображений безопасности.
+1. The **bounceable=false** flag generally means the receiver is a wallet.
+2. The **bounceable=true** flag typically denotes a custom smart contract with its own application logic (for example, a DEX). In this example, non-bounceable messages should not be sent because of security reasons.
 
-Не стесняйтесь читать больше по этой теме в нашей документации, чтобы лучше понять [невозвратные сообщения](/v3/documentation/smart-contracts/message-management/non-bounceable-messages).
+Feel free to read more on this topic in our documentation to gain a better understanding of [non-bounceable messages](/v3/documentation/smart-contracts/message-management/non-bounceable-messages).
 
-#### Представления бронированного base64
+#### Armored base64 representations
 
-Дополнительные двоичные данные, связанные с блокчейном TON, используют похожие "бронированные" удобные для пользователя представления адресов base64. Они отличаются друг от друга в зависимости от первых 4 символов их байтового тега. Например, 256-битные открытые ключи Ed25519 представляются путем создания сначала 36-байтовой последовательности с использованием следующего процесса в следующем порядке:
+Additional binary data related to TON Blockchain employs similar "armored" base64 user-friendly address representations. These differentiate from one another depending on the first 4 characters of their byte tag. For example, 256-bit Ed25519 public keys are represented by first creating a 36-byte sequence using the below process in order:
 
-- Однобайтовый тег с использованием формата *0x3E* обозначает открытый ключ
-- Однобайтовый тег с использованием формата *0xE6* обозначает открытый ключ Ed25519
-- 32 байта, содержащих стандартное двоичное представление открытого ключа Ed25519
-- 2 байта, содержащих от большего к меньшему представление CRC16-CCITT предыдущих 34 байтов
+- A single byte tag using the _0x3E_ format denotes a public key
+- A single byte tag using the _0xE6_ format denotes a Ed25519 public key
+- 32 bytes containing the standard binary representation of the Ed25519 public key
+- 2 bytes containing the big-endian representation of CRC16-CCITT of the previous 34 bytes
 
-Полученная 36-байтовая последовательность преобразуется в 48-символьную строку base64 или base64url стандартным способом. Например, открытый ключ Ed25519 `E39ECDA0A7B0C60A7107EC43967829DBE8BC356A49B9DFC6186B3EAC74B5477D` (обычно представленный последовательностью из 32 байтов, например: `0xE3, 0x9E, ..., 0x7D`) представляется через "бронированное" представление следующим образом:
+The resulting 36-byte sequence is converted into a 48-character base64 or base64url string in the standard fashion. For example, the Ed25519 public key `E39ECDA0A7B0C60A7107EC43967829DBE8BC356A49B9DFC6186B3EAC74B5477D` (usually represented by a sequence of 32 bytes such as:  `0xE3, 0x9E, ..., 0x7D`) presents itself through the "armored" representation as follows:
 
 `Pubjns2gp7DGCnEH7EOWeCnb6Lw1akm538YYaz6sdLVHfRB2`
 
-### Преобразование удобных для пользователя адресов и необработанных адресов
+### Converting user-friendly addresses and raw addresses
 
-Самый простой способ преобразования удобных для пользователя и необработанных адресов — это использование одного из нескольких API TON и других инструментов, включая:
+The simplest way to convert user-friendly and raw addresses is to use one of several TON APIs and other tools, including:
 
 - [ton.org/address](https://ton.org/address)
-- [Метод dton.io API](https://dton.io/api/address/0:867ac2b47d1955de6c8e23f57994fad507ea3bcfe2a7d76ff38f29ec46729627)
-- [Методы API toncenter в основной сети](https://toncenter.com/api/v2/#/accounts/pack_address_packAddress_get)
-- [методы API toncenter в тестовой сети](https://testnet.toncenter.com/api/v2/#/accounts/pack_address_packAddress_get)
+- [dton.io API method](https://dton.io/api/address/0:867ac2b47d1955de6c8e23f57994fad507ea3bcfe2a7d76ff38f29ec46729627)
+- [toncenter API methods in mainnet](https://toncenter.com/api/v2/#/accounts/pack_address_packAddress_get)
+- [toncenter API methods in testnet](https://testnet.toncenter.com/api/v2/#/accounts/pack_address_packAddress_get)
 
-Кроме того, существует два способа преобразования удобных для пользователя и необработанных адресов для кошельков с помощью JavaScript:
+Additionally, there are two ways to convert user-friendly and raw addresses for wallets using JavaScript:
 
-- [Преобразование адреса из/в удобную для пользователя или необработанную форму с помощью ton.js](https://github.com/ton-org/ton-core/blob/main/src/address/Address.spec.ts)
-- [Преобразование адреса из/в удобную для пользователя или необработанную форму с помощью tonweb](https://github.com/toncenter/tonweb/tree/master/src/utils#address-class)
+- [Convert address from/to user-friendly or raw form using ton.js](https://github.com/ton-org/ton-core/blob/main/src/address/Address.spec.ts)
+- [Convert address from/to user-friendly or raw form using tonweb](https://github.com/toncenter/tonweb/tree/master/src/utils#address-class)
 
-Также возможно использовать аналогичные механизмы с помощью [SDK](/v3/guidelines/dapps/apis-sdks/sdk).
+It's also possible to make use of similar mechanisms using [SDKs](/v3/guidelines/dapps/apis-sdks/sdk).
 
-### Примеры адресов
+### Address examples
 
-Узнайте больше примеров адресов TON в [Кулинарной книге TON](/v3/guidelines/dapps/cookbook#working-with-contracts-addresses).
+Learn more examples on TON Addresses in the [TON Cookbook](/v3/guidelines/dapps/cookbook#working-with-contracts-addresses).
 
-## Возможные проблемы
+## Possible problems
 
-При взаимодействии с блокчейном TON важно понимать последствия перевода монет TON на адреса кошельков `uninit`. В этом разделе описываются различные сценарии и их результаты, чтобы прояснить, как обрабатываются такие транзакции.
+When interacting with the TON blockchain, it's crucial to understand the implications of transferring TON coins to `uninit` wallet addresses. This section outlines the various scenarios and their outcomes to provide clarity on how such transactions are handled.
 
-### Что происходит, когда вы переводите Toncoin на адрес uninit?
+### What happens when you transfer Toncoin to an uninit address?
 
-#### Транзакция с включенным `state_init`
+#### Transaction with `state_init` included
 
-Если вы включаете `state_init` (состоящий из кода и данных кошелька или смарт-контракта) в свою транзакцию. Смарт-контракт сначала развертывается с использованием предоставленного `state_init`. После развертывания входящее сообщение обрабатывается аналогично отправке на уже инициализированный аккаунт.
+If you include the `state_init` (which consists of the wallet or smart contract's code and data) with your transaction. The smart contract is deployed first using the provided `state_init`. After deployment, the incoming message is processed, similar to sending to an already initialized account.
 
-#### Транзакция без установленных флагов `state_init` и `bounce`
+#### Transaction without `state_init` and `bounce` flag set
 
-Сообщение не может быть доставлено на смарт-контракт `uninit`, и оно будет возвращено отправителю. После вычета потребленных сборов за газ оставшаяся сумма возвращается на адрес отправителя.
+The message cannot be delivered to the `uninit` smart contract, and it will be bounced back to the sender. After deducting the consumed gas fees, the remaining amount is returned to the sender's address.
 
-#### Транзакция без флагов `state_init` и `bounce`
+#### Transaction without `state_init` and `bounce` flag unset
 
-Сообщение не может быть доставлено, но оно не вернется обратно к отправителю. Вместо этого отправленная сумма будет зачислена на адрес получателя, увеличивая его баланс, даже если кошелек еще не инициализирован. Они будут храниться там до тех пор, пока владелец адреса не развернет контракт смарт-кошелька, после чего он сможет получить доступ к балансу.
+The message cannot be delivered, but it will not bounce back to the sender. Instead, the sent amount will be credited to the receiving address, increasing its balance even though the wallet is not yet initialized. They will be stored there until the address holder deploys a smart wallet contract and then they can access the balance.
 
-#### Как это сделать правильно
+#### How to do it right
 
-Лучший способ развернуть кошелек — отправить немного TON на его адрес (который еще не инициализирован) со снятым флагом `bounce`. После этого шага владелец может развернуть и инициализировать кошелек, используя средства на текущем неинициализированном адресе. Этот шаг обычно выполняется при первой операции с кошельком.
+The best way to deploy a wallet is to send some TON to its address (which is not yet initialized) with the `bounce` flag cleared. After this step, the owner can deploy and initialize the wallet using funds at the current uninitialized address. This step usually occurs on the first wallet operation.
 
-### Блокчейн TON реализует защиту от ошибочных транзакций
+### The TON blockchain implements protection against erroneous transactions
 
-ВВ блокчейне TON стандартные кошельки и приложения автоматически управляют сложностями транзакций по неинициализированным адресам, используя доступные и недоступные адреса, которые описаны [здесь](#bounceable-vs-non-bounceable-addresses). Обычной практикой для кошельков при отправке монет на неинициализированные адреса является отправка монет как на адреса с возможностью возврата, так и на адреса, не подлежащие возврату, без возврата.
+In the TON blockchain, standard wallets and apps automatically manage the complexities of transactions to uninitialized addresses by using bounceable and non-bounceable address, which are described [here](#bounceable-vs-non-bounceable-addresses). It is common practice for wallets, when sending coins to non-initialized addresses, to send coins to both bounceable and non-bounceable addresses without return.
 
-Если вам нужно быстро получить адрес в форме с возможностью возврата/без возможности возврата, это можно сделать [здесь](https://ton.org/address/).
+If you need to quickly get an address in bounceable/non-bounceable form, this can be done [here](https://ton.org/address/).
 
-### Ответственность за пользовательские продукты
+### Responsibility for custom products
 
-Если вы разрабатываете пользовательский продукт на блокчейне TON, важно реализовать аналогичные проверки и логику:
+If you are developing a custom product on the TON blockchain, it is essential to implement similar checks and logic:
 
-Убедитесь, что ваше приложение проверяет, инициализирован ли адрес получателя перед отправкой средств.
-На основе состояния адреса используйте адреса с возможностью возврата для пользовательских смарт-контрактов с пользовательской логикой приложения, чтобы гарантировать возврат средств. Используйте невозвратные адреса для кошельков.
+Ensure your application verifies whether the recipient address is initialized before sending funds.
+Based on the address state, use bounceable addresses for user smart contracts with custom application logic to ensure funds are returned. Use non-bounceable addresses for wallets.
+
+<Feedback />
 
