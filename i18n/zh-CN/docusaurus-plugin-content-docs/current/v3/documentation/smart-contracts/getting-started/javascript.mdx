@@ -1,14 +1,16 @@
+import Feedback from '@site/src/components/Feedback';
+
 import Button from '@site/src/components/button'
 
-# Blueprint SDK
+# Blueprint
 
-![Blueprint](\img\blueprint\logo.svg)
+![Blueprint](/img/blueprint/logo.svg)
 
-一个用于TON的开发环境，用于编写、测试和部署智能合约。
+A development environment for TON for writing, testing, and deploying smart contracts.
 
-## 快速开始 🚀
+## Quick start
 
-在终端中运行以下命令以创建一个新项目，并按照屏幕上的指示操作：
+Run the following in terminal to create a new project and follow the on-screen instructions:
 
 ```bash
 npm create ton@latest
@@ -16,42 +18,47 @@ npm create ton@latest
 
 <Button href="https://www.youtube.com/watch?v=7omBDfSqGfA&list=PLtUBO1QNEKwtO_zSyLj-axPzc9O9rkmYa" colorType={'secondary'} sizeType={'sm'}>
 
-观看视频教程
+Watch video tutorials
 
 </Button>
 
-### 核心特性
+### Core features
 
-- 构建、测试和部署智能合约的流畅工作流
-- 使用您最喜欢的钱包（例如Tonkeeper）轻松部署到主网/测试网
-- 在进程中运行的隔离区块链上快速测试多个智能合约
+- Streamlined workflow for building, testing and deploying smart contracts
+- Dead simple deployment to mainnet/testnet using your favorite wallet (eg. Tonkeeper)
+- Blazing fast testing of multiple smart contracts in an isolated blockchain running in-process
 
-### 技术栈
+### Tech stack
 
-- 编译FunC https://github.com/ton-community/func-js (无需 cli)
-- 测试智能合约 https://github.com/ton-org/sandbox
-- 使用TON Connect 2.0兼容钱包或`ton://`深层链接部署智能合约
+- Compiling FunC with https://github.com/ton-community/func-js (no cli)
+- Compiling Tact with https://github.com/tact-lang/tact
+- Testing smart contracts with https://github.com/ton-org/sandbox
+- Deploying smart contracts with TON Connect 2.0 compatible wallets or a `ton://` deeplink
 
-### 要求
+### Requirements
 
-- [Node.js](https://nodejs.org/) 使用像v18这样的近期版本，用`node -v`验证版本
-- 支持TypeScript和FunC的IDE，如[Visual Studio Code](https://code.visualstudio.com/)，配合[FunC插件](https://marketplace.visualstudio.com/items?itemName=tonwhales.func-vscode)
+- [Node.js](https://nodejs.org/) with a recent version like v18, verify version with `node -v`
+- IDE with TypeScript and TON support:
+  - [Visual Studio Code](https://code.visualstudio.com/) with the [FunC plugin](https://marketplace.visualstudio.com/items?itemName=tonwhales.func-vscode) or [Tact plugin](https://marketplace.visualstudio.com/items?itemName=tonstudio.vscode-tact)
+  - [IntelliJ IDEA](https://www.jetbrains.com/idea/) with the [TON Development plugin](https://plugins.jetbrains.com/plugin/23382-ton)
 
-## 参考资料
+## References
 
 ### GitHub
 
 - https://github.com/ton-org/blueprint
 
-### 资料
+### Materials
 
-- [在DoraHacks直播中使用Blueprint](https://www.youtube.com/watch?v=5ROXVM-Fojo)
-- [创建一个新项目](https://github.com/ton-org/blueprint#create-a-new-project)
-- [开发一个新的智能合约](https://github.com/ton-org/blueprint#develop-a-new-contract)
-- [\[YouTube\] 使用Blueprint EN 的FunC](https://www.youtube.com/watch?v=7omBDfSqGfA&list=PLtUBO1QNEKwtO_zSyLj-axPzc9O9rkmYa) ([俄文版](https://youtube.com/playlist?list=PLyDBPwv9EPsA5vcUM2vzjQOomf264IdUZ))
+- [Blueprint using on DoraHacks stream](https://www.youtube.com/watch?v=5ROXVM-Fojo)
+- [Create a new project](https://github.com/ton-org/blueprint#create-a-new-project)
+- [Develop a new smart contract](https://github.com/ton-org/blueprint#develop-a-new-contract)
+- [[YouTube] Func with Blueprint EN](https://www.youtube.com/watch?v=7omBDfSqGfA&list=PLtUBO1QNEKwtO_zSyLj-axPzc9O9rkmYa) ([RU version](https://youtube.com/playlist?list=PLyDBPwv9EPsA5vcUM2vzjQOomf264IdUZ))
 
-## 参阅
+## See also
 
-- [开发智能合约介绍](/develop/smart-contracts/)
-- [如何使用钱包智能合约工作](/develop/smart-contracts/tutorials/wallet)
-- [使用toncli](/develop/smart-contracts/sdk/toncli)
+- [Develop Smart Contract Introduction](/v3/documentation/smart-contracts/overview)
+- [How to work with wallet smart contracts](/v3/guidelines/smart-contracts/howto/wallet)
+- [SDKs](/v3/guidelines/dapps/apis-sdks/sdk)
+
+<Feedback />

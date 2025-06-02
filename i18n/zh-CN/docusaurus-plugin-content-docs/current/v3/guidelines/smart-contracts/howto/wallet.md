@@ -1,40 +1,41 @@
 ---
-description: 在本教程中，您将学习如何完全使用钱包、交易和智能合约进行工作。
+description: In this tutorial, you will learn how to fully work with wallets, messages and smart contracts.
 ---
 
-import Tabs from'@theme/Tabs';
-import TabItem from'@theme/TabItem';
+import Feedback from '@site/src/components/Feedback';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-# 使用钱包智能合约的工作
+# Working with wallet smart contracts
 
-## 👋 介绍
+## 👋 Introduction
 
-在开始智能合约开发之前，学习 TON 上的钱包和交易如何工作是必不可少的。这些知识将帮助开发者了解钱包、交易和智能合约之间的交互，以实现特定的开发任务。
+Learning how wallets and transactions work on TON before beginning smart contracts development is essential. This knowledge will help developers understand the interaction between wallets, messages, and smart contracts to implement specific development tasks.
 
 :::tip
-建议在阅读本教程之前先熟悉一下 [钱包合约类型](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts) 一文。
+Before starting this tutorial, we recommend reviewing the [Wallet contracts](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts) article.
 :::
 
-在本节中，我们将学习如何创建操作，而不使用预配置的函数，以了解开发工作流程。本教程的所有必要参考资料都位于参考章节。
+This section will teach us to create operations without using pre-configured functions to understand development workflows. The references chapter contains all the necessary references for analyzing this tutorial.
 
-## 💡 必要条件
+## 💡 Prerequisites
 
-本教程要求掌握 JavaScript 和 TypeScript 或 Golang 的基本知识。此外，还需要持有至少 3 TON（可以存储在交易所账户、非托管钱包或使用 Telegram 机器人钱包）。要理解本教程，需要对 [cell](/v3/concepts/dive-into-ton/ton-blockchain/cells-as-data-storage)、[address in TON](/v3/documentation/smart-contracts/addresses)、[blockchain of blockchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains)有基本了解。
+This tutorial requires basic knowledge of JavaScript and TypeScript or Golang. It is also necessary to hold at least 3 TON (which can be stored in an exchange account, a non-custodial wallet, or the Telegram bot wallet). It is necessary to have a basic understanding of [cell](/v3/concepts/dive-into-ton/ton-blockchain/cells-as-data-storage), [addresses in TON](/v3/documentation/smart-contracts/addresses), [blockchain of blockchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains) to understand this tutorial.
 
-:::info 主网开发至关重要
-在 TON 测试网上工作往往会导致部署错误、难以跟踪交易以及不稳定的网络功能。因此，完成大部分开发工作时间可能好处是建议在 TON Mainnet 上完成，以避免这些问题，这可能需要减少交易数量，从而可能减小费用。
+:::info MAINNET DEVELOPMENT IS ESSENTIAL\
+Working with the TON Testnet often leads to deployment errors, difficulty tracking transactions, and unstable network functionality. Completing most of the development on the TON Mainnet could help avoid potential issues. This may reduce the number of transactions and minimize fees.
 :::
 
-## 源代码
+## 💿 Source code
 
-本教程中使用的所有代码示例都可以在以下 [GitHub 存储库](https://github.com/aSpite/wallet-tutorial) 中找到。
+All code examples used in this tutorial can be found in the following [GitHub repository](https://github.com/aSpite/wallet-tutorial).
 
-## ✍️ 您开始所需的内容
+## ✍️ What you need to get started
 
-- 确保 NodeJS 已安装。
-- 需要特定的 Ton 库，包括：@ton/ton 13.5.1+、@ton/core 0.49.2+ 和 @ton/crypto 3.2.0+。
+- Ensure NodeJS is installed.
+- Specific Ton libraries are required and include: @ton/ton 13.5.1+, @ton/core 0.49.2+ and @ton/crypto 3.2.0+.
 
-\*\* 可选\*\*：如果您喜欢使用 Go 而不是 JS，则必须安装 [tonutils-go](https://github.com/xssnick/tonutils-go) 库和 GoLand IDE 才能在 TON 上进行开发。本教程将在 GO 版本中使用该库。
+**OPTIONAL**: If you prefer Go instead of JS, install the [tonutils-go](https://github.com/xssnick/tonutils-go) library and the GoLand IDE to develop on TON. This library will be used in this tutorial for the GO version.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -55,13 +56,13 @@ go get github.com/xssnick/tonutils-go/address
 </TabItem>
 </Tabs>
 
-## ⚙ 设置您的环境
+## ⚙ Set your environment
 
-为了创建一个 TypeScript 项目，必须按照以下步骤进行操作：
+To create a TypeScript project, you need to follow these steps in order:
 
-1. 创建一个空文件夹（我们将其命名为 WalletsTutorial）。
-2. 使用 CLI 打开项目文件夹。
-3. 使用以下命令来设置项目：
+1. Create an empty folder (which we’ll name WalletsTutorial).
+2. Open the project folder using the CLI.
+3. Use the following commands to set up your project:
 
 ```bash
 npm init -y
@@ -70,17 +71,44 @@ npx tsc --init --rootDir src --outDir build \ --esModuleInterop --target es2020 
 ```
 
 :::info
-为了帮助我们完成下一个流程，我们使用了 `ts-node` 来直接执行 TypeScript 代码，而无需预编译。当检测到目录中的文件更改时，`nodemon` 会自动重新启动节点应用程序。
+To help us carry out the following process, a `ts-node` executes TypeScript code directly without precompiling. `nodemon` restarts the node application automatically when file changes in the directory are detected.
+:::4) Next, remove these lines from `tsconfig.json`:```json
+  "files": [
+    "\\",
+    "\\"
+ ]
+```5) Then, create a `nodemon.json` config in your project root with the following content:```json
+{
+  "watch": ["src"],
+  "ext": ".ts,.js",
+  "ignore": [],
+  "exec": "npx ts-node ./src/index.ts"
+}
+```6) Add this script to `package.json` instead of "test", which is included when the project is created.```json
+"start:dev": "npx nodemon"
+```7) Create a `src` folder in the project root and an `index.ts` file in this folder.
+8) Next, the following code should be added:```ts
+async function main() {
+  console.log("Hello, TON!");
+}
+
+main().finally(() => console.log("Exiting..."));
+```9) Run the code using the terminal:```bash
+npm run start:dev
+```10) Finally, the console output will appear.![](/img/docs/how-to-wallet/wallet_1.png):::tip Blueprint
+The TON Community created an excellent tool for automating all development processes (deployment, contract writing, testing) called [Blueprint](https://github.com/ton-org/blueprint). However, we will not need such a powerful tool, so the instructions above should be followed.
 :::
+
+4. Next, remove these lines from `tsconfig.json`:
 
 ```json
   "files": [
     "\\",
     "\\"
-  ]
+ ]
 ```
 
-5. 然后，在项目根目录中创建 `nodemon.json` 配置文件，内容如下：
+5. Then, create a `nodemon.json` config in your project root with the following content:
 
 ```json
 {
@@ -91,14 +119,14 @@ npx tsc --init --rootDir src --outDir build \ --esModuleInterop --target es2020 
 }
 ```
 
-6. 在 `package.json` 中添加以下脚本到 "test" 脚本的位置：
+6. Add this script to `package.json` instead of "test", which is included when the project is created.
 
 ```json
 "start:dev": "npx nodemon"
 ```
 
-7. 在项目根目录中创建 `src` 文件夹，然后在该文件夹中创建 `index.ts` 文件。
-8. 接下来，添加以下代码：
+7. Create a `src` folder in the project root and an `index.ts` file in this folder.
+8. Next, the following code should be added:
 
 ```ts
 async function main() {
@@ -108,24 +136,24 @@ async function main() {
 main().finally(() => console.log("Exiting..."));
 ```
 
-9. 使用终端运行以下代码：
+9. Run the code using the terminal:
 
 ```bash
 npm run start:dev
 ```
 
-10. 最后，控制台将输出以下内容。
+10. Finally, the console output will appear.
 
 ![](/img/docs/how-to-wallet/wallet_1.png)
 
 :::tip Blueprint
-TON 社区创建了一个优秀的工具来自动化所有开发过程（部署、合约编写、测试）称为 [Blueprint](https://github.com/ton-org/blueprint)。然而，我们在本教程中不需要这么强大的工具，所以建议遵循上述说明。
+The TON Community created an excellent tool for automating all development processes (deployment, contract writing, testing) called [Blueprint](https://github.com/ton-org/blueprint). However, we will not need such a powerful tool, so the instructions above should be followed.
 :::
 
-**可选:** 当使用 Golang 时，请按照以下说明进行操作：
+**OPTIONAL:** When using Golang, follow these instructions:
 
-1. 安装 GoLand IDE。
-2. 使用以下内容创建项目文件夹和 `go.mod` 文件（如果使用的当前版本已过时，则可能需要更改 Go 版本）：
+1. Install the GoLand IDE.
+2. Create a project folder and a `go.mod` file with the following content. If the current version of Go is outdated, update it to the required version to proceed with this process:
 
 ```
 module main
@@ -133,123 +161,124 @@ module main
 go 1.20
 ```
 
-3. 在终端中输入以下命令：
+3. Type the following command into the terminal:
 
 ```bash
 go get github.com/xssnick/tonutils-go
 ```
 
-4. 在项目根目录中创建 `main.go` 文件，内容如下：
+4. Create the `main.go` file in the root of your project with the following content:
 
 ```go
 package main
 
 import (
-	"log"
+  "log"
 )
 
 func main() {
-	log.Println("Hello, TON!")
+  log.Println("Hello, TON!")
 }
 ```
 
-5. 将 `go.mod` 中的模块名称更改为 `main`。
-6. 运行上述代码，直到在终端中显示输出。
+5. Change the module's name in the `go.mod` to `main`.
+6. Run the code above until the output in the terminal is displayed.
 
 :::info
-也可以使用其他 IDE，因为 GoLand 不是免费的，但建议使用 GoLand。
+It is also possible to use another IDE since GoLand isn’t free, but it is preferred.
 :::
 
-:::warning 注意
+:::warning IMPORTANT
+Add all coding components to the `main` function created in the [⚙ Set your environment](/v3/guidelines/smart-contracts/howto/wallet#-set-your-environment) section.
 
-另外，下面的每个新部分将指定每个新部分所需的特定代码部分，并且需要将新的导入与旧导入合并起来。\
+Only the imports required for that specific code section are specified in each new section. Combine new imports with the existing ones as needed.
 :::
 
-## 🚀 让我们开始！
+## 🚀 Let's get started!
 
-我们的主要任务是使用 @ton/ton、@ton/core、@ton/crypto 的各种对象和函数构建交易，以了解大规模交易是怎样的。为了完成这个过程，我们将使用两个主要的钱包版本（v3 和 v4），因为交易所、非托管钱包和大多数用户仅使用这些特定版本。
+In this tutorial, we’ll learn which wallets (versions 3 and 4) are most often used on TON Blockchain and get acquainted with how their smart contracts work. This will allow developers to better understand the different message types on the TON platform to make it simpler to create messages, send them to the blockchain, deploy wallets, and eventually, be able to work with high-load wallets.
 
-我们的主要任务是使用 @ton/ton、@ton/core、@ton/crypto（ExternalMessage、InternalMessage、Signing 等）的各种对象和函数构建消息，以了解消息在更大范围内的样子。为了完成这一过程，我们将使用两个主要的钱包版本（v3 和 v4），因为事实上交易所、非托管钱包和大多数用户都只使用这些特定版本。
+Our main task is to build messages using various objects and functions for @ton/ton, @ton/core, and @ton/crypto (ExternalMessage, InternalMessage, Signing, etc.) to understand what messages look like on a bigger scale. To carry out this process, we'll use two main wallet versions (v3 and v4) because exchanges, non-custodial wallets, and most users only use these specific versions.
 
 :::note
-There may be occasions in this tutorial when there is no explanation for particular details. In these cases, more details will be provided in later stages of this tutorial.
+This tutorial may not explain particular details on occasion. In these cases, more details will be provided later.
 
-**重要:** 在本教程中，我们使用了 [wallet v3 代码](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/wallet3-code.fc) 来更好地理解钱包开发过程。需要注意的是，v3 版本有两个子版本：r1 和 r2。目前，只使用第二个版本，这意味着当我们在本文档中提到 v3 时，它指的是 v3r2。
+**IMPORTANT:** Throughout this tutorial, the [wallet v3 code](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/wallet3-code.fc) is used to understand the wallet development process better. Version v3 has two sub-versions: r1 and r2. Currently, only the second version is being used, which means that when we refer to v3 in this document, it implies v3r2.
 :::
 
-## 💎 TON 区块链钱包
+## 💎 TON blockchain wallets
 
-在 TON 区块链上运行的所有钱包实际上都是智能合约，与 TON 上的一切都是智能合约的方式相同。与大多数区块链一样，可以在网络上部署智能合约并根据不同的用途自定义它们。由于这个特性，**完全自定义的钱包是可能的**。
-在 TON 上，钱包智能合约帮助平台与其他智能合约类型进行通信。然而，重要的是要考虑钱包通信是如何进行的。
+All wallets operating on the TON Blockchain are smart contracts, and everything running on TON functions as a smart contract. Like most blockchains, TON allows users to deploy and customize smart contracts for various purposes, enabling full wallet customization.
+Wallet smart contracts on TON facilitate communication between the platform and other types of smart contracts. However, it’s essential to understand how wallet communication works.
 
-### 钱包通信
+### Wallet сommunication
 
-一般来说，TON区块链上有两种消息类型： `internal` 和  `external` 。外部消息允许从外部世界向区块链发送消息，从而允许与接受此类消息的智能合约进行通信。负责执行这一过程的功能如下：
+Generally, TON Blockchain has two message types: `internal` and `external`. External messages allow sending messages to the blockchain from the outside world, thus allowing communication with smart contracts that accept such messages. The function responsible for carrying out this process is as follows:
 
 ```func
 () recv_external(slice in_msg) impure {
-    ;; some code
+ ;; some code
 }
 ```
 
-在深入了解有关钱包的更多细节之前，我们先来看看钱包是如何接受外部信息的。在 TON 上，所有钱包都持有所有者的 "公钥 (public key)"、"序列号 (seqno)"和 "子钱包 ID (subwallet_id)"。收到外部信息时，钱包会使用 `get_data()` 方法从钱包的存储部分检索数据。然后，它会执行几个验证程序，并决定是否接受信息。这个过程如下：
+Before exploring wallets in more detail, let’s examine how wallets accept external messages. On TON, every wallet stores the owner’s `public key`, `seqno`, and `subwallet_id`. When a wallet receives an external message, it uses the `get_data()` method to retrieve data from its storage. The wallet then performs several verification checks to determine whether to accept the message. This process works as follows:
 
 ```func
 () recv_external(slice in_msg) impure {
-  var signature = in_msg~load_bits(512); ;; get signature from the message body
-  var cs = in_msg;
-  var (subwallet_id, valid_until, msg_seqno) = (cs~load_uint(32), cs~load_uint(32), cs~load_uint(32));  ;; get rest values from the message body
-  throw_if(35, valid_until <= now()); ;; check the relevance of the message
-  var ds = get_data().begin_parse(); ;; get data from storage and convert it into a slice to be able to read values
-  var (stored_seqno, stored_subwallet, public_key) = (ds~load_uint(32), ds~load_uint(32), ds~load_uint(256)); ;; read values from storage
-  ds.end_parse(); ;; make sure we do not have anything in ds variable
-  throw_unless(33, msg_seqno == stored_seqno);
-  throw_unless(34, subwallet_id == stored_subwallet);
-  throw_unless(35, check_signature(slice_hash(in_msg), signature, public_key));
-  accept_message();
+ var signature = in_msg~load_bits(512); ;; get signature from the message body
+ var cs = in_msg;
+ var (subwallet_id, valid_until, msg_seqno) = (cs~load_uint(32), cs~load_uint(32), cs~load_uint(32));  ;; get rest values from the message body
+ throw_if(35, valid_until <= now()); ;; check the relevance of the message
+ var ds = get_data().begin_parse(); ;; get data from storage and convert it into a slice to be able to read values
+ var (stored_seqno, stored_subwallet, public_key) = (ds~load_uint(32), ds~load_uint(32), ds~load_uint(256)); ;; read values from storage
+ ds.end_parse(); ;; make sure we do not have anything in ds variable
+ throw_unless(33, msg_seqno == stored_seqno);
+ throw_unless(34, subwallet_id == stored_subwallet);
+ throw_unless(35, check_signature(slice_hash(in_msg), signature, public_key));
+ accept_message();
 ```
 
-> 💡 有用的链接:
+> 💡 Useful links:
 >
-> [文档中的"load_bits()"](/v3/documentation/smart-contracts/func/docs/stdlib/#load_bits)
+> ["load_bits()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#load_bits)
 >
-> [文档中的"get_data()"](/v3/documentation/smart-contracts/func/docs/stdlib/#load_bits)
+> ["get_data()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#load_bits)
 >
-> [文档中的"begin_parse()"](/v3/documentation/smart-contracts/func/docs/stdlib/#load_bits)
+> ["begin_parse()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#load_bits)
 >
-> [文档中的"end_parse()"](/v3/documentation/smart-contracts/func/docs/stdlib/#end_parse)
+> ["end_parse()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#end_parse)
 >
-> [文档中的"load_int()"](/v3/documentation/smart-contracts/func/docs/stdlib/#load_int)
+> ["load_int()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#load_int)
 >
-> [文档中的"load_uint()"](/v3/documentation/smart-contracts/func/docs/stdlib/#load_int)
+> ["load_uint()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#load_int)
 >
-> [文档中的"check_signature()"](/v3/documentation/smart-contracts/func/docs/stdlib/#check_signature)
+> ["check_signature()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#check_signature)
 >
-> [文档中的"slice_hash()"](/v3/documentation/smart-contracts/func/docs/stdlib/#slice_hash)
+> ["slice_hash()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#slice_hash)
 >
-> [文档中的"accept_message()"](/v3/documentation/smart-contracts/transaction-fees/accept-message-effects)
+> ["accept_message()" in docs](/v3/documentation/smart-contracts/transaction-fees/accept-message-effects)
 
-接下来，我们来详细看一下。
+Now, let’s take a closer look.
 
-### 重放保护 - Seqno
+### Replay protection - seqno
 
-钱包智能合约中的消息重放保护与消息序列号（seqno，Sequence Number）直接相关，该序列号可追踪消息的发送顺序。钱包中的单条信息不能重复发送，这一点非常重要，因为这会完全破坏系统的完整性。如果我们进一步检查钱包内的智能合约代码，`seqno` 通常会按以下方式处理：
+Message replay protection in the wallet smart contract relies on the `seqno` (Sequence Number), which tracks the order of sent messages. Preventing message repetition is critical, as duplicate messages can compromise the system’s integrity. When analyzing wallet smart contract code, the `seqno` is typically managed as follows:
 
 ```func
 throw_unless(33, msg_seqno == stored_seqno);
 ```
 
-上面这行代码检查消息中的 `seqno` 并与存储在智能合约中的 `seqno` 进行核对。如果两者不匹配，合约就会返回一个带有 `33 exit code` 的错误。因此，如果发送者传递了无效的 seqno，这意味着他在信息序列中犯了某些错误，而合约可以防止这种情况发生。
+The code above compares the `seqno` from the incoming message with the `seqno` stored in the smart contract. If the values do not match, the contract returns an error with the `33 exit code`. This ensures that if the sender provides an invalid `seqno`, indicating a mistake in the message sequence, the contract prevents further processing and safeguards against such errors.
 
 :::note
-还需要确认外部消息可以由任何人发送。这意味着如果您向某人发送 1 TON，其他人也可以重复该消息。但是，当 seqno 增加时，以前的外部消息失效，并且没有人可以重复该消息，从而防止窃取您的资金。
+It's also essential to consider that anyone can send external messages. If you send 1 TON to someone, someone else can repeat this message. However, when the seqno increases, the previous external message becomes invalid, and no one will be able to repeat it, thus preventing the possibility of stealing your funds.
 :::
 
-### 签名
+### Signature
 
-要执行此过程，首先钱包需要从传入消息中获取签名，从存储中加载公钥，并使用以下过程验证签名：
+As mentioned earlier, wallet smart contracts accept external messages. However, since these messages originate from the outside world, their data cannot be fully trusted. Therefore, each wallet stores the owner's public key. When the wallet receives an external message signed with the owner’s private key, the smart contract uses the public key to verify the message’s signature. This ensures the message genuinely comes from the contract owner.
 
-要执行此过程，首先钱包需要从传入消息中获取签名，从存储中加载公钥，并使用以下过程验证签名：
+The wallet first extracts the signature from the incoming message to perform this verification. It then loads the public key from storage and validates the signature using the following process:
 
 ```func
 var signature = in_msg~load_bits(512);
@@ -258,138 +287,138 @@ var (stored_seqno, stored_subwallet, public_key) = (ds~load_uint(32), ds~load_ui
 throw_unless(35, check_signature(slice_hash(in_msg), signature, public_key));
 ```
 
-如果所有验证流程都顺利完成，智能合约接受消息并对其进行处理：
+If all verification steps succeed, the smart contract accepts and processes the message:
 
 ```func
 accept_message();
 ```
 
 :::info accept_message()
-由于消息来自外部世界，它不包含支付交易费用所需的 Toncoin。在使用 accept_message() 函数发送 TON 时，应用gas_credit（在写入时其值为10,000 gas单位），并且只要gas不超过 gas_credit 值，就允许免费进行必要的计算。使用 accept_message() 函数后，从智能合约的账户余额中收取所有已花费的gas（以 TON 计）。可以在[此处](/v3/documentation/smart-contracts/transaction-fees/accept-message-effects)了解有关此过程的更多信息。
+Since external messages do not include the Toncoin required to pay transaction fees, the `accept_message()` function applies a `gas_credit` (currently valued at 10,000 gas units). This allows the contract to perform necessary calculations for free, provided the gas usage does not exceed the `gas_credit` limit. After invoking `accept_message()`, the smart contract deducts all gas costs (in TON) from its balance. You can read more about this process [here](/v3/documentation/smart-contracts/transaction-fees/accept-message-effects).
 :::
 
-### 交易过期
+### Transaction expiration
 
-用于检查外部报文有效性的另一个步骤是 `valid_until` 字段。从变量名可以看出，在 UNIX 中，这是报文生效前的时间。如果验证过程失败，合约将完成事务处理，并返回如下的 35 退出码：
+Another step used to check the validity of external messages is the `valid_until` field. As you can see from the variable name, this is the time in UNIX before the message is valid. If this verification process fails, the contract completes the processing of the transaction and returns the 35 exit code as follows:
 
 ```func
 var (subwallet_id, valid_until, msg_seqno) = (cs~load_uint(32), cs~load_uint(32), cs~load_uint(32));
 throw_if(35, valid_until <= now());
 ```
 
-当信息不再有效，但由于不明原因仍被发送到区块链上时，这种算法可以防止出现各种错误。
+This algorithm safeguards against potential errors, such as when a message is no longer valid but is still sent to the blockchain for an unknown reason.
 
-### 钱包 v3 和钱包 v4 的区别
+### Wallet v3 and wallet v4 differences
 
-钱包 v3 和钱包 v4 之间的唯一区别是钱包 v4 使用可以安装和删除的 `插件`。插件是特殊的智能合约，可以从钱包智能合约请求在特定时间从指定数量的 TON 中。钱包智能合约将相应地发送所需数量的 TON，而无需所有者参与。这类似于为插件创建的 **订阅模型**。我们不会在本教程中详细介绍这些细节，因为这超出了本教程的范围。
+The key difference between wallet v3 and wallet v4 lies in wallet v4’s support for `plugins`. Users can install or delete these plugins, which are specialized smart contracts capable of requesting a specific amount of TON from the wallet smart contract at a designated time.
 
-正如我们之前讨论的那样，钱包智能合约接受外部交易，验证它们，如果通过了所有检查，则接受它们。然后，合约开始从外部消息的主体中检索消息，然后创建内部消息并将其发送到区块链，如下所示：
+Wallet smart contracts automatically send the required amount of TON in response to plugin requests without requiring the owner’s involvement. This functionality mirrors a **subscription model**, which is the primary purpose of plugins. We won’t delve into these details further as they fall outside the scope of this tutorial.
 
-### 钱包如何促进与智能合约的通信
+### How wallets facilitate communication with smart contracts
 
-正如我们前面所讨论的，钱包智能合约会接受外部信息，对其进行验证，并在所有检查都通过的情况下接受它们。然后，合约开始从外部信息正文中检索信息的循环，然后创建内部信息并将其发送到区块链，如下所示：
+As mentioned, a wallet smart contract accepts external messages, validates them, and processes them if all checks pass. Once the contract accepts a message, it begins a loop to extract messages from the body of the external message, creates internal messages, and sends them to the blockchain as shown below:
 
 ```func
 cs~touch();
 while (cs.slice_refs()) {
-    var mode = cs~load_uint(8); ;; load message mode
-    send_raw_message(cs~load_ref(), mode); ;; get each new internal message as a cell with the help of load_ref() and send it
+ var mode = cs~load_uint(8); ;; load message mode
+ send_raw_message(cs~load_ref(), mode); ;; get each new internal message as a cell with the help of load_ref() and send it
 }
 ```
 
 :::tip touch()
-在 TON 上，所有智能合约都在基于堆栈的 TON 虚拟机（TVM）上运行。~ touch() 将变量 `cs` 放在栈顶，以优化代码运行，减少 gas 。
+On TON, all smart contracts run on the stack-based TON Virtual Machine (TVM). ~ touch() places the variable `cs` on top of the stack to optimize code running for less gas.
 :::
 
-由于一个 cell 中 **最多可存储 4 个引用**，因此每个外部信息最多可发送 4 个内部信息。
+Since a single cell can store **a maximum of 4 references**, we can send up to 4 internal messages per external message.
 
 > 💡 Useful links:
 >
-> [文档中的 "slice_refs()"](/v3/documentation/smart-contracts/func/docs/stdlib/#slice_refs)
+> ["slice_refs()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#slice_refs)
 >
-> [文档中的 "send_raw_message() 和消息模式"](/v3/documentation/smart-contracts/func/docs/stdlib/#send_raw_message)
+> ["send_raw_message() and message modes" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#send_raw_message)
 >
-> [文档中的 "load_ref()"](/v3/documentation/smart-contracts/func/docs/stdlib/#load_ref)
+> ["load_ref()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#load_ref)
 
-## 📬 外部和内部信息
+## 📬 External and internal messages
 
-在本节中，我们将进一步了解  `internal` 和  `external` 消息，并创建消息和将其发送到网络，以尽量减少使用预制函数。
+This section will explore `internal` and `external` messages in more detail. We’ll create and send these messages to the network, minimizing reliance on pre-built functions.
 
-这样，Tonkeeper 钱包应用程序将部署钱包合约，我们可以在以下步骤中使用它。
+To simplify this process, we’ll use a pre-built wallet. Here’s how to proceed:
 
-1. 安装 [钱包应用程序](/v3/concepts/dive-into-ton/ton-ecosystem/wallet-apps) （例如，作者使用的是 Tonkeeper）
-2. 将钱包应用程序切换到 v3r2 地址版本
-3. 向钱包存入 1  TON
-4. 将信息发送到另一个地址（可以发送给自己，发送到同一个钱包）。
+1. Install the [wallet app](/v3/concepts/dive-into-ton/ton-ecosystem/wallet-apps) (e.g., Tonkeeper is used by the author)
+2. Switch the wallet app to v3r2 address version
+3. Deposit 1 TON into the wallet
+4. Send the message to another address (you can send it to yourself, to the same wallet).
 
-这样，Tonkeeper 钱包应用程序就会部署钱包合约，我们就可以在下面的步骤中使用它了。
+This way, the Tonkeeper wallet app will deploy the wallet contract, which we can use for the following steps.
 
 :::note
-在编写本教程时，TON 上的大多数钱包应用程序默认使用钱包 v4 版本。本教程不需要插件，我们将使用钱包 v3 提供的功能。在使用过程中，Tonkeeper 允许用户选择所需的钱包版本。因此，建议部署钱包版本 3（钱包 v3）。
+At the time of writing, most wallet apps on TON default to wallet v4. However, since plugins are not required for this tutorial, we’ll use the functionality provided by wallet v3. Tonkeeper allows users to select their preferred wallet version, so it’s recommended to deploy wallet v3.
 :::
 
 ### TL-B
 
-在本节中，我们将详细研究 [block.tlb](https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb)。在将来的开发中，此文件将非常有用，因为它描述了不同cell的组装方式。在我们的情况下，它详细描述了内部和外部交易的复杂性。
+As mentioned earlier, everything in the TON Blockchain is a smart contract composed of cells. Standards are essential to ensure proper serialization and deserialization of data. For this purpose, `TL-B` was developed as a universal tool to describe various data types, structures, and sequences within cells.
 
-在本节中，我们将研究 [block.tlb](https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb)。该文件将在未来的开发过程中非常有用，因为它描述了不同 cell 应如何组装。具体到我们的例子，它详细说明了内部和外部信息的复杂性。
+This section will explore [block.tlb](https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb). This file will be invaluable for future development as it outlines how to assemble different types of cells. Specifically for our purposes, it provides detailed information about the structure and behavior of internal and external messages.
 
 :::info
-本指南将提供基本信息。如需了解更多详情，请参阅我们的 TL-B [文档](/v3/documentation/data-formats/tlb/tl-b-language)，了解有关 TL-B 的更多信息。
+This guide provides basic information. For further details, please refer to our TL-B [documentation](/v3/documentation/data-formats/tlb/tl-b-language) to learn more about TL-B.
 :::
 
 ### CommonMsgInfo
 
-您可以从 [TL-B](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L127-L128) 中看到，**仅在与 ext_in_msg_info 类型一起使用时才可以使用 CommonMsgInfo**。因为交易类型字段，如 `src`、`created_lt`、`created_at` 等，由验证者在交易处理期间进行重写。在这种情况下，`src` 交易类型最重要，因为当发送交易时，发送者是未知的，验证者在验证期间对其在 `src` 字段中的地址进行重写。这样确保 `src` 字段中的地址是正确的，并且不能被操纵。
+Initially, each message must first store `CommonMsgInfo` ([TL-B](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L123-L130)) or `CommonMsgInfoRelaxed` ([TL-B](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L132-L137)). This allows us to define technical details that relate to the message type, message time, recipient address, technical flags, and fees.
 
-但是，`CommonMsgInfo` 结构仅支持 `MsgAddress` 规格，但通常情况下发送方的地址是未知的，并且需要写入 `addr_none`（两个零位 `00`）。在这种情况下，使用 `CommonMsgInfoRelaxed` 结构，该结构支持 `addr_none` 地址。对于 `ext_in_msg_info`（用于传入的外部消息），使用 `CommonMsgInfo` 结构，因为这些消息类型不使用sender，始终使用 [MsgAddressExt](https://hub.com/ton/ton.blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L100) 结构（`addr_none$00` 表示两个零位），因此无需覆盖数据。
+By reading the `block.tlb` file, we can notice three types of CommonMsgInfo: `int_msg_info$0`, `ext_in_msg_info$10`, `ext_out_msg_info$11`. We will not go into specific details detailing the specificities of the `ext_out_msg_info` TL-B structure. That said, it is an external message type that a smart contract can send to use as an external log. For examples of this format, consider having a closer look at the [Elector](https://tonscan.org/address/Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF) contract.
 
-[查看 TL-B](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L127-L128)，您会注意到**当与 ext_in_msg_info 类型**一起使用时，只有 CommonMsgInfo 可用。这是因为诸如 `src`、`created_lt`、`created_at` 等消息字段会在事务处理过程中被验证器重写。在这种情况下，消息中的 `src` 字段最为重要，因为在发送消息时，发件人是未知的，验证程序在验证时会写入该字段。这样可以确保 `src` 字段中的地址是正确的，不会被篡改。
+When examining [TL-B](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L127-L128), you’ll notice that **only `CommonMsgInfo` is available when using the `ext_in_msg_info` type**. It is because fields like `src`, `created_lt`, `created_at`, and others are overwritten by validators during transaction processing. Among these, the `src` field is particularly important. Since the sender’s address is unknown when the message is sent, validators populate this field during verification. This ensures the `src` address is accurate and cannot be tampered with.
 
-但是，`CommonMsgInfo` 结构只支持 `MsgAddress` 规格，但发件人地址通常是未知的，因此需要写入 "addr_none"（两个零位 "00"）。在这种情况下，使用支持 `addr_none` 地址的 `CommonMsgInfoRelaxed` 结构。对于 `ext_in_msg_info`（用于传入的外部报文），则使用 `CommonMsgInfo` 结构，因为这些消息类型不使用 sender，始终使用[MsgAddressExt](https://hub.com/ton/ton.blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L100) 结构（`addr_none$00` 表示两个零位），这意味着无需覆盖数据。
+However, the `CommonMsgInfo` structure only supports the `MsgAddress` specification. Since the sender’s address is typically unknown, it’s necessary to use `addr_none` (represented by two zero bits `00`). The `CommonMsgInfoRelaxed` structure is used in such cases, as it supports the `addr_none` address. For `ext_in_msg_info` (used for incoming external messages), the `CommonMsgInfo` structure is sufficient because these messages don’t require a sender and always use the [MsgAddressExt](https://hub.com/ton/ton.blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L100) structure (represented by `addr_none$00`, meaning two zero bits). This eliminates the need to overwrite the data.
 
 :::note
-`$`符号后面的数字是在某个结构的开始处所要求存储的位，以便在读取时（反序列化）可进一步识别这些结构。
+The numbers after the `$` symbol are the bits that must be stored at the beginning of a specific structure for further identification of these structures during reading (deserialization).
 :::
 
-### 创建内部信息
+### Internal message creation
 
-让我们首先考虑 `0x18` 和 `0x10`（x - 16 进制），这些十六进制数是按以下方式排列的（考虑到我们分配了 6 个位）：`011000` 和 `010000`。这意味着，可以将上述代码重写为以下内容：
-
-```func
-var msg = begin_cell()
-  .store_uint(0x18, 6) ;; or 0x10 for non-bounce
-  .store_slice(to_address)
-  .store_coins(amount)
-  .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1) ;; default message headers (see sending messages page)
-  ;; store something as a body
-```
-
-现在我们来详细解释每个选项：
+Internal messages facilitate communication between contracts. When examining various contract types, such as [NFTs](https://github.com/ton-blockchain/token-contract/blob/f2253cb0f0e1ae0974d7dc0cef3a62cb6e19f806/nft/nft-item.fc#L51-L56) and [Jettons](https://github.com/ton-blockchain/token-contract/blob/f2253cb0f0e1ae0974d7dc0cef3a62cb6e19f806/ft/jetton-wallet.fc#L139-L144), you’ll often encounter the following lines of code, which are commonly used when writing contracts that send messages:
 
 ```func
 var msg = begin_cell()
-  .store_uint(0, 1) ;; this bit indicates that we send an internal message according to int_msg_info$0  
-  .store_uint(1, 1) ;; IHR Disabled
-  .store_uint(1, 1) ;; or .store_uint(0, 1) for 0x10 | bounce
-  .store_uint(0, 1) ;; bounced
-  .store_uint(0, 2) ;; src -> two zero bits for addr_none
-  .store_slice(to_address)
-  .store_coins(amount)
-  .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1) ;; default message headers (see sending messages page)
-  ;; store something as a body
+ .store_uint(0x18, 6) ;; or 0x10 for non-bounce
+ .store_slice(to_address)
+ .store_coins(amount)
+ .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1) ;; default message headers (see sending messages page)
+ ;; store something as a body
 ```
 
-现在，让我们详细了解每个选项：
+Let’s examine `0x18` and `0x10` (where `x` denotes hexadecimal). These numbers can be represented in binary as `011000` and `010000`, assuming we allocate 6 bits. This means the code above can be rewritten as follows:
 
-|      选项      |                                                                                                                                           说明                                                                                                                                           |
-| :----------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| IHR Disabled | 目前，由于即时超立方路由（Instant Hypercube Routing）尚未完全实现，因此该选项被禁用（即存储 1）。此外，当网络上有大量 [Shardchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#many-accountchains-shards) 时，也需要使用该选项。有关禁用 IHR 选项的更多信息，请参阅 [tblkch.pdf](https://ton.org/tblkch.pdf)（第 2 章）。 |
-|    Bounce    |                              在发送信息时，智能合约处理过程中可能会出现各种错误。为避免损失 TON，有必要将 Bounce 选项设置为 1（true）。在这种情况下，如果在交易处理过程中出现任何合约错误，信息将被退回给发送方，同时会收到扣除费用后的相同数量的 TON。关于不可反弹报文的更多信息，请参阅 [此处](/v3/documentation/smart-contracts/message-management/non-bounceable-messages)。                             |
-|    Bounced   |                                                                                                                   退回信息是指由于智能合约处理交易时发生错误而退回给发件人的信息。该选项会告诉你收到的信息是否被退回。                                                                                                                   |
-|      Src     |                                                                                                                     Src 是发件人地址。在这种情况下，会写入两个 0 位来表示 `addr_none` 地址。                                                                                                                     |
+```func
+var msg = begin_cell()
+ .store_uint(0, 1) ;; this bit indicates that we send an internal message according to int_msg_info$0
+ .store_uint(1, 1) ;; IHR Disabled
+ .store_uint(1, 1) ;; or .store_uint(0, 1) for 0x10 | bounce
+ .store_uint(0, 1) ;; bounced
+ .store_uint(0, 2) ;; src -> two zero bits for addr_none
+ .store_slice(to_address)
+ .store_coins(amount)
+ .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1) ;; default message headers (see sending messages page)
+ ;; store something as a body
+```
 
-最后，我们来看剩下的代码行：
+Now, let’s go through each option in detail:
+
+|    Option    |                                                                                                                                                                                                                                                                              Explanation                                                                                                                                                                                                                                                                              |
+| :----------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| IHR Disabled |       Currently, this option is disabled (meaning we store `1`) because Instant Hypercube Routing (IHR) is not yet fully implemented. This option will become relevant once many [Shardchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#many-accountchains-shards) are active on the network. For more details about the IHR Disabled option, refer to [tblkch.pdf](https://ton.org/tblkch.pdf) (chapter 2).      |
+|    Bounce    | When sending messages, errors can occur during smart contract processing. Setting the `Bounce` option to `1` (true) is essential to prevent TON loss. If any errors arise during transaction processing, the message will be returned to the sender, and the same amount of TON (minus fees) will be refunded. Refer to [this guide](/v3/documentation/smart-contracts/message-management/non-bounceable-messages) for more details on non-bounceable messages. |
+|    Bounced   |                                                                                                                                                                      Bounced messages are those returned to the sender due to an error during transaction processing with a smart contract. This option indicates whether the received message is bounced or not.                                                                                                                                                                     |
+|      Src     |                                                                                                                                                                                                                     The Src is the sender's address. In this case, two zero bits indicate the `addr_none` address.                                                                                                                                                                                                                    |
+
+The following two lines of code:
 
 ```func
 ...
@@ -398,46 +427,45 @@ var msg = begin_cell()
 ...
 ```
 
-- 我们指定收件人和要发送的 TON 数。
+- we specify the recipient and the number of TON to be sent.
 
-上述值（包括 Src）具有以下特征，但不包括 State Init 和 Message Body 位，由验证者重写。
+Finally, let’s look at the remaining lines of code:
 
 ```func
 ...
-  .store_uint(0, 1) ;; Extra currency
-  .store_uint(0, 4) ;; IHR fee
-  .store_uint(0, 4) ;; Forwarding fee
-  .store_uint(0, 64) ;; Logical time of creation
-  .store_uint(0, 32) ;; UNIX time of creation
-  .store_uint(0, 1) ;; State Init
-  .store_uint(0, 1) ;; Message body
-  ;; store something as a body
+ .store_uint(0, 1) ;; Extra currency
+ .store_uint(0, 4) ;; IHR fee
+ .store_uint(0, 4) ;; Forwarding fee
+ .store_uint(0, 64) ;; Logical time of creation
+ .store_uint(0, 32) ;; UNIX time of creation
+ .store_uint(0, 1) ;; State Init
+ .store_uint(0, 1) ;; Message body
+ ;; store something as a body
 ```
 
-|            选项            |                                                                       说明                                                                      |
-| :----------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------: |
-|      Extra currency      |                                                           这是现有 jetton 的本机实现，目前尚未使用。                                                           |
-|          IHR fee         | 如前所述，目前 IHR 尚未启用，因此该费用始终为零。您可以在 [tblkch.pdf](https://ton.org/tblkch.pdf)（第 3.1.8 节）中了解更多相关信息。 |
-|      Forwarding fee      |                转发信息费用。更多信息请参阅[费用文档](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#transactions-and-phases)。               |
-| Logical time of creation |                                                                 用于创建正确信息队列的时间。                                                                |
-|   UNIX time of creation  |                                                                信息在 UNIX 中创建的时间。                                                               |
-|        State Init        |               部署智能合约的代码和源代码。如果该位被设置为 `0`，则表示我们没有 State Init。但如果该位被设置为 `1`，则需要写入另一位，该位表示 State Init 是存储在同一 cell 中（0）还是作为引用写入（1）。               |
-|       Message body       |                   这部分定义了如何存储报文正文。有时，信息正文太大，无法放入信息本身。在这种情况下，应将其存储为 **引用**，将该位设置为 `1` ，表示正文被用作引用。如果该位为 `0`，则正文与信息存放在同一 cell 中。                  |
+|          Option          |                                                                                                                                                                                        Explanation                                                                                                                                                                                       |
+| :----------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|      Extra currency      |                                                                                                                                             This is a native implementation of existing jettons and is not currently in use.                                                                                                                                             |
+|          IHR fee         |                                                             As mentioned, IHR is not currently used, so this fee is always zero. For more information, refer to [tblkch.pdf](https://ton.org/tblkch.pdf) (section 3.1.8).                                                             |
+|      Forwarding fee      |                                                                                         A forwarding message fee. For more information, refer to [fees documentation](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#transactions-and-phases).                                                                                        |
+| Logical time of creation |                                                                                                                                                            The time used to create the correct messages queue.                                                                                                                                                           |
+|   UNIX time of creation  |                                                                                                                                                                 The time the message was created in UNIX.                                                                                                                                                                |
+|        State Init        |             The code and source data for deploying a smart contract. If the bit is set to `0`, there is no State Init. However, if it’s set to `1`, an additional bit is required to indicate whether the State Init is stored in the same cell (`0`) or written as a reference (`1`).             |
+|       Message body       | This section determines how the message body is stored. If the message body is too large to fit directly into the message, it is stored as a **reference**. In this case, the bit is set to `1` to indicate that the body is stored as a reference. If the bit is `0`, the body resides in the same cell as the message. |
 
-接下来，我们将开始准备一个交易，该交易将向另一个钱包 v3 发送 Toncoins。首先，假设用户想要向自己发送 0.5 TON，并附带文本“**你好，TON！**”，请参阅本文档的这一部分来了解[如何发送带有评论的消息](/develop/func/cookbook#how-to-send-a-simple-message)。
+Validators rewrite the above values (including src), excluding the State Init and the Message Body bits.
 
 :::note
-如果数字值适合的比特数少于指定的比特数，那么缺失的零将被添加到数值的左边。例如，0x18 适合 5 位 -> `11000`。但是，由于指定的是 6 位，最终结果就变成了 `011000`。
+If the number value fits within fewer bits than is specified, then the missing zeros are added to the left side of the value. For example, 0x18 fits within 5 bits -> `11000`. However, since 6 bits were specified, the result becomes `011000`.
 :::
 
-接下来，我们开始准备一条消息，将 Toncoin 发送到另一个钱包 v3。
-首先，假设用户想给自己发送 0.5 TON，并附上文字  "**Hello, TON!**"，请参考我们文档中的这部分内容（[如何发送带注释的消息](/v3/documentation/smart-contracts/func/cookbook#how-to-send-a-simple-message)）。
+Next, we’ll prepare a message to send Toncoins to another wallet v3. For example, let’s say a user wants to send 0.5 TON to themselves with the comment "**Hello, TON!**". To learn how to send a message with a comment, refer to this documentation section: [How to send a simple message](/v3/documentation/smart-contracts/func/cookbook#how-to-send-a-simple-message).
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { beginCell } from '@ton/core';
+import { beginCell } from "@ton/core";
 
 let internalMessageBody = beginCell()
   .storeUint(0, 32) // write 32 zero bits to indicate that a text comment will follow
@@ -450,7 +478,7 @@ let internalMessageBody = beginCell()
 
 ```go
 import (
-	"github.com/xssnick/tonutils-go/tvm/cell"
+  "github.com/xssnick/tonutils-go/tvm/cell"
 )
 
 internalMessageBody := cell.BeginCell().
@@ -462,17 +490,17 @@ internalMessageBody := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-上面我们创建了一个 `InternalMessageBody`（内部消息体），消息的正文就存储在其中。请注意，当存储的文本不适合单个 cell （1023 位）时，有必要**根据 [以下文档](/v3/documentation/smart-contracts/message-management/internal-messages) 将数据分割成多个 cell**。不过，在这种情况下，高级库会根据要求创建 cell ，因此现阶段无需担心这个问题。
+Above, we created an `InternalMessageBody` to store the body of our message. Note that if the text exceeds the capacity of a single Cell (1023 bits), it’s necessary to **split the data into multiple cells**, as outlined in [this documentation](/v3/documentation/smart-contracts/message-management/internal-messages). However, high-level libraries handle cell creation according to the requirements in this case, so there’s no need to worry about it at this stage.
 
-接下来，我们将根据之前研究的信息创建 `内部消息`（InternalMessage），具体如下：
+Next, the `InternalMessage` is created according to the information we have studied earlier as follows:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { toNano, Address } from '@ton/ton';
+import { toNano, Address } from "@ton/ton";
 
-const walletAddress = Address.parse('put your wallet address');
+const walletAddress = Address.parse("put your wallet address");
 
 let internalMessage = beginCell()
   .storeUint(0, 1) // indicate that it is an internal message -> int_msg_info$0
@@ -526,28 +554,28 @@ internalMessage := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-### 创建信息
+### Creating a message
 
-有必要检索我们钱包智能合约的 `seqno`（序列号）。为此，需要创建一个 `Client`，用来发送请求，运行钱包的获取方法 `seqno`。此外，还需要添加一个种子短语（在创建钱包 [此处](#--external-and-internal-messages) 时保存），以便通过以下步骤签署我们的信息：
+We must create a `client` to retrieve our wallet smart contract's `seqno` (sequence number). This client will send a request to execute the Get method `seqno` on our wallet. Additionally, we must include the seed phrase (saved during wallet creation [here](#--external-and-internal-messages)) to sign our message. Follow these steps to proceed:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { TonClient } from '@ton/ton';
-import { mnemonicToWalletKey } from '@ton/crypto';
+import { TonClient } from "@ton/ton";
+import { mnemonicToWalletKey } from "@ton/crypto";
 
 const client = new TonClient({
   endpoint: "https://toncenter.com/api/v2/jsonRPC", // you can replace it on https://testnet.toncenter.com/api/v2/jsonRPC for testnet
-  apiKey: "put your api key" // you can get an api key from @tonapibot bot in Telegram
+  apiKey: "put your api key", // you can get an api key from @tonapibot bot in Telegram
 });
 
-const mnemonic = 'put your mnemonic'; // word1 word2 word3
+const mnemonic = "put your mnemonic"; // word1 word2 word3
 let getMethodResult = await client.runMethod(walletAddress, "seqno"); // run "seqno" GET method from your wallet contract
 let seqno = getMethodResult.stack.readNumber(); // get seqno from response
 
-const mnemonicArray = mnemonic.split(' '); // get array from string
-const keyPair = await mnemonicToWalletKey(mnemonicArray); // get Secret and Public keys from mnemonic 
+const mnemonicArray = mnemonic.split(" "); // get array from string
+const keyPair = await mnemonicToWalletKey(mnemonicArray); // get Secret and Public keys from mnemonic
 ```
 
 </TabItem>
@@ -576,7 +604,7 @@ if err != nil {
 }
 client := ton.NewAPIClient(connection) // create client
 
-block, err := client.CurrentMasterchainInfo(context.Background()) // get current block, we will need it in requests to LiteServer
+block, err := client.CurrentMasterchainInfo(context.Background()) // get the current block, we will need it in requests to LiteServer
 if err != nil {
   log.Fatalln("CurrentMasterchainInfo err:", err.Error())
   return
@@ -592,7 +620,7 @@ seqno := getMethodResult.MustInt(0) // get seqno from response
 // The next three lines will extract the private key using the mnemonic phrase. We will not go into cryptographic details. With the tonutils-go library, this is all implemented, but we’re doing it again to get a full understanding.
 mac := hmac.New(sha512.New, []byte(strings.Join(mnemonic, " ")))
 hash := mac.Sum(nil)
-k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries "TON default seed" is used as salt when getting keys
+k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries, "TON default seed" is used as salt when getting keys
 
 privateKey := ed25519.NewKeyFromSeed(k)
 ```
@@ -600,13 +628,13 @@ privateKey := ed25519.NewKeyFromSeed(k)
 </TabItem>
 </Tabs>
 
-因此，需要发送 `seqno`、`keys` 和 `internal message`。现在，我们需要为钱包创建一个 [消息](/v3/documentation/smart-contracts/message-management/sending-messages)，并按照教程开头使用的序列将数据存储在该消息中。具体步骤如下
+To proceed, we must send the `seqno`, `keys`, and `internal message`. Next, we’ll create a [message](/v3/documentation/smart-contracts/message-management/sending-messages) for our wallet and store the data in the sequence outlined at the beginning of the tutorial. This is achieved as follows:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { sign } from '@ton/crypto';
+import { sign } from "@ton/crypto";
 
 let toSign = beginCell()
   .storeUint(698983191, 32) // subwallet_id | We consider this further
@@ -615,7 +643,7 @@ let toSign = beginCell()
   .storeUint(3, 8) // store mode of our internal message
   .storeRef(internalMessage); // store our internalMessage as a reference
 
-let signature = sign(toSign.endCell().hash(), keyPair.secretKey); // get the hash of our message to wallet smart contract and sign it to get signature
+let signature = sign(toSign.endCell().hash(), keyPair.secretKey); // get the hash of our message to the wallet smart contract and sign it to get signature
 
 let body = beginCell()
   .storeBuffer(signature) // store signature
@@ -638,7 +666,7 @@ toSign := cell.BeginCell().
   MustStoreUInt(uint64(3), 8). // store mode of our internal message
   MustStoreRef(internalMessage) // store our internalMessage as a reference
 
-signature := ed25519.Sign(privateKey, toSign.EndCell().Hash()) // get the hash of our message to wallet smart contract and sign it to get signature
+signature := ed25519.Sign(privateKey, toSign.EndCell().Hash()) // get the hash of our message to the wallet smart contract and sign it to get the signature
 
 body := cell.BeginCell().
   MustStoreSlice(signature, 512). // store signature
@@ -649,15 +677,15 @@ body := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-要从外部世界将任何内部消息传递到区块链中，需要将其包含在外部交易中发送。正如我们之前讨论的那样，仅需要使用 `ext_in_msg_info$10` 结构，因为目标是将外部消息发送到我们的合约中。现在，我们创建一个外部消息，将发送到我们的钱包：
+Note that no `.endCell()` was used in defining the `toSign` here. In this case, it is necessary **to transfer toSign content directly to the message body**. If writing a cell was required, it would have to be stored as a reference.
 
 :::tip Wallet V4
-除了基本的验证过程外，我们还了解到 Wallet V3、Wallet V4 智能合约 [提取操作码以确定是简单翻译还是与插件相关的消息](https://github.com/ton-blockchain/wallet-contract/blob/4111fd9e3313ec17d99ca9b5b1656445b5b49d8f/func/wallet-v4-code.fc#L94-L100) 是必需的。为了与该版本相匹配，有必要在写入 seqno（序列号）之后和指定交易模式之前添加 `storeUint(0, 8).` (JS/TS), `MustStoreUInt(0, 8).` (Golang)函数。
+In addition to the basic verification process we learned above for the Wallet V3, Wallet V4 smart contracts [extract the opcode to determine whether a simple translation or a message associated with the plugin](https://github.com/ton-blockchain/wallet-contract/blob/4111fd9e3313ec17d99ca9b5b1656445b5b49d8f/func/wallet-v4-code.fc#L94-L100) is required. To match this version, it is necessary to add the `storeUint(0, 8).` (JS/TS), `MustStoreUInt(0, 8).` (Golang) functions after writing the **sequence number (seqno)** and before specifying the transaction mode.
 :::
 
-### 创建外部信息
+### External message creation
 
-要从外部世界向区块链传递任何内部消息，都必须在外部消息中发送。正如我们之前所考虑的，只需使用 `ext_in_msg_info$10` 结构即可，因为我们的目标是向我们的合约发送外部消息。现在，让我们创建一条将发送到钱包的外部消息：
+To deliver an internal message to the blockchain from the outside world, it must be sent within an external message. As previously discussed, we’ll use the `ext_in_msg_info$10` structure since our goal is to send an external message to our contract. Now, let’s create the external message that will be sent to our wallet:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -692,24 +720,24 @@ externalMessage := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-|      选项      |                                                                                              说明                                                                                             |
-| :----------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|      Src     | 发件人地址。由于收到的外部报文不可能有发件人，因此总是有 2 个零位（addr_none [TL-B](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L100)）。 |
-|  Import Fee  |                                                                                        用于支付导入外部信息的费用。                                                                                       |
-|  State Init  |                                                         与内部信息不同，外部信息中的 State Init 是 **从外部世界** 部署合约所必需的。状态初始与内部报文结合使用，可以让一个合约部署另一个合约。                                                        |
-| Message Body |                                                                                       必须发送给合约进行处理的信息。                                                                                       |
+|    Option    |                                                                                                                                                          Explanation                                                                                                                                                          |
+| :----------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|      Src     | The sender address. Since an incoming external message cannot have a sender, there will always be 2 zero bits (an addr_none [TL-B](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L100)). |
+|  Import Fee  |                                                                                                                               The fee for importing incoming external messages.                                                                                                                               |
+|  State Init  |                                    Unlike the Internal Message, the State Init within the external message is needed **to deploy a contract from the outside world**. The State Init used with the Internal Message allows one contract to deploy another.                                    |
+| Message Body |                                                                                                                            The message must be sent to the contract for processing.                                                                                                                           |
 
 :::tip 0b10
-0b10（b - 二进制）表示二进制记录。在此过程中，会存储两个比特：`1` 和 `0`。因此，我们指定为 `ext_in_msg_info$10`。
+0b10 (b - binary) denotes a binary record. Two bits are stored in this process: `1` and `0`. Thus, we specify that it's `ext_in_msg_info$10`.
 :::
 
-现在，我们有了一条已完成的消息，可以发送给我们的合约了。要做到这一点，首先应将其序列化为`BOC`（[Bag of Cells](/v3/documentation/data-formats/tlb/cell-boc#bag-of-cells)），然后使用以下代码发送：
+Now that we have a completed message ready to send to our contract, the next step is to serialize it into a `BoC` ([bag of cells](/v3/documentation/data-formats/tlb/cell-boc#bag-of-cells)). Once serialized, we can send it using the following code:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-console.log(externalMessage.toBoc().toString("base64"))
+console.log(externalMessage.toBoc().toString("base64"));
 
 client.sendFile(externalMessage.toBoc());
 ```
@@ -739,32 +767,32 @@ if err != nil {
 
 > 💡 Useful link:
 >
-> [Bag of Cells 的更多信息](/v3/documentation/data-formats/tlb/cell-boc#bag-of-cells)
+> More about [Bag of cells](/v3/documentation/data-formats/tlb/cell-boc#bag-of-cells)
 
-在本节中，我们将介绍如何从头开始创建钱包（钱包v3）。您将学习如何为钱包智能合约编译代码，生成助记词短语，获得钱包地址，并使用外部交易和State Init部署钱包。
+As a result, we got the output of our BOC in the console, and the message was sent to our wallet. By copying the base64 encoded string, it is possible to [manually send our message and retrieve the hash using toncenter](https://toncenter.com/api/v2/#/send/send_boc_return_hash_sendBocReturnHash_post).
 
-## 生成助记词
+## 👛 Deploying a wallet
 
-正确定义钱包所需的第一件事是检索`private`和`public`密钥。为了完成这个任务，需要生成助记词种子短语，然后使用加密库提取私钥和公钥。
+We’ve covered the basics of creating messages to help us deploy a wallet. Previously, we deployed wallets using wallet apps, but we’ll deploy our wallet manually this time.
 
-通过以下方式实现：
+In this section, we’ll walk through creating a wallet (wallet v3) from scratch. You’ll learn how to compile the wallet smart contract code, generate a mnemonic phrase, obtain a wallet address, and deploy the wallet using external messages and State Init (state initialization).
 
-### 生成助记符
+### Generating a mnemonic
 
-要正确创建钱包，首先需要获取 "私钥 "和 "公钥"。要完成这项任务，需要生成一个助记种子短语，然后使用加密库提取私钥和公钥。
+The first step in creating a wallet is generating a `private` and `public` key. We’ll generate a mnemonic seed phrase and extract the keys using cryptographic libraries.
 
-具体做法如下
+Here’s how to accomplish this:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { mnemonicToWalletKey, mnemonicNew } from '@ton/crypto';
+import { mnemonicToWalletKey, mnemonicNew } from "@ton/crypto";
 
 // const mnemonicArray = 'put your mnemonic'.split(' ') // get our mnemonic as array
 const mnemonicArray = await mnemonicNew(24); // 24 is the number of words in a seed phrase
 const keyPair = await mnemonicToWalletKey(mnemonicArray); // extract private and public keys from mnemonic
-console.log(mnemonicArray) // if we want, we can print our mnemonic
+console.log(mnemonicArray); // if we want, we can print our mnemonic
 ```
 
 </TabItem>
@@ -784,42 +812,42 @@ import (
 // mnemonic := strings.Split("put your mnemonic", " ") // get our mnemonic as array
 mnemonic := wallet.NewSeed() // get new mnemonic
 
-// The following three lines will extract the private key using the mnemonic phrase. We will not go into cryptographic details. It has all been implemented in the tonutils-go library, but it immediately returns the finished object of the wallet with the address and ready methods. So we’ll have to write the lines to get the key separately. Goland IDE will automatically import all required libraries (crypto, pbkdf2 and others).
-mac := hmac.New(sha512.New, []byte(strings.Join(mnemonic, " "))) 
+// The following three lines will extract the private key using the mnemonic phrase. We will not go into cryptographic details. It has all been implemented in the tonutils-go library, but it immediately returns the finished wallet object with the address and ready methods. So we’ll have to write the lines to get the key separately. Goland IDE will automatically import all required libraries (crypto, pbkdf2, and others).
+mac := hmac.New(sha512.New, []byte(strings.Join(mnemonic, " ")))
 hash := mac.Sum(nil)
-k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries "TON default seed" is used as salt when getting keys
-// 32 is a key len 
+k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries, "TON default seed" is used as salt when getting keys
+// 32 is a key len
 
 privateKey := ed25519.NewKeyFromSeed(k) // get private key
 publicKey := privateKey.Public().(ed25519.PublicKey) // get public key from private key
-log.Println(publicKey) // print publicKey so that at this stage the compiler does not complain that we do not use our variable
+log.Println(publicKey) // print publicKey so that at this stage, the compiler does not complain that we do not use our variable
 log.Println(mnemonic) // if we want, we can print our mnemonic
 ```
 
 </TabItem>
 </Tabs>
 
-钱包作为智能合约的最显着优势之一是能够仅使用一个私钥创建**大量的钱包**。这是因为TON区块链上的智能合约地址是使用多个因素计算出来的，其中包括`stateInit`。stateInit包含了`代码`和`初始数据`，这些数据存储在区块链的智能合约存储中。
+The private key is needed to sign messages, and the public key is stored in the wallet’s smart contract.
 
-:::danger 重要事项
-有必要将生成的助记符种子短语输出到控制台，然后保存并使用（如上一节所述），以便每次运行钱包代码时使用相同的配对密钥。
+:::danger IMPORTANT
+Make sure to output the generated mnemonic seed phrase to the console, save it, and use it (as detailed in the previous section) to ensure the same key pair is used each time the wallet’s code is run.
 :::
 
-### 子钱包 ID
+### Subwallet IDs
 
-根据TON区块链的源代码中的[代码行](https://github.com/ton-blockchain/ton/blob/4b940f8bad9c2d3bf44f196f6995963c7cee9cc3/tonlib/tonlib/TonlibClient.cpp#L2420)，默认的`subwallet_id`值为`698983191`：
+One of the most notable benefits of wallets being smart contracts is the ability to create **a vast number of wallets** using just one private key. This is because the addresses of smart contracts on TON Blockchain are computed using several factors, including the `stateInit`. The stateInit contains the `code` and `initial data`, which is stored in the blockchain’s smart contract storage.
 
-可以从[配置文件](https://ton.org/global-config.json)中获取创世块信息（zero_state）。了解其复杂性和细节并非必要，但重要的是要记住`subwallet_id`的默认值为`698983191`。
+Changing just one bit within the stateInit can generate a different address. That is why the `subwallet_id` was initially created. The `subwallet_id` is stored in the contract storage and can be used to create many different wallets (with different subwallet IDs) with one private key. This functionality can be handy when integrating various wallet types with centralized services such as exchanges.
 
-每个钱包合约都会检查外部交易的subwallet_id字段，以避免将请求发送到具有不同ID的钱包的情况：
+The default `subwallet_id` value is `698983191`, as per the [line of code](https://github.com/ton-blockchain/ton/blob/4b940f8bad9c2d3bf44f196f6995963c7cee9cc3/tonlib/tonlib/TonlibClient.cpp#L2420) below taken from the TON Blockchain’s source code:
 
 ```cpp
 res.wallet_id = td::as<td::uint32>(res.config.zero_state_id.root_hash.as_slice().data());
 ```
 
-我们需要将以上的值添加到合约的初始数据中，所以变量需要保存如下：
+It is possible to retrieve genesis block information (zero_state) from the [configuration file](https://ton.org/global-config.json). Understanding the complexities and details of this is not necessary, but it's important to remember that the default value of the `subwallet_id` is `698983191`.
 
-每个钱包合约都会检查外部信息的 subwallet_id 字段，以避免请求被发送到另一个 ID 的钱包：
+Each wallet contract checks the `subwallet_id` field for external messages to avoid instances where requests are sent to a wallet with another ID:
 
 ```func
 var (subwallet_id, valid_until, msg_seqno) = (cs~load_uint(32), cs~load_uint(32), cs~load_uint(32));
@@ -827,7 +855,7 @@ var (stored_seqno, stored_subwallet, public_key) = (ds~load_uint(32), ds~load_ui
 throw_unless(34, subwallet_id == stored_subwallet);
 ```
 
-我们需要将上述值添加到合约的初始数据中，因此需要按如下方式保存变量：
+We will need to add the above value to the initial data of the contract, so the variable needs to be saved as follows:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -846,22 +874,21 @@ var subWallet uint64 = 698983191
 </TabItem>
 </Tabs>
 
-### 编译钱包代码
+### Compiling wallet code
 
-我们将仅使用JavaScript来编译代码，因为用于编译代码的库基于JavaScript。
-但是，一旦编译完成，只要我们拥有编译后的cell的**base64输出**，就可以在其他编程语言（如Go等）中使用这些编译后的代码。
+Now that the private and public keys and the `subwallet_id` are clearly defined, we must compile the wallet code. We’ll use the [wallet v3 code](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/wallet3-code.fc) from the official repository.
 
-首先，我们需要创建两个文件：`wallet_v3.fc`和`stdlib.fc`。编译器和stdlib.fc库一起使用。库中创建了所有必需的基本函数，这些函数对应于`asm`指令。可以从[这里](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/stdlib.fc)下载stdlib.fc文件。在`wallet_v3.fc`文件中，需要复制上面的代码。
+The [@ton-community/func-js](https://github.com/ton-community/func-js) library is necessary to compile wallet code. This library allows us to compile FunC code and retrieve a cell containing the code. To get started, install the library and save it to the `package.json` as follows:
 
 ```bash
 npm i --save @ton-community/func-js
 ```
 
-现在，我们为我们正在创建的项目有了以下结构：
+We’ll only use JavaScript to compile code, as the libraries for compiling code are JavaScript-based. However, after compiling is finalized, as long as we have our cell's **base64 output**, it is possible to use this compiled code in languages such as Go and others.
 
-首先，我们需要创建两个文件：`wallet_v3.fc` 和 `stdlib.fc`。编译器使用 stdlib.fc 库。库中创建了与 `asm` 指令相对应的所有必要的基本函数。可下载 stdlib.fc 文件 [此处](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/stdlib.fc)。在 `wallet_v3.fc` 文件中，需要复制上述代码。
+First, we must create two files: `wallet_v3.fc` and `stdlib.fc`. The compiler relies on the `stdlib.fc` library, which contains all the necessary basic functions corresponding to `asm` instructions. You can download the `stdlib.fc` file [here](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/stdlib.fc). For the `wallet_v3.fc` file, copy the code from the repository.
 
-请记住，在`wallet_v3.fc`文件的开头添加以下行，以指示将在下面使用stdlib中的函数：
+Now, we have the following structure for the project we are creating:
 
 ```
 .
@@ -876,43 +903,45 @@ npm i --save @ton-community/func-js
 ```
 
 :::info
-如果您的 IDE 插件与 `stdlib.fc` 文件中的 `() set_seed(int) impure asm "SETRAND";`冲突，也没关系。
+It’s OK if your IDE plugin conflicts with the `() set_seed(int) impure asm "SETRAND";` in the `stdlib.fc` file.
 :::
 
-现在，让我们编写代码来编译我们的智能合约并使用`npm run start:dev`来运行它：
+Remember to add the following line to the beginning of the `wallet_v3.fc` file to indicate that the functions from the stdlib will be used below:
 
 ```func
 #include "stdlib.fc";
 ```
 
-终端的输出结果如下：
+Now let’s write code to compile our smart contract and run it using `npm run start:dev`:
 
 ```js
-import { compileFunc } from '@ton-community/func-js';
-import fs from 'fs'; // we use fs for reading content of files
-import { Cell } from '@ton/core';
+import { compileFunc } from "@ton-community/func-js";
+import fs from "fs"; // we use fs for reading content of files
+import { Cell } from "@ton/core";
 
 const result = await compileFunc({
-targets: ['wallet_v3.fc'], // targets of your project
-sources: {
-    "stdlib.fc": fs.readFileSync('./src/stdlib.fc', { encoding: 'utf-8' }),
-    "wallet_v3.fc": fs.readFileSync('./src/wallet_v3.fc', { encoding: 'utf-8' }),
-}
+  targets: ["wallet_v3.fc"], // targets of your project
+  sources: {
+    "stdlib.fc": fs.readFileSync("./src/stdlib.fc", { encoding: "utf-8" }),
+    "wallet_v3.fc": fs.readFileSync("./src/wallet_v3.fc", {
+      encoding: "utf-8",
+    }),
+  },
 });
 
-if (result.status === 'error') {
-console.error(result.message)
-return;
+if (result.status === "error") {
+  console.error(result.message);
+  return;
 }
 
 const codeCell = Cell.fromBoc(Buffer.from(result.codeBoc, "base64"))[0]; // get buffer from base64 encoded BOC and get cell from this buffer
 
-// now we have base64 encoded BOC with compiled code in result.codeBoc
-console.log('Code BOC: ' + result.codeBoc);
-console.log('\nHash: ' + codeCell.hash().toString('base64')); // get the hash of cell and convert in to base64 encoded string. We will need it further
+// now we have base64 encoded BOC with compiled code in the result.codeBoc
+console.log("Code BOC: " + result.codeBoc);
+console.log("\nHash: " + codeCell.hash().toString("base64")); // get the hash of cell and convert it to base64 encoded string. We will need it further
 ```
 
-完成后，可以使用其他库和语言使用我们的钱包代码检索相同的cell（使用base64编码的输出）：
+The result will be the following output in the terminal:
 
 ```text
 Code BOC: te6ccgEBCAEAhgABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQCW8oMI1xgg0x/TH9MfAvgju/Jj7UTQ0x/TH9P/0VEyuvKhUUS68qIE+QFUEFX5EPKj+ACTINdKltMH1AL7AOgwAaTIyx/LH8v/ye1UAATQMAIBSAYHABe7Oc7UTQ0z8x1wv/gAEbjJftRNDXCx+A==
@@ -920,7 +949,7 @@ Code BOC: te6ccgEBCAEAhgABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQCW8oMI1xgg0x/TH9MfAvgju/
 Hash: idlku00WfSC36ujyK2JVT92sMBEpCNRUXOGO4sJVBPA=
 ```
 
-一旦完成，就可以使用其他库和语言，用我们的钱包代码检索相同的 cell （使用 base64 编码输出）：
+Once this process is complete, you can retrieve the same cell (using the base64 encoded output) containing our wallet code using other libraries and languages:
 
 <Tabs groupId="code-examples">
 <TabItem value="go" label="Golang">
@@ -935,42 +964,43 @@ base64BOC := "te6ccgEBCAEAhgABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQCW8oMI1xgg0x/TH9MfAv
 codeCellBytes, _ := base64.StdEncoding.DecodeString(base64BOC) // decode base64 in order to get byte array
 codeCell, err := cell.FromBOC(codeCellBytes) // get cell with code from byte array
 if err != nil { // check if there are any error
-  panic(err) 
+  panic(err)
 }
 
-log.Println("Hash:", base64.StdEncoding.EncodeToString(codeCell.Hash())) // get the hash of our cell, encode it to base64 because it has []byte type and output to the terminal
+log.Println("Hash:", base64.StdEncoding.EncodeToString(codeCell.Hash())) // get the hash of our cell, encode it to base64 because it has []byte type, and output to the terminal
 ```
 
 </TabItem>
 </Tabs>
 
-完成上述过程后，确认我们的cell中正在使用正确的代码，因为哈希值相匹配。
+The result will be the following output in the terminal:
 
 ```text
 idlku00WfSC36ujyK2JVT92sMBEpCNRUXOGO4sJVBPA=
 ```
 
-在构建交易之前，了解State Init非常重要。首先让我们了解[TL-B方案](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L141-L143)：
+After the above processes are complete, the hashes match, confirming that the correct code is used within our cell.
 
-### 为部署创建状态初始
+### Creating the state init for deployment
 
-在创建信息之前，了解什么是 State Init 是非常重要的。首先让我们来了解一下 [TL-B 方案](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L141-L143)：
+Before building a message, it is essential to understand what a State Init is. First, let’s go through the [TL-B scheme](https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L141-L143):
 
-|                选项                |                                                                                                                                                     说明                                                                                                                                                     |
-| :------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| split_depth | 该选项适用于高负载智能合约，这些合约可以拆分并位于多个 [shardchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#many-accountchains-shards)。  有关其工作原理的详细信息，请参阅 [tblkch.pdf](https://ton.org/tblkch.pdf) (4.1.6)。  由于只在钱包智能合约中使用，因此只存储`0`位。 |
-|              special             |                   用于 TicTok。每个区块都会自动调用这些智能合约，普通智能合约不需要。相关信息可参见 [此章节](/v3/documentation/data-formats/tlb/transaction-layout#tick-tock) 或 [tblkch.pdf](https://ton.org/tblkch.pdf) (4.1.6)。本规范中只存储了 `0` 位，因为我们不需要这样的函数。                   |
-|               code               |                                                                                                                                            `1` 位表示存在智能合约代码作为参考。                                                                                                                                            |
-|               data               |                                                                                                                                            `1` 位表示存在智能合约数据作为参考。                                                                                                                                            |
-|              library             |             在 [主链](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#masterchain-blockchain-of-blockchains) 上运行的库，可用于不同的智能合约。它不会用于钱包，因此其位设置为 `0`。相关信息可参见 [tblkch.pdf](https://ton.org/tblkch.pdf) (1.8.4)。            |
+|              Option              |                                                                                                                                                                                                                                                                                  Explanation                                                                                                                                                                                                                                                                                  |
+| :------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| split_depth |                 This option is designed for highly loaded smart contracts that can be split and distributed across multiple [shardchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#many-accountchains-shards). For more details on how this works, refer to the [tblkch.pdf](https://ton.org/tblkch.pdf) (section 4.1.6). Since this feature is not needed for wallet smart contracts, only a `0` bit is stored.                |
+|              special             | This option is used for **TicTok** smart contracts that are automatically triggered for each block. Regular smart contracts, such as wallets, do not require this functionality. For more details, refer to [this section](/v3/documentation/data-formats/tlb/transaction-layout#tick-tock) or the [tblkch.pdf](https://ton.org/tblkch.pdf) (section 4.1.6). Since this feature is unnecessary for our use case, only a `0` bit is stored. |
+|                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|               code               |                                                                                                                                                                                                                                             `1` bit means the presence of the smart contract code as a reference.                                                                                                                                                                                                                                             |
+|               data               |                                                                                                                                                                                                                                             `1` bit means the presence of the smart contract data as a reference.                                                                                                                                                                                                                                             |
+|              library             |                              This option refers to a library that operates on the [MasterChain](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#masterchain-blockchain-of-blockchains) and can be shared across multiple smart contracts. Since wallets do not require this functionality, its bit is set to `0`. For more information, refer to [tblkch.pdf](https://ton.org/tblkch.pdf) (section 1.8.4).                             |
 
-接下来，我们将准备 `initial data`，这些数据将在部署后立即出现在我们的合约存储中：
+Next, we’ll prepare the `initial data`, which will be present in our contract’s storage immediately after deployment:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { beginCell } from '@ton/core';
+import { beginCell } from "@ton/core";
 
 const dataCell = beginCell()
   .storeUint(0, 32) // Seqno
@@ -993,13 +1023,13 @@ dataCell := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-在这个阶段，合约的 `code` 和 `initial data` 都已存在。有了这些数据，我们就可以生成**钱包地址**。钱包地址取决于 State Init，其中包括代码和初始数据。
+The contract `code` and its `initial data` are present at this stage. With this data, we can produce our **wallet address**. The wallet's address depends on the State Init, which includes the code and initial data.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { Address } from '@ton/core';
+import { Address } from "@ton/core";
 
 const stateInit = beginCell()
   .storeBit(0) // No split_depth
@@ -1040,22 +1070,24 @@ log.Println("Contract address:", contractAddress.String()) // Output contract ad
 </TabItem>
 </Tabs>
 
-现在，我们可以使用 State Init 创建信息并将其发送到区块链上。
+We can build and send the message to the blockchain using the State Init.
 
 :::warning
-To carry out this process, **a minimum wallet balance of 0.1 TON** is required (the balance can be less, but this amount is guaranteed to be sufficient). To accomplish this, we’ll need to run the code mentioned earlier in the tutorial, obtain the correct wallet address, and send 0.1 TON to this address. Alternatively, you can send this sum manually via your wallet app before sending the deployment message itself.
-
-这里介绍的通过外部消息部署主要是出于教育目的；实际上，[通过钱包部署智能合约](/v3/guidelines/smart-contracts/howto/wallet#contract-deployment-via-wallet) 要方便得多，这将在后面介绍。
+Keep in mind this concept for your services
 :::
 
-首先，让我们创建一个与 **上一节** 中类似的信息：
+To carry out this process, **a minimum wallet balance of 0.1 TON** is required (the balance can be less, but this amount is guaranteed sufficient). To accomplish this, we’ll need to run the code mentioned earlier in the tutorial, obtain the correct wallet address, and send 0.1 TON to this address. Alternatively, you can send this sum manually via your wallet app before sending the deployment message.
+
+Deployment by external messages is presented here primarily for educational purposes; in practice, it's much more convenient to [deploy smart contracts via wallets](/v3/guidelines/smart-contracts/howto/wallet#contract-deployment-via-wallet), which will be described later.
+
+Let’s start with building a message similar to the one we built **in the previous section**:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { sign } from '@ton/crypto';
-import { toNano } from '@ton/core';
+import { sign } from "@ton/crypto";
+import { toNano } from "@ton/core";
 
 const internalMessageBody = beginCell()
   .storeUint(0, 32)
@@ -1064,9 +1096,11 @@ const internalMessageBody = beginCell()
 
 const internalMessage = beginCell()
   .storeUint(0x10, 6) // no bounce
-  .storeAddress(Address.parse("put your first wallet address from were you sent 0.1 TON"))
+  .storeAddress(
+    Address.parse("put your first wallet address from were you sent 0.1 TON")
+  )
   .storeCoins(toNano("0.03"))
-  .storeUint(1, 1 + 4 + 4 + 64 + 32 + 1 + 1) // We store 1 that means we have body as a reference
+  .storeUint(1, 1 + 4 + 4 + 64 + 32 + 1 + 1) // We store 1, which means we have a body as a reference
   .storeRef(internalMessageBody)
   .endCell();
 
@@ -1074,15 +1108,12 @@ const internalMessage = beginCell()
 const toSign = beginCell()
   .storeUint(subWallet, 32)
   .storeUint(Math.floor(Date.now() / 1e3) + 60, 32)
-  .storeUint(0, 32) // We put seqno = 0, because after deploying wallet will store 0 as seqno
+  .storeUint(0, 32) // We put seqno = 0 because after deploying wallet will store 0 as seqno
   .storeUint(3, 8)
   .storeRef(internalMessage);
 
 const signature = sign(toSign.endCell().hash(), keyPair.secretKey);
-const body = beginCell()
-  .storeBuffer(signature)
-  .storeBuilder(toSign)
-  .endCell();
+const body = beginCell().storeBuffer(signature).storeBuilder(toSign).endCell();
 ```
 
 </TabItem>
@@ -1101,9 +1132,9 @@ internalMessageBody := cell.BeginCell().
 
 internalMessage := cell.BeginCell().
   MustStoreUInt(0x10, 6). // no bounce
-  MustStoreAddr(address.MustParseAddr("put your first wallet address from were you sent 0.1 TON")).
+  MustStoreAddr(address.MustParseAddr("put your first wallet address from where you sent 0.1 TON")).
   MustStoreBigCoins(tlb.MustFromTON("0.03").NanoTON()).
-  MustStoreUInt(1, 1 + 4 + 4 + 64 + 32 + 1 + 1). // We store 1 that means we have body as a reference
+  MustStoreUInt(1, 1 + 4 + 4 + 64 + 32 + 1 + 1). // We store 1, which means we have a body as a reference
   MustStoreRef(internalMessageBody).
   EndCell()
 
@@ -1111,7 +1142,7 @@ internalMessage := cell.BeginCell().
 toSign := cell.BeginCell().
   MustStoreUInt(subWallet, 32).
   MustStoreUInt(uint64(time.Now().UTC().Unix()+60), 32).
-  MustStoreUInt(0, 32). // We put seqno = 0, because after deploying wallet will store 0 as seqno
+  MustStoreUInt(0, 32). // We put seqno = 0 because after deploying, the wallet will store 0 as seqno
   MustStoreUInt(3, 8).
   MustStoreRef(internalMessage)
 
@@ -1119,24 +1150,24 @@ signature := ed25519.Sign(privateKey, toSign.EndCell().Hash())
 body := cell.BeginCell().
   MustStoreSlice(signature, 512).
   MustStoreBuilder(toSign).
-	EndCell()
+  EndCell()
 ```
 
 </TabItem>
 </Tabs>
 
-主要的区别将在外部消息的存在上，因为State Init被存储用于正确的合约部署。由于合约尚无自己的代码，因此无法处理任何内部消息。因此，接下来，我们将在成功部署后发送其代码和初始数据，以便可处理我们带有“Hello, TON！”评论的消息：
+Once this process is complete, the result is a properly constructed State Init and Message Body.
 
-### 发送外部信息
+### Sending an external message
 
-**主要区别**在于外部信息的存在，因为 state Init 的存储是为了帮助正确部署合约。由于合约还没有自己的代码，因此无法处理任何内部信息。因此，接下来我们将在它成功部署后**发送它的代码和初始数据，以便它能处理我们的消息**，并注释为 "Hello, TON!"：
+The **main difference** lies in including the external message, as the State Init is stored to ensure proper contract deployment. Since the contract doesn’t yet have its code, it cannot process internal messages. Therefore, we send its code and initial data, enabling it to process our message with the "Hello, TON!" comment **after successful deployment**.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
 const externalMessage = beginCell()
-  .storeUint(0b10, 2) // indicate that it is an incoming external message
+  .storeUint(0b10, 2) // indicates that it is an incoming external message
   .storeUint(0, 2) // src -> addr_none
   .storeAddress(contractAddress)
   .storeCoins(0) // Import fee
@@ -1153,7 +1184,7 @@ const externalMessage = beginCell()
 
 ```go
 externalMessage := cell.BeginCell().
-  MustStoreUInt(0b10, 2). // indicate that it is an incoming external message
+  MustStoreUInt(0b10, 2). // indicates that it is an incoming external message
   MustStoreUInt(0, 2). // src -> addr_none
   MustStoreAddr(contractAddress).
   MustStoreCoins(0). // Import fee
@@ -1168,17 +1199,17 @@ externalMessage := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-最后，我们可以向区块链发送信息，部署我们的钱包并使用它。
+Finally, we can send our message to the blockchain to deploy our wallet and use it.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { TonClient } from '@ton/ton';
+import { TonClient } from "@ton/ton";
 
 const client = new TonClient({
   endpoint: "https://toncenter.com/api/v2/jsonRPC",
-  apiKey: "put your api key" // you can get an api key from @tonapibot bot in Telegram
+  apiKey: "put your api key", // you can get an api key from @tonapibot bot in Telegram
 });
 
 client.sendFile(externalMessage.toBoc());
@@ -1214,45 +1245,45 @@ if err != nil {
 </TabItem>
 </Tabs>
 
-请注意，我们使用 `3` 模式发送了内部信息。如果需要重复部署同一个钱包，**可以销毁智能合约**。为此，请正确设置模式，添加 128（取走智能合约的全部余额）+ 32（销毁智能合约），即 = `160`，以取回剩余的 TON 余额并再次部署钱包。
+Note that we sent an internal message using mode `3`. If you must redeploy the same wallet, **the smart contract can be destroyed**. To do this, set the [mode](/v3/documentation/smart-contracts/message-management/message-modes-cookbook#mode160/) to `160` by adding `128` (take the entire balance of the smart contract) + `32` (destroy the smart contract). This will retrieve the remaining TON balance and allow you to deploy the wallet again.
 
-正如您可能已经知道的，[一个cell可以存储最多1023位的数据和最多4个指向其他cells的引用](/develop/data-formats/cell-boc#cell)。在本教程的第一部分中，我们详细介绍了内部消息是如何以“整体”循环作为链接发送的。这意味着可以**在外部消息内存储多达4条内部消息**。这允许同时发送四笔交易。
+Remember that for each new transaction, the `seqno` must be incremented by one.
 
 :::info
-我们使用的合约代码是 [已验证](https://tonscan.org/tx/BL9T1i5DjX1JRLUn4z9JOgOWRKWQ80pSNevis26hGvc=)，因此您可以在 [这里](https://tonscan.org/address/EQDBjzo_iQCZh3bZSxFnK9ue4hLTOKgsCNKfC8LOUM4SlSCX#source) 看到一个示例。
+The contract code we used is [verified](https://tonscan.org/tx/BL9T1i5DjX1JRLUn4z9JOgOWRKWQ80pSNevis26hGvc=), so you can see an example [here](https://tonscan.org/address/EQDBjzo_iQCZh3bZSxFnK9ue4hLTOKgsCNKfC8LOUM4SlSCX#source).
 :::
 
-## 同时发送多条消息
+## 💸 Working with wallet smart contracts
 
-正如您可能已经知道的，[一个cell可以存储最多1023位的数据和最多4个指向其他cells的引用](/develop/data-formats/cell-boc#cell)。在本教程的第一部分中，我们详细介绍了内部消息是如何以“整体”循环作为链接发送的。这意味着可以**在外部消息内存储多达4条内部消息**。这允许同时发送四笔交易。
+After completing the first half of this tutorial, we’ve gained a deeper understanding of wallet smart contracts, including how they are developed and used. We’ve also learned how to deploy and destroy them and how to send messages without relying on pre-configured library functions. The next section will focus on building and sending more complex messages to apply what we've learned further.
 
-### 同时发送多条信息
+### Sending multiple messages simultaneously
 
-您可能已经知道，[一个 cell 最多可存储 1023 位数据和 4 个引用](/v3/documentation/data-formats/tlb/cell-boc#cell) 到其他 cell 。在本教程的第一部分，我们详细介绍了内部信息如何作为链接在 `整体` 循环中传递和发送。这意味着可以在外部**信息中**存储多达 4 条内部信息。这样就可以同时发送四条信息。
+As you already know, [a single cell can store up to 1023 bits of data and up to 4 references](/v3/documentation/data-formats/tlb/cell-boc#cell) to other cells. In the first section of this tutorial, we explained how internal messages are delivered in a ‘whole’ loop as a link and sent. This means it’s possible to **store up to 4 internal messages within an external message**, allowing four messages to be sent simultaneously.
 
-为此，有必要创建 4 条不同的内部信息。我们可以手动创建，也可以通过 "循环 "创建。我们需要定义 3 个数组：TON 数量数组、注释数组、消息数组。对于消息，我们需要准备另一个数组 - internalMessages。
+To accomplish this, we need to create four different internal messages. We can do this manually or through a `loop`. We need to define three arrays: an array of TON amount, an array of comments, and an array of messages. For messages, we need to prepare another array - internalMessages.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { Cell } from '@ton/core';
+import { Cell } from "@ton/core";
 
 const internalMessagesAmount = ["0.01", "0.02", "0.03", "0.04"];
 const internalMessagesComment = [
   "Hello, TON! #1",
   "Hello, TON! #2",
   "", // Let's leave the third message without comment
-  "Hello, TON! #4" 
-]
+  "Hello, TON! #4",
+];
 const destinationAddresses = [
   "Put any address that belongs to you",
   "Put any address that belongs to you",
   "Put any address that belongs to you",
-  "Put any address that belongs to you"
-] // All 4 addresses can be the same
+  "Put any address that belongs to you",
+]; // All 4 addresses can be the same
 
-let internalMessages:Cell[] = []; // array for our internal messages
+let internalMessages: Cell[] = []; // array for our internal messages
 ```
 
 </TabItem>
@@ -1283,32 +1314,29 @@ var internalMessages [len(internalMessagesAmount)]*cell.Cell // array for our in
 </TabItem>
 </Tabs>
 
-所有信息的[发送模式](/v3/documentation/smart-contracts/message-management/sending-messages#message-modes)都设置为 `mode 3`。  不过，如果需要不同的模式，可以创建一个数组来实现不同的目的。
+[Sending mode](/v3/documentation/smart-contracts/message-management/sending-messages#message-modes) for all messages is set to `mode 3`. However, an array can be created to fulfill different purposes if different modes are required.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { Address, beginCell, toNano } from '@ton/core';
+import { Address, beginCell, toNano } from "@ton/core";
 
 for (let index = 0; index < internalMessagesAmount.length; index++) {
   const amount = internalMessagesAmount[index];
-  
-  let internalMessage = beginCell()
-      .storeUint(0x18, 6) // bounce
-      .storeAddress(Address.parse(destinationAddresses[index]))
-      .storeCoins(toNano(amount))
-      .storeUint(0, 1 + 4 + 4 + 64 + 32 + 1);
-      
-  /*
-      At this stage, it is not clear if we will have a message body. 
-      So put a bit only for stateInit, and if we have a comment, in means 
-      we have a body message. In that case, set the bit to 1 and store the 
-      body as a reference.
-  */
 
-  if(internalMessagesComment[index] != "") {
-    internalMessage.storeBit(1) // we store Message Body as a reference
+  let internalMessage = beginCell()
+    .storeUint(0x18, 6) // bounce
+    .storeAddress(Address.parse(destinationAddresses[index]))
+    .storeCoins(toNano(amount))
+    .storeUint(0, 1 + 4 + 4 + 64 + 32 + 1);
+
+  /*
+It’s unclear whether we’ll have a message body at this stage. Therefore, we’ll only set a bit for the `stateInit`. If we include a comment, it means we have a message body. In that case, set the bit to `1` and store the body as a reference.
+ */
+
+  if (internalMessagesComment[index] != "") {
+    internalMessage.storeBit(1); // we store Message Body as a reference
 
     let internalMessageBody = beginCell()
       .storeUint(0, 32)
@@ -1316,15 +1344,13 @@ for (let index = 0; index < internalMessagesAmount.length; index++) {
       .endCell();
 
     internalMessage.storeRef(internalMessageBody);
-  } 
-  else 
-    /*
-        Since we do not have a message body, we indicate that 
-        the message body is in this message, but do not write it, 
-        which means it is absent. In that case, just set the bit to 0.
-    */
-    internalMessage.storeBit(0);
-  
+  } else internalMessage.storeBit(0);
+  /*
+ Since we do not have a message body, we indicate that 
+ the message body is in this message but do not write it, 
+ which means it is absent. In that case, just set the bit to 0.
+ */
+
   internalMessages.push(internalMessage.endCell());
 }
 ```
@@ -1348,11 +1374,8 @@ for i := 0; i < len(internalMessagesAmount); i++ {
     MustStoreUInt(0, 1+4+4+64+32+1)
 
   /*
-      At this stage, it is not clear if we will have a message body. 
-      So put a bit only for stateInit, and if we have a comment, in means 
-      we have a body message. In that case, set the bit to 1 and store the 
-      body as a reference.
-  */
+It’s unclear whether we’ll have a message body at this stage. Therefore, we’ll only set a bit for the `stateInit`. If we include a comment, it means we have a message body. In that case, set the bit to `1` and store the body as a reference.
+ */
 
   if internalMessagesComment[i] != "" {
     internalMessage.MustStoreBoolBit(true) // we store Message Body as a reference
@@ -1363,14 +1386,14 @@ for i := 0; i < len(internalMessagesAmount); i++ {
       EndCell()
 
     internalMessage.MustStoreRef(internalMessageBody)
-  } else {
+ } else {
     /*
-        Since we do not have a message body, we indicate that
-        the message body is in this message, but do not write it,
-        which means it is absent. In that case, just set the bit to 0.
-    */
+ Since we do not have a message body, we indicate that
+ the message body is in this message but do not write it,
+ which means it is absent. In that case, just set the bit to 0.
+ */
     internalMessage.MustStoreBoolBit(false)
-  }
+ }
   internalMessages[i] = internalMessage.EndCell()
 }
 ```
@@ -1378,33 +1401,33 @@ for i := 0; i < len(internalMessagesAmount); i++ {
 </TabItem>
 </Tabs>
 
-现在，让我们利用 [第二章](/v3/guidelines/smart-contracts/howto/wallet#-deploying-a-wallet) 中的知识，为我们的钱包创建一个可以同时发送 4 条信息的钱包：
+Now let's use our knowledge from [chapter two](/v3/guidelines/smart-contracts/howto/wallet#-deploying-a-wallet) to build a message for our wallet that can send four messages simultaneously:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { TonClient } from '@ton/ton';
-import { mnemonicToWalletKey } from '@ton/crypto';
+import { TonClient } from "@ton/ton";
+import { mnemonicToWalletKey } from "@ton/crypto";
 
-const walletAddress = Address.parse('put your wallet address');
+const walletAddress = Address.parse("put your wallet address");
 const client = new TonClient({
   endpoint: "https://toncenter.com/api/v2/jsonRPC",
-  apiKey: "put your api key" // you can get an api key from @tonapibot bot in Telegram
+  apiKey: "put your api key", // you can get an api key from @tonapibot bot in Telegram
 });
 
-const mnemonic = 'put your mnemonic'; // word1 word2 word3
+const mnemonic = "put your mnemonic"; // word1 word2 word3
 let getMethodResult = await client.runMethod(walletAddress, "seqno"); // run "seqno" GET method from your wallet contract
 let seqno = getMethodResult.stack.readNumber(); // get seqno from response
 
-const mnemonicArray = mnemonic.split(' '); // get array from string
-const keyPair = await mnemonicToWalletKey(mnemonicArray); // get Secret and Public keys from mnemonic 
+const mnemonicArray = mnemonic.split(" "); // get array from string
+const keyPair = await mnemonicToWalletKey(mnemonicArray); // get Secret and Public keys from mnemonic
 
 let toSign = beginCell()
   .storeUint(698983191, 32) // subwallet_id
   .storeUint(Math.floor(Date.now() / 1e3) + 60, 32) // Message expiration time, +60 = 1 minute
   .storeUint(seqno, 32); // store seqno
-  // Do not forget that if we use Wallet V4, we need to add .storeUint(0, 8) 
+// Do not forget that if we use Wallet V4, we need to add .storeUint(0, 8)
 ```
 
 </TabItem>
@@ -1412,16 +1435,16 @@ let toSign = beginCell()
 
 ```go
 import (
-	"context"
-	"crypto/ed25519"
-	"crypto/hmac"
-	"crypto/sha512"
-	"github.com/xssnick/tonutils-go/liteclient"
-	"github.com/xssnick/tonutils-go/ton"
-	"golang.org/x/crypto/pbkdf2"
-	"log"
-	"strings"
-	"time"
+  "context"
+  "crypto/ed25519"
+  "crypto/hmac"
+  "crypto/sha512"
+  "github.com/xssnick/tonutils-go/liteclient"
+  "github.com/xssnick/tonutils-go/ton"
+  "golang.org/x/crypto/pbkdf2"
+  "log"
+  "strings"
+  "time"
 )
 
 walletAddress := address.MustParseAddr("put your wallet address")
@@ -1442,11 +1465,11 @@ mnemonic := strings.Split("put your mnemonic", " ") // word1 word2 word3
 // all required libraries (crypto, pbkdf2 and others).
 mac := hmac.New(sha512.New, []byte(strings.Join(mnemonic, " ")))
 hash := mac.Sum(nil)
-k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries "TON default seed" is used as salt when getting keys
+k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries, "TON default seed" is used as salt when getting keys
 // 32 is a key len
 privateKey := ed25519.NewKeyFromSeed(k)              // get private key
 
-block, err := client.CurrentMasterchainInfo(context.Background()) // get current block, we will need it in requests to LiteServer
+block, err := client.CurrentMasterchainInfo(context.Background()) // get the current block, we will need it in requests to LiteServer
 if err != nil {
   log.Fatalln("CurrentMasterchainInfo err:", err.Error())
   return
@@ -1463,13 +1486,13 @@ toSign := cell.BeginCell().
   MustStoreUInt(698983191, 32). // subwallet_id | We consider this further
   MustStoreUInt(uint64(time.Now().UTC().Unix()+60), 32). // message expiration time, +60 = 1 minute
   MustStoreUInt(seqno.Uint64(), 32) // store seqno
-  // Do not forget that if we use Wallet V4, we need to add MustStoreUInt(0, 8). 
+  // Do not forget that if we use Wallet V4, we need to add MustStoreUInt(0, 8).
 ```
 
 </TabItem>
 </Tabs>
 
-接下来，我们将在循环中添加之前创建的信息：
+Next, we’ll add the messages that we built earlier in the loop:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -1477,8 +1500,8 @@ toSign := cell.BeginCell().
 ```js
 for (let index = 0; index < internalMessages.length; index++) {
   const internalMessage = internalMessages[index];
-  toSign.storeUint(3, 8) // store mode of our internal message
-  toSign.storeRef(internalMessage) // store our internalMessage as a reference
+  toSign.storeUint(3, 8); // store mode of our internal message
+  toSign.storeRef(internalMessage); // store our internalMessage as a reference
 }
 ```
 
@@ -1487,39 +1510,39 @@ for (let index = 0; index < internalMessages.length; index++) {
 
 ```go
 for i := 0; i < len(internalMessages); i++ {
-		internalMessage := internalMessages[i]
-		toSign.MustStoreUInt(3, 8) // store mode of our internal message
-		toSign.MustStoreRef(internalMessage) // store our internalMessage as a reference
+    internalMessage := internalMessages[i]
+    toSign.MustStoreUInt(3, 8) // store mode of our internal message
+    toSign.MustStoreRef(internalMessage) // store our internalMessage as a reference
 }
 ```
 
 </TabItem>
 </Tabs>
 
-现在，上述过程已经完成，让我们 **签署** 我们的信息，**构建外部信息**（如本教程前几节所述），然后 **发送** 到区块链：
+Now that the above processes are complete, let’s **sign** our message, **build an external message** (as outlined in previous sections of this tutorial), and **send it** to the blockchain:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { sign } from '@ton/crypto';
+import { sign } from "@ton/crypto";
 
-let signature = sign(toSign.endCell().hash(), keyPair.secretKey); // get the hash of our message to wallet smart contract and sign it to get signature
+let signature = sign(toSign.endCell().hash(), keyPair.secretKey); // get the hash of our message to the wallet smart contract and sign it to get signature
 
 let body = beginCell()
-    .storeBuffer(signature) // store signature
-    .storeBuilder(toSign) // store our message
-    .endCell();
+  .storeBuffer(signature) // store signature
+  .storeBuilder(toSign) // store our message
+  .endCell();
 
 let externalMessage = beginCell()
-    .storeUint(0b10, 2) // ext_in_msg_info$10
-    .storeUint(0, 2) // src -> addr_none
-    .storeAddress(walletAddress) // Destination address
-    .storeCoins(0) // Import Fee
-    .storeBit(0) // No State Init
-    .storeBit(1) // We store Message Body as a reference
-    .storeRef(body) // Store Message Body as a reference
-    .endCell();
+  .storeUint(0b10, 2) // ext_in_msg_info$10
+  .storeUint(0, 2) // src -> addr_none
+  .storeAddress(walletAddress) // Destination address
+  .storeCoins(0) // Import Fee
+  .storeBit(0) // No State Init
+  .storeBit(1) // We store Message Body as a reference
+  .storeRef(body) // Store Message Body as a reference
+  .endCell();
 
 client.sendFile(externalMessage.toBoc());
 ```
@@ -1532,7 +1555,7 @@ import (
   "github.com/xssnick/tonutils-go/tl"
 )
 
-signature := ed25519.Sign(privateKey, toSign.EndCell().Hash()) // get the hash of our message to wallet smart contract and sign it to get signature
+signature := ed25519.Sign(privateKey, toSign.EndCell().Hash()) // get the hash of our message to the wallet smart contract and sign it to get the signature
 
 body := cell.BeginCell().
   MustStoreSlice(signature, 512). // store signature
@@ -1561,42 +1584,46 @@ if err != nil {
 </TabItem>
 </Tabs>
 
-:::info 连接错误
-如果出现与 lite-server 连接（Golang）相关的错误，则必须运行代码，直到信息可以发送为止。这是因为 tonutils-go 库通过代码中指定的全局配置使用了多个不同的 lite-server。然而，并非所有 Lite 服务器都能接受我们的连接。
+:::info Connection error
+If an error related to the lite-server connection (in Golang) occurs, you may need to run the code repeatedly until the message is successfully sent. This happens because the `tonutils-go` library uses multiple lite-servers from the global configuration specified in the code. However, not all lite-servers may accept the connection.
 :::
 
-现在让我们构建交易本身：
+After completing this process, you can use a TON blockchain explorer to verify that the wallet sent four messages to the specified addresses.
 
-### NFT 转账
+### NFT transfers
 
-除了普通信息，用户之间还经常发送 NFT。遗憾的是，并非所有的库都包含专门用于这种智能合约的方法。因此，有必要创建代码，让我们能够构建用于发送 NFT 的消息。首先，让我们进一步熟悉 TON NFT [标准](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md)。
+In addition to regular messages, users often send NFTs to each other. Unfortunately, not all libraries specifically use methods for interacting with this type of smart contract. As a result, we need to write code that allows us to construct messages for sending NFTs. First, let’s familiarize ourselves with the TON NFT [standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md).
 
-现在让我们构建交易本身：
+Specifically, we need to thoroughly understand the TL-B schema for [NFT Transfers](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#1-transfer).
 
-- `query_id`：Query ID 在消息处理方面没有价值。NFT 合约不会验证它，只会读取它。当服务希望为其每条报文分配一个特定的查询 ID 以供识别时，这个值可能会很有用。因此，我们将其设置为 0。
+- `query_id`: Query ID has no value in message processing. The NFT contract doesn't validate it; it only reads it. This value can be helpful when a service wants to assign a specific query ID to each message for identification purposes. Therefore, we will set it to 0.
 
-- `response_destination`：处理所有权变更信息后，将产生额外的 TON。如果指定了该地址，它们将被发送到该地址，否则将保留在 NFT 余额中。
+- `response_destination`: After processing the ownership change message, there will be extra TONs. If specified, they will be sent to this address; otherwise, they will remain on the NFT balance.
 
-- `custom_payload`：custom_payload 用于执行特定任务，不与普通 NFT 一起使用。
+- `custom_payload`: The custom_payload is used for specific tasks and is not typically required for ordinary NFTs.
 
-- `forward_amount`：如果 forward_amount 不为零，指定的 TON 数将发送给新的所有者。这样，新的所有者就会知道他们收到了一些东西。
+- `forward_amount`: If the forward_amount isn’t zero, the specified TON amount will be sent to the new owner, who will then be notified that they received something.
 
-- `forward_payload`：forward_payload 是附加数据，可与 forward_amount 一起发送给新的所有者。例如，使用 forward_payload，用户可以[在 NFT 转移过程中添加注释](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#forward_payload-format)，如前面的教程所示。不过，虽然 forward_payload 是在 TON 的 NFT 标准中编写的，但区块链探索者并不完全支持显示各种详细信息。在显示 Jettons 时也存在同样的问题。
+- `forward_payload`: The forward_payload is additional data that can be sent to the new owner along with the `forward_amount`. For example, the forward_payload allows users to [add a comment during the transfer of an NFT](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#forward_payload-format), as demonstrated earlier in the tutorial. However, despite being part of TON’s NFT standard, blockchain explorers do not fully support displaying these details. A similar issue exists when displaying Jettons.
 
-现在，让我们来构建信息本身：
+Now, let's build the message itself:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { Address, beginCell, toNano } from '@ton/core';
+import { Address, beginCell, toNano } from "@ton/core";
 
-const destinationAddress = Address.parse("put your wallet where you want to send NFT");
-const walletAddress = Address.parse("put your wallet which is the owner of NFT")
+const destinationAddress = Address.parse(
+  "put your wallet where you want to send NFT"
+);
+const walletAddress = Address.parse(
+  "put your wallet, which is the owner of NFT."
+);
 const nftAddress = Address.parse("put your nft address");
 
-// We can add a comment, but it will not be displayed in the explorers, 
-// as it is not supported by them at the time of writing the tutorial.
+// We can add a comment, but it will not be displayed in the explorers,
+// as they do not support it at the time of writing the tutorial.
 const forwardPayload = beginCell()
   .storeUint(0, 32)
   .storeStringTail("Hello, TON!")
@@ -1613,13 +1640,13 @@ const transferNftBody = beginCell()
   .storeRef(forwardPayload) // store forward_payload as a .reference
   .endCell();
 
-const internalMessage = beginCell().
-  storeUint(0x18, 6). // bounce
-  storeAddress(nftAddress).
-  storeCoins(toNano("0.05")).
-  storeUint(1, 1 + 4 + 4 + 64 + 32 + 1 + 1). // We store 1 that means we have body as a reference
-  storeRef(transferNftBody).
-  endCell();
+const internalMessage = beginCell()
+  .storeUint(0x18, 6) // bounce
+  .storeAddress(nftAddress)
+  .storeCoins(toNano("0.05"))
+  .storeUint(1, 1 + 4 + 4 + 64 + 32 + 1 + 1) // We store 1, which means we have the body as a reference
+  .storeRef(transferNftBody)
+  .endCell();
 ```
 
 </TabItem>
@@ -1637,7 +1664,7 @@ walletAddress := address.MustParseAddr("put your wallet which is the owner of NF
 nftAddress := address.MustParseAddr("put your nft address")
 
 // We can add a comment, but it will not be displayed in the explorers,
-// as it is not supported by them at the time of writing the tutorial.
+// as they do not support it at the time of writing the tutorial.
 forwardPayload := cell.BeginCell().
   MustStoreUInt(0, 32).
   MustStoreStringSnake("Hello, TON!").
@@ -1658,7 +1685,7 @@ internalMessage := cell.BeginCell().
   MustStoreUInt(0x18, 6). // bounce
   MustStoreAddr(nftAddress).
   MustStoreBigCoins(tlb.MustFromTON("0.05").NanoTON()).
-  MustStoreUInt(1, 1 + 4 + 4 + 64 + 32 + 1 + 1). // We store 1 that means we have body as a reference
+  MustStoreUInt(1, 1 + 4 + 4 + 64 + 32 + 1 + 1). // We store 1, which means we have the body as a reference
   MustStoreRef(transferNftBody).
   EndCell()
 ```
@@ -1666,47 +1693,49 @@ internalMessage := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-NFT 传输操作码来自 [同一标准](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#tl-b-schema)。
-现在，让我们按照本教程前几节的内容完成报文。完成信息所需的正确代码可在 [GitHub 代码库](/v3/guidelines/smart-contracts/howto/wallet#-source-code) 中找到。
+The NFT transfer opcode comes from [the same standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md#tl-b-schema).
+Now, let's complete the message as laid out in this tutorial's previous sections. The correct code to complete the message is in the [GitHub repository](/v3/guidelines/smart-contracts/howto/wallet#-source-code).
 
-现在，我们转向只有 V4 钱包使用的方法：
+The same procedure can also be applied to Jettons. To carry out this process, refer to the TL-B [standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md) for Jettons transfers. It’s important to note that a slight difference exists between NFT and Jettons transfers.
 
-### Wallet v3 和 Wallet v4 获取方法
+### Wallet v3 and wallet v4 get methods
 
-让我们考虑 `get_public_key` 和 `is_plugin_installed` 方法。选择这两种方法是因为，首先我们需要从 256 位数据中获取公钥，然后我们需要学习如何向 GET 方法传递 slice 和不同类型的数据。这对于我们正确使用这些方法非常有用。
+Smart contracts often use [GET methods](/v3/guidelines/smart-contracts/get-methods). However, they don’t run inside the blockchain but on the client side. GET methods have many uses and provide accessibility to different data types for smart contracts. For example, the [get_nft_data() method in NFT smart contracts](https://github.com/ton-blockchain/token-contract/blob/991bdb4925653c51b0b53ab212c53143f71f5476/nft/nft-item.fc#L142-L145) allows users to retrieve specific content, owner, and NFT collection information.
 
-首先，我们需要一个能够发送请求的客户端。因此，我们将使用特定的钱包地址（[EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72r5gqPrHF](https://tonscan.org/address/EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72r5gqPrHF)）作为例子：
+Below we’ll learn more about the basics of GET methods used with [V3](https://github.com/ton-blockchain/ton/blob/e37583e5e6e8cd0aebf5142ef7d8db282f10692b/crypto/smartcont/wallet3-code.fc#L31-L41) and [V4](https://github.com/ton-blockchain/wallet-contract/blob/4111fd9e3313ec17d99ca9b5b1656445b5b49d8f/func/wallet-v4-code.fc#L164-L198). Let’s start with the methods that are the same for both wallet versions:
 
-|                                                                方法                                                                |                                                         说明                                                        |
-| :------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------: |
-|                        int get_subwallet_id()                       |                                 需要使用该方法接收当前的 seqno，并以正确的值发送信息。在本教程的前几节中，该方法经常被调用。                                 |
-| int is_plugin_installed(int wc, int addr_hash) | 让我们知道插件是否已安装。调用此方法时，需要传递 [工作链](/learn/overviews/ton-blockchain#workchain-blockchain-with-your-own-rules) 和插件地址哈希。 |
+|                                       Method                                      |                                                                                                                                                              Explanation                                                                                                                                                             |
+| :-------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                           int seqno()                          |                                                            This method is essential for retrieving the current seqno and sending messages with the correct value. In previous sections of this tutorial, we frequently called this method.                                                           |
+| int get_public_key() | This method retrieves the public key. While get_public_key() is not widely used, various services can utilize it. For example, some API services allow retrieving multiple wallets associated with the same public key. |
 
-让我们考虑 `get_public_key` 和 `is_plugin_installed` 方法。选择这两种方法是因为，首先我们需要从 256 位数据中获取公钥，然后我们需要学习如何向 GET 方法传递 slice 和不同类型的数据。这对于我们正确使用这些方法非常有用。
+Now, let’s move to the methods that only the V4 wallet makes use of:
 
-|                                                                方法                                                                |                                                                              说明                                                                              |
-| :------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                        int get_subwallet_id()                       |                                             在本教程的前面部分，我们已经讨论过这个问题。通过这种方法可以重新获取 subwallet_id。                                            |
-| int is_plugin_installed(int wc, int addr_hash) | 让我们知道插件是否已安装。要调用此方法，必须传递 [workchain](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#workchain-blockchain-with-your-own-rules) 和插件地址哈希值。 |
-|                       tuple get_plugin_list()                       |                                                                        此方法返回已安装插件的地址。                                                                        |
+|                                                              Method                                                              |                                                                                                                                   Explanation                                                                                                                                  |
+| :------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                        int get_subwallet_id()                       |                                                                Earlier in the tutorial, we considered this. This method allows you to retrive subwallet_id.                                                               |
+| int is_plugin_installed(int wc, int addr_hash) | Let us know if the plugin has been installed. To call this method, you need to pass the [workchain](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains#workchain-blockchain-with-your-own-rules) and the plugin address hash. |
+|                       tuple get_plugin_list()                       |                                                                                                    This method returns the address of the installed plugins.                                                                                                   |
 
-让我们来看看 `get_public_key` 和 `is_plugin_installed` 方法。之所以选择这两个方法，是因为一开始我们必须从 256 位数据中获取公钥，之后我们必须学习如何向 GET 方法传递 slice 和不同类型的数据。这对我们学习如何正确使用这些方法非常有用。
+Let’s consider the `get_public_key` and the `is_plugin_installed` methods. These two methods were chosen because we would first have to get a public key from 256 bits of data, and then we would have to learn how to pass a slice and different types of data to GET methods. This is very useful to help us learn how to properly use these methods.
 
-首先，我们需要一个能够发送请求的客户端。因此，我们将以一个特定的钱包地址（[EQDKbjIcfM6ezt8KjKJLshZJSqX7XOA4ff-W72r5gqPrHF](https://tonscan.org/address/EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72r5gqPrHF) ）为例：
+First, we need a client who is capable of sending requests. Therefore, we’ll use a specific wallet address ([EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72r5gqPrHF](https://tonscan.org/address/EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72r5gqPrHF)) as an example:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { TonClient } from '@ton/ton';
-import { Address } from '@ton/core';
+import { TonClient } from "@ton/ton";
+import { Address } from "@ton/core";
 
 const client = new TonClient({
-    endpoint: "https://toncenter.com/api/v2/jsonRPC",
-    apiKey: "put your api key" // you can get an api key from @tonapibot bot in Telegram
+  endpoint: "https://toncenter.com/api/v2/jsonRPC",
+  apiKey: "put your api key", // you can get an api key from @tonapibot bot in Telegram
 });
 
-const walletAddress = Address.parse("EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72r5gqPrHF"); // my wallet address as an example
+const walletAddress = Address.parse(
+  "EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72r5gqPrHF"
+); // my wallet address as an example
 ```
 
 </TabItem>
@@ -1729,7 +1758,7 @@ if err != nil {
 }
 client := ton.NewAPIClient(connection)
 
-block, err := client.CurrentMasterchainInfo(context.Background()) // get current block, we will need it in requests to LiteServer
+block, err := client.CurrentMasterchainInfo(context.Background()) // get the current block, we will need it in requests to LiteServer
 if err != nil {
   log.Fatalln("CurrentMasterchainInfo err:", err.Error())
   return
@@ -1741,17 +1770,20 @@ walletAddress := address.MustParseAddr("EQDKbjIcfM6ezt8KjKJJLshZJJSqX7XOA4ff-W72
 </TabItem>
 </Tabs>
 
-现在，我们需要调用 GET 方法钱包。
+Now, we need to call the GET method wallet.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-// I always call runMethodWithError instead of runMethod to be able to check the exit_code of the called method. 
-let getResult = await client.runMethodWithError(walletAddress, "get_public_key"); // run get_public_key GET Method
+// I always call runMethodWithError instead of runMethod to be able to check the exit_code of the called method.
+let getResult = await client.runMethodWithError(
+  walletAddress,
+  "get_public_key"
+); // run get_public_key GET Method
 const publicKeyUInt = getResult.stack.readBigNumber(); // read answer that contains uint256
 const publicKey = publicKeyUInt.toString(16); // get hex string from bigint (uint256)
-console.log(publicKey)
+console.log(publicKey);
 ```
 
 </TabItem>
@@ -1760,8 +1792,8 @@ console.log(publicKey)
 ```go
 getResult, err := client.RunGetMethod(context.Background(), block, walletAddress, "get_public_key") // run get_public_key GET Method
 if err != nil {
-	log.Fatalln("RunGetMethod err:", err.Error())
-	return
+  log.Fatalln("RunGetMethod err:", err.Error())
+  return
 }
 
 // We have a response as an array with values and should specify the index when reading it
@@ -1774,17 +1806,21 @@ log.Println(publicKey)
 </TabItem>
 </Tabs>
 
-调用成功后，最终结果是一个极大的 256 位数字，必须将其转换为十六进制字符串。上面提供的钱包地址的十六进制字符串如下：`430db39b13cf3cb76bfa818b6b13417b82be2c6c389170fbe06795c71996b1f8`.
-接下来，我们利用 [TonAPI](https://docs.tonconsole.com/tonapi/rest-api) (/v1/wallet/findByPubkey 方法)，将获得的十六进制字符串输入系统，答案中数组的第一个元素将立即识别我的钱包。
+After the call is successfully completed, the end result is an extremely large 256-bit number that must be translated into a hex string. The resulting hex string for the wallet address we provided above is as follows: `430db39b13cf3cb76bfa818b6b13417b82be2c6c389170fbe06795c71996b1f8`.
+Next, we leverage the [TonAPI](https://docs.tonconsole.com/tonapi/rest-api) (/v1/wallet/findByPubkey method) by inputting the obtained hex string into the system. It is immediately clear that the first element in the array within the answer will identify my wallet.
 
-然后切换到 `is_plugin_installed` 方法。例如，我们将再次使用之前使用过的钱包（[EQAM7M--HGyfxlErAIUODrxBA3yj5roBeYiTuy6BHgJ3Sx8k](https://tonscan.org/address/EQAM7M--HGyfxlErAIUODrxBA3yj5roBeYiTuy6BHgJ3Sx8k) 和插件（[EQBTKTis-SWYdupy99ozeOvnEBu8LRrQP_N9qwOTSAy3sQSZ](https://tonscan.org/address/EQBTKTis-SWYdupy99ozeOvnEBu8LRrQP_N9qwOTSAy3sQSZ)）：
+Then, we switch to the `is_plugin_installed` method. As an example, we’ll again use the wallet we used earlier ([EQAM7M--HGyfxlErAIUODrxBA3yj5roBeYiTuy6BHgJ3Sx8k](https://tonscan.org/address/EQAM7M--HGyfxlErAIUODrxBA3yj5roBeYiTuy6BHgJ3Sx8k)) and the plugin ([EQBTKTis-SWYdupy99ozeOvnEBu8LRrQP_N9qwOTSAy3sQSZ](https://tonscan.org/address/EQBTKTis-SWYdupy99ozeOvnEBu8LRrQP_N9qwOTSAy3sQSZ)):
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-const oldWalletAddress = Address.parse("EQAM7M--HGyfxlErAIUODrxBA3yj5roBeYiTuy6BHgJ3Sx8k"); // my old wallet address
-const subscriptionAddress = Address.parseFriendly("EQBTKTis-SWYdupy99ozeOvnEBu8LRrQP_N9qwOTSAy3sQSZ"); // subscription plugin address which is already installed on the wallet
+const oldWalletAddress = Address.parse(
+  "EQAM7M--HGyfxlErAIUODrxBA3yj5roBeYiTuy6BHgJ3Sx8k"
+); // my old wallet address
+const subscriptionAddress = Address.parseFriendly(
+  "EQBTKTis-SWYdupy99ozeOvnEBu8LRrQP_N9qwOTSAy3sQSZ"
+); // subscription plugin address, which is already installed on the wallet
 ```
 
 </TabItem>
@@ -1798,19 +1834,22 @@ subscriptionAddress := address.MustParseAddr("EQBTKTis-SWYdupy99ozeOvnEBu8LRrQP_
 </TabItem>
 </Tabs>
 
-现在，我们需要获取插件的哈希地址，以便将地址转换为数字并发送到 GET 方法。
+Now, we need to retrieve the plugin’s hash address to translate it into a number and send it to the GET Method.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-const hash = BigInt(`0x${subscriptionAddress.address.hash.toString("hex")}`) ;
+const hash = BigInt(`0x${subscriptionAddress.address.hash.toString("hex")}`);
 
-getResult = await client.runMethodWithError(oldWalletAddress, "is_plugin_installed", 
-[
-    {type: "int", value: BigInt("0")}, // pass workchain as int
-    {type: "int", value: hash} // pass plugin address hash as int
-]);
+getResult = await client.runMethodWithError(
+  oldWalletAddress,
+  "is_plugin_installed",
+  [
+    { type: "int", value: BigInt("0") }, // pass workchain as int
+    { type: "int", value: hash }, // pass plugin address hash as int
+  ]
+);
 console.log(getResult.stack.readNumber()); // -1
 ```
 
@@ -1839,41 +1878,42 @@ log.Println(getResult.MustInt(0)) // -1
 </TabItem>
 </Tabs>
 
-在第三章中，我们部署了一个钱包。为此，我们最初发送了一些TON，然后从钱包发送了一笔交易以部署一个智能合约。然而，这个过程并不常用于外部交易，通常主要用于钱包。在开发合约时，部署过程是通过发送内部消息来初始化的。
+The response must be `-1`, meaning the result is `true`. It is also possible to send a slice and a cell if required. It would be enough to create and transfer a Slice or Cell instead of using the BigInt, specifying the appropriate type.
 
-### 通过钱包部署合约
+### Contract deployment via wallet
 
-在第三章中，我们部署了一个钱包。为此，我们首先发送了一些 TON，然后从钱包中发送了一条部署智能合约的消息。不过，这个过程并不广泛用于外部消息，通常只主要用于钱包。在开发合约时，部署流程是通过发送内部消息来初始化的。
+In chapter three, we deployed a wallet. To accomplish this, we initially sent some TON and a message from the wallet to deploy a smart contract. However, this process is not broadly used with external messages and is often used mainly for wallets. While developing contracts, the deployment process is initialized by sending internal messages.
 
-为此，我们将使用 [第三章](/v3/guidelines/smart-contracts/howto/wallet#compiling-wallet-code) 中使用的 V3R2 钱包智能合约。
-在这种情况下，我们将把 `subwallet_id` 设置为 `3` 或其他任何需要的数字，以便在使用相同私钥（可更改）时检索另一个地址：
+To achieve this, we’ll use the V3R2 wallet smart contract introduced in [the third chapter](/v3/guidelines/smart-contracts/howto/wallet#compiling-wallet-code). In this case, we’ll set the `subwallet_id` to `3` or any other number required to generate a different address while using the same private key (this value is customizable):
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { beginCell, Cell } from '@ton/core';
-import { mnemonicToWalletKey } from '@ton/crypto';
+import { beginCell, Cell } from "@ton/core";
+import { mnemonicToWalletKey } from "@ton/crypto";
 
-const mnemonicArray = 'put your mnemonic'.split(" ");
+const mnemonicArray = "put your mnemonic".split(" ");
 const keyPair = await mnemonicToWalletKey(mnemonicArray); // extract private and public keys from mnemonic
 
-const codeCell = Cell.fromBase64('te6ccgEBCAEAhgABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQCW8oMI1xgg0x/TH9MfAvgju/Jj7UTQ0x/TH9P/0VEyuvKhUUS68qIE+QFUEFX5EPKj+ACTINdKltMH1AL7AOgwAaTIyx/LH8v/ye1UAATQMAIBSAYHABe7Oc7UTQ0z8x1wv/gAEbjJftRNDXCx+A==');
+const codeCell = Cell.fromBase64(
+  "te6ccgEBCAEAhgABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQCW8oMI1xgg0x/TH9MfAvgju/Jj7UTQ0x/TH9P/0VEyuvKhUUS68qIE+QFUEFX5EPKj+ACTINdKltMH1AL7AOgwAaTIyx/LH8v/ye1UAATQMAIBSAYHABe7Oc7UTQ0z8x1wv/gAEbjJftRNDXCx+A=="
+);
 const dataCell = beginCell()
-    .storeUint(0, 32) // Seqno
-    .storeUint(3, 32) // Subwallet ID
-    .storeBuffer(keyPair.publicKey) // Public Key
-    .endCell();
+  .storeUint(0, 32) // Seqno
+  .storeUint(3, 32) // Subwallet ID
+  .storeBuffer(keyPair.publicKey) // Public Key
+  .endCell();
 
 const stateInit = beginCell()
-    .storeBit(0) // No split_depth
-    .storeBit(0) // No special
-    .storeBit(1) // We have code
-    .storeRef(codeCell)
-    .storeBit(1) // We have data
-    .storeRef(dataCell)
-    .storeBit(0) // No library
-    .endCell();
+  .storeBit(0) // No split_depth
+  .storeBit(0) // No special
+  .storeBit(1) // We have code
+  .storeRef(codeCell)
+  .storeBit(1) // We have data
+  .storeRef(dataCell)
+  .storeBit(0) // No library
+  .endCell();
 ```
 
 </TabItem>
@@ -1898,7 +1938,7 @@ mnemonicArray := strings.Split("put your mnemonic", " ")
 // all required libraries (crypto, pbkdf2 and others).
 mac := hmac.New(sha512.New, []byte(strings.Join(mnemonicArray, " ")))
 hash := mac.Sum(nil)
-k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries "TON default seed" is used as salt when getting keys
+k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries, "TON default seed" is used as salt when getting keys
 // 32 is a key len
 privateKey := ed25519.NewKeyFromSeed(k)              // get private key
 publicKey := privateKey.Public().(ed25519.PublicKey) // get public key from private key
@@ -1925,33 +1965,33 @@ stateInit := cell.BeginCell().
 </TabItem>
 </Tabs>
 
-接下来，我们将从合约中获取地址，并创建 InternalMessage。此外，我们还要在消息中添加 "Deploying..." 注释。
+Next, we’ll retrieve the address from our contract and build the Internal Message. We'll also add the "Deploying..." comment to our message.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { Address, toNano } from '@ton/core';
+import { Address, toNano } from "@ton/core";
 
 const contractAddress = new Address(0, stateInit.hash()); // get the hash of stateInit to get the address of our smart contract in workchain with ID 0
 console.log(`Contract address: ${contractAddress.toString()}`); // Output contract address to console
 
 const internalMessageBody = beginCell()
-    .storeUint(0, 32)
-    .storeStringTail('Deploying...')
-    .endCell();
+  .storeUint(0, 32)
+  .storeStringTail("Deploying...")
+  .endCell();
 
 const internalMessage = beginCell()
-    .storeUint(0x10, 6) // no bounce
-    .storeAddress(contractAddress)
-    .storeCoins(toNano('0.01'))
-    .storeUint(0, 1 + 4 + 4 + 64 + 32)
-    .storeBit(1) // We have State Init
-    .storeBit(1) // We store State Init as a reference
-    .storeRef(stateInit) // Store State Init as a reference
-    .storeBit(1) // We store Message Body as a reference
-    .storeRef(internalMessageBody) // Store Message Body Init as a reference
-    .endCell();
+  .storeUint(0x10, 6) // no bounce
+  .storeAddress(contractAddress)
+  .storeCoins(toNano("0.01"))
+  .storeUint(0, 1 + 4 + 4 + 64 + 32)
+  .storeBit(1) // We have State Init
+  .storeBit(1) // We store State Init as a reference
+  .storeRef(stateInit) // Store State Init as a reference
+  .storeBit(1) // We store Message Body as a reference
+  .storeRef(internalMessageBody) // Store Message Body Init as a reference
+  .endCell();
 ```
 
 </TabItem>
@@ -1989,55 +2029,69 @@ internalMessage := cell.BeginCell().
 </Tabs>
 
 :::info
-请注意，上面已经指定了位，stateInit 和 internalMessageBody 已作为引用保存。由于链接是单独保存的，我们可以写 4 (0b100) + 2 (0b10) + 1 (0b1) -> (4 + 2 + 1, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1) 即 (0b111, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)，然后保存两个引用。
+Note that the bits have been specified above and that the stateInit and internalMessageBody have been saved as references.
 :::
 
-接下来，我们将为钱包准备一条信息并发送：
+Since the links are stored separately, we could write:
+
+```tlb
+4 (0b100) + 2 (0b10) + 1 (0b1) -> (4 + 2 + 1, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)
+```
+
+Tha also means:
+
+```tlb
+(0b111, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)
+```
+
+Then, save two references.
+
+Next, we’ll prepare a message for our wallet and send it:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { TonClient } from '@ton/ton';
-import { sign } from '@ton/crypto';
+import { TonClient } from "@ton/ton";
+import { sign } from "@ton/crypto";
 
 const client = new TonClient({
-    endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-    apiKey: 'put your api key' // you can get an api key from @tonapibot bot in Telegram
+  endpoint: "https://toncenter.com/api/v2/jsonRPC",
+  apiKey: "put your api key", // you can get an api key from @tonapibot bot in Telegram
 });
 
-const walletMnemonicArray = 'put your mnemonic'.split(' ');
+const walletMnemonicArray = "put your mnemonic".split(" ");
 const walletKeyPair = await mnemonicToWalletKey(walletMnemonicArray); // extract private and public keys from mnemonic
-const walletAddress = Address.parse('put your wallet address with which you will deploy');
-const getMethodResult = await client.runMethod(walletAddress, 'seqno'); // run "seqno" GET method from your wallet contract
+const walletAddress = Address.parse("put the wallet address you will deploy.");
+const getMethodResult = await client.runMethod(walletAddress, "seqno"); // run "seqno" GET method from your wallet contract
 const seqno = getMethodResult.stack.readNumber(); // get seqno from response
 
 // message for our wallet
 const toSign = beginCell()
-    .storeUint(698983191, 32) // subwallet_id
-    .storeUint(Math.floor(Date.now() / 1e3) + 60, 32) // Message expiration time, +60 = 1 minute
-    .storeUint(seqno, 32) // store seqno
-    // Do not forget that if we use Wallet V4, we need to add .storeUint(0, 8) 
-    .storeUint(3, 8)
-    .storeRef(internalMessage);
+  .storeUint(698983191, 32) // subwallet_id
+  .storeUint(Math.floor(Date.now() / 1e3) + 60, 32) // Message expiration time, +60 = 1 minute
+  .storeUint(seqno, 32) // store seqno
+  // Do not forget that if we use Wallet V4, we need to add .storeUint(0, 8)
+  .storeUint(3, 8)
+  .storeRef(internalMessage);
 
 const signature = sign(toSign.endCell().hash(), walletKeyPair.secretKey); // get the hash of our message to wallet smart contract and sign it to get signature
 const body = beginCell()
-    .storeBuffer(signature) // store signature
-    .storeBuilder(toSign) // store our message
-    .endCell();
+  .storeBuffer(signature) // store signature
+  .storeBuilder(toSign) // store our message
+  .endCell();
 
 const external = beginCell()
-    .storeUint(0b10, 2) // indicate that it is an incoming external message
-    .storeUint(0, 2) // src -> addr_none
-    .storeAddress(walletAddress)
-    .storeCoins(0) // Import fee
-    .storeBit(0) // We do not have State Init
-    .storeBit(1) // We store Message Body as a reference
-    .storeRef(body) // Store Message Body as a reference
-    .endCell();
+  .storeUint(0b10, 2) // indicate that it is an incoming external message
+  .storeUint(0, 2) // src -> addr_none
+  .storeAddress(walletAddress)
+  .storeCoins(0) // Import fee
+  .storeBit(0) // We do not have State Init
+  .storeBit(1) // We store Message Body as a reference
+  .storeRef(body) // Store Message Body as a reference
+  .endCell();
 
-console.log(external.toBoc().toString('base64'));
+console.log(external.toBoc().toString("base64"));
 client.sendFile(external.toBoc());
 ```
 
@@ -2061,7 +2115,7 @@ if err != nil {
 }
 client := ton.NewAPIClient(connection)
 
-block, err := client.CurrentMasterchainInfo(context.Background()) // get current block, we will need it in requests to LiteServer
+block, err := client.CurrentMasterchainInfo(context.Background()) // get the current block, we will need it in requests to LiteServer
 if err != nil {
   log.Fatalln("CurrentMasterchainInfo err:", err.Error())
   return
@@ -2070,7 +2124,7 @@ if err != nil {
 walletMnemonicArray := strings.Split("put your mnemonic", " ")
 mac = hmac.New(sha512.New, []byte(strings.Join(walletMnemonicArray, " ")))
 hash = mac.Sum(nil)
-k = pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries "TON default seed" is used as salt when getting keys
+k = pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries, "TON default seed" is used as salt when getting keys
 // 32 is a key len
 walletPrivateKey := ed25519.NewKeyFromSeed(k) // get private key
 walletAddress := address.MustParseAddr("put your wallet address with which you will deploy")
@@ -2090,7 +2144,7 @@ toSign := cell.BeginCell().
   MustStoreUInt(3, 8).          // store mode of our internal message
   MustStoreRef(internalMessage) // store our internalMessage as a reference
 
-signature := ed25519.Sign(walletPrivateKey, toSign.EndCell().Hash()) // get the hash of our message to wallet smart contract and sign it to get signature
+signature := ed25519.Sign(walletPrivateKey, toSign.EndCell().Hash()) // get the hash of our message to the wallet smart contract and sign it to get the signature
 
 body := cell.BeginCell().
   MustStoreSlice(signature, 512). // store signature
@@ -2119,131 +2173,131 @@ if err != nil {
 </TabItem>
 </Tabs>
 
-首先，让我们查看[高负载钱包智能合约的代码结构](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/highload-wallet-v2-code.fc)：
+This concludes our work with ordinary wallets. At this stage, you should have a strong understanding of how to interact with wallet smart contracts, send messages, and be able to use various library types.
 
-## 🔥 高负载钱包 V3
+## 🔥 High-load wallet v3
 
-在短时间内处理大量信息时，需要使用名为 "高负载钱包 "的特殊钱包。在很长一段时间里，高负载钱包 V2 是 TON 的主要钱包，但使用时必须非常小心。否则，您可能会被 [锁定所有资金](https://t.me/tonstatus/88)。
+You’ll need a specialized wallet called a **High-Load Wallet** to handle many messages quickly. High-Load Wallet V2 was the primary wallet on TON for a long time, but it required careful handling. Otherwise, you risk [locking all funds](https://t.me/tonstatus/88).
 
-您会发现与普通钱包有些不同。现在让我们更详细地看看高负载钱包在TON上的工作原理（除了子钱包，因为我们之前已经讨论过了）。
+[With the introduction of High-Load Wallet V3](https://github.com/ton-blockchain/highload-wallet-contract-v3), this issue has been resolved at the contract architecture level, and it consumes less gas. This chapter will cover the basics of High-Load Wallet V3 and highlight important nuances to keep in mind.
 
 :::note
-我们将[使用稍作修改的 Wrapper 版本](https://github.com/aSpite/highload-wallet-contract-v3/blob/main/wrappers/HighloadWalletV3.ts)来签订合约，因为它可以防止一些不明显的错误。
+We will work [with a slightly modified version of wrapper](https://github.com/aSpite/highload-wallet-contract-v3/blob/main/wrappers/HighloadWalletV3.ts) for the contract, as it protects against some non-obvious mistakes.
 :::
 
-### 存储结构
+### Storage structure
 
-如果相同的交易请求已经存在，合约将不会接受它，因为它已经被处理过了：
+First of all, [TL-B schema](https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/d58c31e82315c34b4db55942851dd8d4153975c5/contracts/scheme.tlb#L1C1-L3C21) will help us in learning the structure of the contract storage:
 
 ```
 storage$_ public_key:bits256 subwallet_id:uint32 old_queries:(HashmapE 14 ^Cell)
-          queries:(HashmapE 14 ^Cell) last_clean_time:uint64 timeout:uint22
-          = Storage;
+ queries:(HashmapE 14 ^Cell) last_clean_time:uint64 timeout:uint22
+ = Storage;
 ```
 
 :::tip TL-B
-您可以 [在此](/v3/documentation/data-formats/tlb/tl-b-language) 阅读有关 TL-B 的更多信息。
+You can read more about TL-B [here](/v3/documentation/data-formats/tlb/tl-b-language).
 :::
 
-在合约存储中，我们可以找到以下字段：
+In the contract storage, we can find the following fields:
 
-|                           Field                           |                                                                          说明                                                                          |
-| :-------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------: |
-|              public_key              |                                                                       合约的公开密钥。                                                                       |
-|             subwallet_id             |                                                       [钱包 ID](#subwallet-ids)。它允许你使用同一公钥创建多个钱包。                                                      |
-|              old_queries             |                                                              已经处理过的过时查询。每次超时后，它们都会被移至此处。                                                             |
-|                          queries                          |                                                                     已处理但尚未过时的查询。                                                                     |
-| last_clean_time | 上次清理的时间。如果 `last_clean_time < (now() - timeout)`，旧查询将被移至 `old_queries`。如果 `last_clean_time < (now() - 2 * timeout)`，则同时清除 `old_queries` 和 `queries`。 |
-|                          timeout                          |                                                                查询转到 `old_queries` 的时间。                                                               |
+|                           Field                           |                                                                                                                         Description                                                                                                                         |
+| :-------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|              public_key              |                                                                                                         Public key of the contract.                                                                                                         |
+|             subwallet_id             |                                                                 [Wallet ID](#subwallet-ids). It allows you to create many wallets using the same public key.                                                                |
+|              old_queries             |                                                            Old queries that have already been processed and are outdated. They are moved here after each timeout.                                                           |
+|                          queries                          |                                                                                          Queries that have been processed but are not yet outdated.                                                                                         |
+| last_clean_time | The time of the last cleanup. If `last_clean_time < (now() - timeout)`, old queries are moved to `old_queries`. If `last_clean_time < (now() - 2 * timeout)`, both `old_queries` and `queries` are cleared. |
+|                          timeout                          |                                                                                           The time after which queries are moved to `old_queries`.                                                                                          |
 
-我们将在 [重放保护](#replay-protection) 中进一步讨论如何处理已处理的查询。
+We’ll explore how to work with processed queries in more detail in the [Replay protection](#replay-protection) section.
 
-### Shifts 和 Bits 数字作为 Query ID
+### Shifts and bits numbers as query id
 
-请注意，如果找到一个值，`f` 永远等于 -1（真）。`~ -1` 操作（位非）将始终返回 0 的值，意味着应该继续循环。与此同时，当字典填充了交易时，需要开始计算那些**大于 -1** 的值（例如，0），并且每次交易都将值递增 1。这个结构允许以正确的顺序发送交易。
+The Query ID is a number that consists of two parts: shift and bit_number:
 
 ```func.
 int shift = msg_inner_slice~load_uint(KEY_SIZE);
 int bit_number = msg_inner_slice~load_uint(BIT_NUMBER_SIZE);
 ```
 
-通常情况下，[TON上的智能合约需要为自己的存储付费](/develop/smart-contracts/fees#storage-fee)。这意味着智能合约可以存储的数据量是有限的，以防止高网络交易费用。为了让系统更高效，超过 64 秒的交易将从存储中移除。按照以下方式进行：
+The core idea is that each Query ID now occupies only 1 bit in the dictionary while typically avoiding an increase in gas consumption.
 
-首先，合约会使用 shift 命令，尝试从  `old_queries` 字典中获取位于该索引处的 cell ：
+To start, the contract, using shift, tries to get the cell at that index in the `old_queries` dictionary:
 
 ```func
 (cell value, int found) = old_queries.udict_get_ref?(KEY_SIZE, shift);
 ```
 
-请注意，必须多次与 `f` 变量进行交互。由于 [TVM 是一个堆栈机器](/learn/tvm-instructions/tvm-overview#tvm-is-a-stack-machine)，在每次与 `f` 变量交互时，必须弹出所有值以获得所需的变量。`f~touch()` 操作将 f 变量放在堆栈顶部，以优化代码执行。
+If such a cell is found, it skips `bit_number` bits to reach the bit at index `bit_number` (it’s important to distinguish between `bit_number` as a quantity and `bit_number` as an index). If the bit is set, it means a query with that Query ID has already been processed, and the contract throws an error:
 
 ```func
 if (found) {
-    slice value_slice = value.begin_parse();
-    value_slice~skip_bits(bit_number);
-    throw_if(error::already_executed, value_slice.preload_int(1));
+ slice value_slice = value.begin_parse();
+ value_slice~skip_bits(bit_number);
+ throw_if(error::already_executed, value_slice.preload_int(1));
 }
 ```
 
-如果您之前没有使用过位运算，那么这个部分可能会显得有些复杂。在智能合约代码中可以看到以下代码行：
+The next step is to search the `queries` dictionary:
 
 ```func
 (cell value, int found) = queries.udict_get_ref?(KEY_SIZE, shift);
 ```
 
-结果，在右侧的数字上添加了 32 位。这意味着 **现有值向左移动 32 位**。举例来说，让我们考虑数字 3 并将其翻译成二进制形式，结果是 11。应用 `3 << 2` 操作，11 移动了 2 位。这意味着在字符串的右侧添加了两位。最后，我们得到了 1100，即 12。
+If such a cell is found, the contract splits it into two parts: `0...bit_number-1` (head) and `bit_number...1023` (tail). It then reads one bit from the beginning of the tail (this bit corresponds to the `bit_number` variable when counting from 0, i.e., it represents the index of the required bit). If the bit is set to `1`, the request with that Query ID has already been processed, and the contract throws an error. Otherwise, the contract sets the bit to `1`, merges the pieces back into a single cell, and writes it back into the `queries` dictionary:
 
 ```func
 builder new_value = null();
 if (found) {
-    slice value_slice = value.begin_parse();
-    (slice tail, slice head) = value_slice.load_bits(bit_number);
-    throw_if(error::already_executed, tail~load_int(1));
-    new_value = begin_cell().store_slice(head).store_true().store_slice(tail);
+ slice value_slice = value.begin_parse();
+ (slice tail, slice head) = value_slice.load_bits(bit_number);
+ throw_if(error::already_executed, tail~load_int(1));
+ new_value = begin_cell().store_slice(head).store_true().store_slice(tail);
 } else {
-    new_value = begin_cell().store_zeroes(bit_number).store_true().store_zeroes(CELL_BITS_SIZE - bit_number - 1);
+ new_value = begin_cell().store_zeroes(bit_number).store_true().store_zeroes(CELL_BITS_SIZE - bit_number - 1);
 }
 ```
 
 :::note
-If you [familiarize yourself](/v3/documentation/tvm/instructions) with the operation of the `LDSLICEX` opcode (the load\_bits function uses this opcode), you will notice that the read data is returned first (head) and only then the remaining data (tail), but they are in reverse order in the contract code.
+If you [familiarize yourself](/v3/documentation/tvm/instructions) with the operation of the `LDSLICEX` opcode (used by the `load_bits` function), you’ll notice that the read data is returned first (head), followed by the remaining data (tail). However, in the contract code, they appear in reverse order.
 
-事实上，它们的顺序是相反的，因为在 stdlib 的函数签名中，返回的数据[顺序相反](https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/d58c31e82315c34b4db55942851dd8d4153975c5/contracts/imports/stdlib.fc#L321)：`(slice, slice) load_bits(slice s, int len) asm(s len -> 1 0) "LDSLICEX";`。这里 `-> 1 0` 表示先返回索引为 1（尾部）的参数，然后返回索引为 0（头部）的参数。
+This happens because, in the stdlib function signature, the returned data [is ordered differently](https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/d58c31e82315c34b4db55942851dd8d4153975c5/contracts/imports/stdlib.fc#L321): `(slice, slice) load_bits(slice s, int len) asm(s len -> 1 0) "LDSLICEX";`. Here, `-> 1 0` indicates that the argument with index `1` (tail) is returned first, followed by the argument with index `0` (head).
 :::
 
-在上面，我们执行了一个操作，将数字 64 向左移动 32 位，以**减去 64 秒**的时间戳。这样我们就可以比较过去的 query_ids，看看它们是否小于接收到的值。如果是这样，它们就超过了 64 秒：
+In practice, we’re working with a matrix where `shift` represents the row index and `bit_number` represents the column index. This structure allows us to store up to 1023 queries in a single cell, meaning gas consumption only increases every 1023 queries when a new cell is added to the dictionary. However, this efficiency depends on the sequential growth of values, not random ones. Therefore, it’s crucial to increment the Query ID properly [using a dedicated class for this purpose](https://github.com/aSpite/highload-wallet-contract-v3/blob/main/wrappers/HighloadQueryId.ts).
 
-这种方法允许每次超时存储大量请求（1023 \* 8192 = 8,380,416），但你可能会注意到[类 HighloadQueryId 支持 8,380,415](https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/d58c31e82315c34b4db55942851dd8d4153975c5/wrappers/HighloadQueryId.ts#L32)。这是为了确保在整个限制耗尽的情况下，总有 1 个比特可用于一个紧急超时请求。之所以设置这个值，是因为区块链上有[账户堆栈中可能存在的最大 cell 数限制](https://github.com/ton-blockchain/ton/blob/5c392e0f2d946877bb79a09ed35068f7b0bd333a/crypto/block/mc-config.h#L395)（截至本文撰写时）。
+This approach allows storing massive requests per timeout (1023 \* 8192 = 8,380,416). Still, you may notice that [the class HighloadQueryId supports 8,380,415](https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/d58c31e82315c34b4db55942851dd8d4153975c5/wrappers/HighloadQueryId.ts#L32). This is to ensure that there will always be 1 bit left for one emergency timeout request if the entire limit is exhausted. This value is set because of the [limit on the maximum possible number of cells in an account stack](https://github.com/ton-blockchain/ton/blob/5c392e0f2d946877bb79a09ed35068f7b0bd333a/crypto/block/mc-config.h#L395) on the blockchain (as of this writing).
 
-为了更好地理解，让我们使用 `1625918400` 作为时间戳的示例。它的二进制表示（左侧添加零以得到 32 位）是 01100000111010011000101111000000。执行 32 位位左移操作后，我们数字的二进制表示末尾会出现 32 个零。
+For every cell that can hold 1023 requests, 2 cells in the dictionary are spent (one to store the key, the other for the value). If we take the current maximum shift value, the theoretical maximum is 8192 \* 2 \* 2 (we have two dictionaries: queries and old_queries) = 32,768 cells. If you increase the key size by a bit, it will no longer fit within the current limits.
 
 :::info
-在高负载 V2 的早期版本中，每个 Query ID（64 位）都存储在字典中的单独 cell 中，并且是 32 位字段 `expire_at` 和 `query_id` 的组合。这导致在清除旧查询时， gas 消耗量增长非常快。
+In High-Load V2, each Query ID (64-bit) was stored in a separate cell within the dictionary, combining two 32-bit fields: `expire_at` and `query_id`. This approach caused gas consumption to grow rapidly when clearing old queries.
 :::
 
-### 存储更新
+### Replay protection
 
-所有操作完成后，剩下的唯一任务就是将新的值保存在存储中：
+As we know that external messages in TON [have no sender and can be sent by anyone in the network](#replay-protection---seqno), it is essential to have a list of processed requests to avoid re-processing. For this purpose, High-Load Wallet V3 uses the `queries` and `old_queries` dictionaries and the `last_clean_time` and `timeout` values.
 
-当合约从其存储空间中完全检索到所需的所有数据后，它会检查上次查询字典清理的时间。如果超过了 `timeout` 时间，合约会将所有查询从 queries 移到 old_queries。如果上次清理时间超过 `timeout * 2` 次，合约会额外清理 old_queries：
+After the contract has completely retrieved all the data it needs from its storage, it checks when the last query dictionary cleanup occurred. If it was more than the `timeout` time ago, the contract moves all queries from queries to old_queries. If the last cleanup was more than `timeout * 2` times ago, the contract cleans up old_queries in addition:
 
 ```func
 if (last_clean_time < (now() - timeout)) {
-    (old_queries, queries) = (queries, null());
-    if (last_clean_time < (now() - (timeout * 2))) {
-        old_queries = null();
-    }
-    last_clean_time = now();
+ (old_queries, queries) = (queries, null());
+ if (last_clean_time < (now() - (timeout * 2))) {
+ old_queries = null();
+ }
+ last_clean_time = now();
 }
 ```
 
-在我们深入了解钱包部署和交易创建之前，我们必须考虑的最后一件事是高负载钱包的 GET 方法：
+This happens because the contract doesn’t track the exact execution time of each request. For example, suppose the `timeout` is set to 3 hours, but the last request was executed one minute before the timeout. In that case, the request will be considered outdated just one minute later, even though the entire 3-hour period hasn’t elapsed. The second dictionary stores the same queries for at least the specified timeout duration to address this issue.
 
-理论上，查询的生命周期从 `timeout` 到 `timeout * 2`，这意味着在跟踪哪些查询过时时，最好至少等待 `timeout * 2` 次，以确定查询是否过时。
+Theoretically, a query has a lifetime from `timeout` to `timeout * 2`, which means that when tracking which queries are outdated, it is good practice to wait at least `timeout * 2` times to see if the query is obsolete.
 
-### 保证无差错行动阶段
+### Guaranteed error-free action phase
 
-一旦完成所有检查和清理工作，合约就可以接受信息，对其存储空间进行更改，并调用提交函数，即使接下来出现错误，也会认为计算阶段已经成功：
+Once all checks and cleanups are complete, the contract can accept the message, update its storage, and call the commit function. This ensures the compute phase is considered successful, even if an error occurs afterward.
 
 ```func
 accept_message();
@@ -2251,29 +2305,29 @@ accept_message();
 queries~udict_set_ref(KEY_SIZE, shift, new_value.end_cell());
 
 set_data(begin_cell()
-    .store_uint(public_key, PUBLIC_KEY_SIZE)
-    .store_uint(subwallet_id, SUBWALLET_ID_SIZE)
-    .store_dict(old_queries)
-    .store_dict(queries)
-    .store_uint(last_clean_time, TIMESTAMP_SIZE)
-    .store_uint(timeout, TIMEOUT_SIZE)
-    .end_cell());
+ .store_uint(public_key, PUBLIC_KEY_SIZE)
+ .store_uint(subwallet_id, SUBWALLET_ID_SIZE)
+ .store_dict(old_queries)
+ .store_dict(queries)
+ .store_uint(last_clean_time, TIMESTAMP_SIZE)
+ .store_uint(timeout, TIMEOUT_SIZE)
+ .end_cell());
 
 
 commit();
 ```
 
-这意味着，如果传递给方法的 query_id 小于 last_cleaned 值，就无法确定它是否曾在合约中。因此 `query_id <= last_cleaned` 返回 -1，而表达式前面的减号将答案改为 1。如果 query_id 大于 last_cleaned 方法，则表示它尚未被处理。
+This ensures that when executing further code, the contract doesn’t revert to its previous state if an error occurs in the message the user is trying to send. Without this, the external message would remain valid and could be accepted multiple times, leading to unnecessary balance depletion.
 
-不过，还有一个问题必须解决，那就是在 **行动阶段** 可能出现的错误。虽然我们在发送消息时有一个忽略错误（2）的标记，但它并不是在所有情况下都有效，因此我们需要确保在这个阶段不会发生错误，因为错误可能会导致状态回滚，使 `commit()` 失去意义。
+However, we must address another issue: potential errors during the **Action Phase**. While we have a flag to ignore errors (2) when sending a message, it doesn’t cover all cases. Therefore, we need to ensure no errors occur during this phase, as they could cause a state rollback, rendering `commit()` meaningless.
 
-为了部署高负载钱包，必须提前生成一个助记词密钥，用户将使用此密钥。可以使用在本教程之前部分中使用的相同密钥。
+For this reason, instead of sending all messages directly, the contract sends itself a message with the `internal_transfer` opcode. This message is parsed in detail by the contract to ensure that no Action Phase error occurs:
 
 ```func
 throw_if(error::invalid_message_to_send, message_slice~load_uint(1)); ;; int_msg_info$0
 int msg_flags = message_slice~load_uint(3); ;; ihr_disabled:Bool bounce:Bool bounced:Bool
 if (is_bounced(msg_flags)) {
-    return ();
+ return ();
 }
 slice message_source_adrress = message_slice~load_msg_addr(); ;; src
 throw_unless(error::invalid_message_to_send, is_address_none(message_source_adrress));
@@ -2287,77 +2341,77 @@ int maybe_state_init = message_slice~load_uint(1);
 throw_if(error::invalid_message_to_send, maybe_state_init); ;; throw if state-init included (state-init not supported)
 int either_body = message_slice~load_int(1);
 if (either_body) {
-    message_slice~load_ref();
-    message_slice.end_parse();
+ message_slice~load_ref();
+ message_slice.end_parse();
 }
 ```
 
-如果在读取数据时出现任何问题，仍将处于计算阶段。不过，由于存在 `commit()` 这不是问题，事务仍将被视为成功。如果所有数据都已成功读取，这就保证了操作阶段将无差错地通过，因为这些检查涵盖了 `IGNORE_ERRORS` (2) 标志失败的所有情况。然后，合约就可以通过发送消息来完成工作：
+If any issue arises while reading the data, it will still occur during the compute phase. However, thanks to `commit()`, this isn’t a problem, and the transaction will still be considered successful. If all data is read successfully, it guarantees that the Action Phase will proceed without errors, as these checks cover all cases where the `IGNORE_ERRORS` (2) flag might fail. The contract can then finalize its work by sending the message.
 
 ```func
-;; send message with IGNORE_ERRORS flag to ignore errors in the action phase
+;; send a message with the IGNORE_ERRORS flag to ignore errors in the action phase
 
 send_raw_message(message_to_send, send_mode | SEND_MODE_IGNORE_ERRORS);
 ```
 
-### 内部转账
+### Internal transfer
 
-在终端中的输出将如下所示：
+After `internal_transfer` reaches the contract, it loads the list of actions, sets them in the c5 register, and then applies `set_code` to protect against accidental code changes, which is also an action. Because of this, the number of messages that can be sent is 254 rather than 255, which is the limit on the blockchain. However, the contract can call itself to send more messages, which we will discuss later:
 
 ```func
 if (op == op::internal_transfer) {
-    in_msg_body~skip_query_id();
-    cell actions = in_msg_body.preload_ref();
-    cell old_code = my_code();
-    set_actions(actions);
-    set_code(old_code); ;; prevent to change smart contract code
-    return ();
+ in_msg_body~skip_query_id();
+ cell actions = in_msg_body.preload_ref();
+ cell old_code = my_code();
+ set_actions(actions);
+ set_code(old_code); ;; prevent to change smart contract code
+ return ();
 }
 ```
 
-在上述结果的基础上，我们可以使用base64编码的输出，在其他库和语言中检索包含我们钱包代码的cell，具体操作如下：
+When working with `internal_transfer`, there’s an important nuance to consider. As mentioned earlier, the contract sends a message to itself, but it is entirely collected on the user's side. The challenge lies in accurately calculating the amount of TON to attach to the message.
 
-在官方版本库的包装器中，这个字段是可选的，如果用户不指定，[mode就会变成 128](https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/d58c31e82315c34b4db55942851dd8d4153975c5/wrappers/HighloadWalletV3.ts#L115)，这意味着会发送全部余额。问题是，在这种情况下存在**边缘情况**。
+In the wrapper in the official repository, this field is optional, and if the user does not specify it, [mode becomes 128](https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/d58c31e82315c34b4db55942851dd8d4153975c5/wrappers/HighloadWalletV3.ts#L115), which means that the entire balance is sent. The problem is that there is **an edge case** in such a case.
 
-假设我们要发送大量代币。由于我们在 `response_destination` 字段中设置了我们的地址，所以在发送后，剩余的 TON 会返回到我们的钱包。我们开始同时发送多个外部代币，就会出现以下情况：
+Imagine we want to send out a large number of tokens. After sending them, the remaining TONs are returned to our wallet because we set our address in the `response_destination` field. If we start sending multiple external messages simultaneously, the following situation can occur:
 
-1. 接收并处理外部信息 A，并通过 `response_destination` 发送全部合约余额。
-2. 在外部信息 B 到达之前，已发送完毕的代币的部分佣金已经到达。因此，非空合约余额允许再次向内部报文 B 发送全部余额，但这次发送的代币数量很少。
-3. 接收并处理内部报文 A。发送 token 信息。
-4. 在内部信息 B 到达之前，外部信息 C 成功到达，并再次发送了整个余额。
-5. 当收到内部信息 B 时，即使从发送代币中得到一些额外的 TON，合约的 TON 也很少，因此请求失败，行动阶段的退出代码 = 37（资金不足）。
+1. External message A is received, processed, and sent the entire contract balance via `internal_transfer`.
+2. Before external message B arrives, part of the commissions from the already completed token transfer reaches the contract. This replenishes the contract balance, allowing the entire balance to be sent again in internal message B, but this time with a tiny amount of TONs.
+3. Internal message A is received and processed. Token transfer messages are sent.
+4. External message C reaches the contract before internal message B arrives and sends the entire balance again.
+5. When internal message B is received, the contract has very little TON left. Even if some additional TON from token transfers arrives, the request fails with exit code `37` during the Action Phase (Insufficient Funds).
 
-现在我们需要检索由其初始数据组成的cell，构建一个State Init，并计算一个高负载钱包地址。经过研究智能合约代码后，我们发现subwallet_id、last_cleaned、public_key和old_queries是顺序存储在存储中的：
+As a result, the contract marks the request as processed, even though it wasn’t successfully executed. To avoid this scenario, it’s **recommended to always allocate 1 TON** for `internal_transfer`. Therefore, [we use a modified wrapper](#-high-load-wallet-v3) that requires the user to specify the amount of TONs. This value will suffice for all cases, as the external message size is limited to 64 KB, and a message close to this limit will consume less than 1 TON.
 
-高负载钱包 V3 可以发送超过 254 条信息，[将剩余信息放入第 254 条信息中](https://github.com/aSpite/highload-wallet-contract-v3/blob/d4c1752d00b5303782f121a87eb0620d403d9544/wrappers/HighloadWalletV3.ts#L169-L176)。这样，`internal_transfer` 将被处理多次。封装程序会自动执行此操作，我们无需担心，但**建议每次接收不超过 150 条信息**，以确保即使是复杂的信息也能放入外部信息中。
+High-Load Wallet V3 can send more than 254 messages, [putting the remaining messages into the 254th message](https://github.com/aSpite/highload-wallet-contract-v3/blob/d4c1752d00b5303782f121a87eb0620d403d9544/wrappers/HighloadWalletV3.ts#L169-L176). This way `internal_transfer` will be processed several times. The wrapper automatically does this, and we won't have to worry about it, but **recommended to take no more than 150 messages at a time** to ensure that even complex messages will fit into an external message.
 
 :::info
-虽然外部信息限制为 64KB，但外部信息越大，在发送过程中丢失的可能性就越大，因此 150 条信息是最佳解决方案。
+Although the external message limit is 64KB, the larger the external message, the more likely it is to be lost in delivery, so 150 messages is the optimal solution.
 :::
 
-### GET 方法
+### GET methods
 
-高负载钱包 V3 支持 5 种 GET 方法：
+High-Load Wallet V3 supports the 5 GET methods:
 
-|                                                      方法                                                     |                                                                                              说明                                                                                              |
-| :---------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|              int get_public_key()              |                                                                                           返回合约的公钥。                                                                                           |
-|             int get_subwallet_id()             |                                                                                           返回子钱包 ID。                                                                                          |
-| int get_last_clean_time() |                                                                                          返回上次清理的时间。                                                                                          |
-|                          int get_timeout()                          |                                                                                            返回超时值。                                                                                            |
-|  int processed?(int query_id, int need_clean)  | 返回 query_id 是否已被处理。如果 need_clean 设置为 1，那么将首先根据 `last_clean_time` 和 `timeout` 进行清理，然后检查 `old_queries` 和 `queries` 中的 query_id。 |
+|                                                    Method                                                   |                                                                                                                                                  Explanation                                                                                                                                                 |
+| :---------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|              int get_public_key()              |                                                                                                                            Returns the public key of the contract.                                                                                                                           |
+|             int get_subwallet_id()             |                                                                                                                                   Returns the subwallet ID.                                                                                                                                  |
+| int get_last_clean_time() |                                                                                                                            Returns the time of the last cleaning.                                                                                                                            |
+|                          int get_timeout()                          |                                                                                                                                  Returns the timeout value.                                                                                                                                  |
+|  int processed?(int query_id, int need_clean)  | Returns whether the query_id has been processed. If need_clean is set to 1, we will first do the cleanup based on `last_clean_time` and `timeout` and then check for query_id in `old_queries` and `queries`. |
 
 :::tip
-除非情况另有要求，否则建议为 `need_clean` 传递 `true`，因为这样会返回最新的字典状态。
+It’s recommended to pass `true` for `need_clean` unless the situation requires explicitly otherwise. This ensures the most current dictionary states are returned.
 :::
 
-由于高负载钱包 V3 采用了查询 ID 的组织方式，因此如果查询 ID 没有到达，我们可以再次发送具有相同查询 ID 的信息，而不必担心请求会被处理两次。
+Thanks to how the Query ID is structured in High-Load Wallet V3, we can safely resend a message with the same Query ID if it doesn’t arrive initially without worrying about the request being processed twice.
 
-现在，让我们编程高负载钱包同时发送多条消息。例如，让我们每条消息发送12笔交易，这样gas费用就很小。
+However, in such cases, we must ensure that no more than `timeout` time has passed since the first sending attempt. Otherwise, the request might have already been processed and deleted from the dictionaries. Therefore, it’s recommended to set `timeout` to no less than an hour and no more than 24 hours.
 
-### 部署高负载钱包 V3
+### Deploying high-load wallet v3
 
-每条消息携带其自己的含代码的评论，目的地址将是我们部署的钱包：
+To deploy a contract, we need 2 cells: `code` and `date`. For the code, we will use the following cell:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -2365,42 +2419,52 @@ if (op == op::internal_transfer) {
 ```js
 import { Cell } from "@ton/core";
 
-const HIGHLOAD_V3_CODE = Cell.fromBoc(Buffer.from('b5ee9c7241021001000228000114ff00f4a413f4bcf2c80b01020120020d02014803040078d020d74bc00101c060b0915be101d0d3030171b0915be0fa4030f828c705b39130e0d31f018210ae42e5a4ba9d8040d721d74cf82a01ed55fb04e030020120050a02027306070011adce76a2686b85ffc00201200809001aabb6ed44d0810122d721d70b3f0018aa3bed44d08307d721d70b1f0201200b0c001bb9a6eed44d0810162d721d70b15800e5b8bf2eda2edfb21ab09028409b0ed44d0810120d721f404f404d33fd315d1058e1bf82325a15210b99f326df82305aa0015a112b992306dde923033e2923033e25230800df40f6fa19ed021d721d70a00955f037fdb31e09130e259800df40f6fa19cd001d721d70a00937fdb31e0915be270801f6f2d48308d718d121f900ed44d0d3ffd31ff404f404d33fd315d1f82321a15220b98e12336df82324aa00a112b9926d32de58f82301de541675f910f2a106d0d31fd4d307d30cd309d33fd315d15168baf2a2515abaf2a6f8232aa15250bcf2a304f823bbf2a35304800df40f6fa199d024d721d70a00f2649130e20e01fe5309800df40f6fa18e13d05004d718d20001f264c858cf16cf8301cf168e1030c824cf40cf8384095005a1a514cf40e2f800c94039800df41704c8cbff13cb1ff40012f40012cb3f12cb15c9ed54f80f21d0d30001f265d3020171b0925f03e0fa4001d70b01c000f2a5fa4031fa0031f401fa0031fa00318060d721d300010f0020f265d2000193d431d19130e272b1fb00b585bf03', 'hex'))[0];
+const HIGHLOAD_V3_CODE = Cell.fromBoc(
+  Buffer.from(
+    "b5ee9c7241021001000228000114ff00f4a413f4bcf2c80b01020120020d02014803040078d020d74bc00101c060b0915be101d0d3030171b0915be0fa4030f828c705b39130e0d31f018210ae42e5a4ba9d8040d721d74cf82a01ed55fb04e030020120050a02027306070011adce76a2686b85ffc00201200809001aabb6ed44d0810122d721d70b3f0018aa3bed44d08307d721d70b1f0201200b0c001bb9a6eed44d0810162d721d70b15800e5b8bf2eda2edfb21ab09028409b0ed44d0810120d721f404f404d33fd315d1058e1bf82325a15210b99f326df82305aa0015a112b992306dde923033e2923033e25230800df40f6fa19ed021d721d70a00955f037fdb31e09130e259800df40f6fa19cd001d721d70a00937fdb31e0915be270801f6f2d48308d718d121f900ed44d0d3ffd31ff404f404d33fd315d1f82321a15220b98e12336df82324aa00a112b9926d32de58f82301de541675f910f2a106d0d31fd4d307d30cd309d33fd315d15168baf2a2515abaf2a6f8232aa15250bcf2a304f823bbf2a35304800df40f6fa199d024d721d70a00f2649130e20e01fe5309800df40f6fa18e13d05004d718d20001f264c858cf16cf8301cf168e1030c824cf40cf8384095005a1a514cf40e2f800c94039800df41704c8cbff13cb1ff40012f40012cb3f12cb15c9ed54f80f21d0d30001f265d3020171b0925f03e0fa4001d70b01c000f2a5fa4031fa0031f401fa0031fa00318060d721d300010f0020f265d2000193d431d19130e272b1fb00b585bf03",
+    "hex"
+  )
+)[0];
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-与其他示例不同的是，这里我们将[使用现成的封装器](https://github.com/aSpite/highload-wallet-contract-v3/blob/main/wrappers/HighloadWalletV3.ts)，因为手动创建每条信息将相当困难和耗时。要创建 HighloadWalletV3 类的实例，我们需要传递 `publicKey`、`subwalletId` 和 `timeout` 以及代码：
+Unlike the other examples, here we will work [with a ready-made wrapper](https://github.com/aSpite/highload-wallet-contract-v3/blob/main/wrappers/HighloadWalletV3.ts), as it will be quite difficult and time-consuming to build each message manually. To create an instance of the HighloadWalletV3 class, we pass `publicKey`, `subwalletId`, and `timeout` and also the code:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
 import { TonClient } from "@ton/ton";
-import { HighloadWalletV3 } from "./wrappers/HighloadWalletV3"; 
+import { HighloadWalletV3 } from "./wrappers/HighloadWalletV3";
 import { mnemonicToWalletKey } from "@ton/crypto";
 
 const client = new TonClient({
-    endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-    apiKey: 'put your api key' // you can get an api key from @tonapibot bot in Telegram
+  endpoint: "https://toncenter.com/api/v2/jsonRPC",
+  apiKey: "put your api key", // you can get an api key from @tonapibot bot in Telegram
 });
 
-const walletMnemonicArray = 'put your mnemonic'.split(' ');
+const walletMnemonicArray = "put your mnemonic".split(" ");
 const walletKeyPair = await mnemonicToWalletKey(walletMnemonicArray); // extract private and public keys from mnemonic
-const wallet = client.open(HighloadWalletV3.createFromConfig({
-    publicKey: walletKeyPair.publicKey,
-    subwalletId: 0x10ad,
-    timeout: 60 * 60, // 1 hour
-}, HIGHLOAD_V3_CODE));
+const wallet = client.open(
+  HighloadWalletV3.createFromConfig(
+    {
+      publicKey: walletKeyPair.publicKey,
+      subwalletId: 0x10ad,
+      timeout: 60 * 60, // 1 hour
+    },
+    HIGHLOAD_V3_CODE
+  )
+);
 
 console.log(`Wallet address: ${wallet.address.toString()}`);
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-现在我们需要一个普通钱包，我们将从这个钱包中部署合约：
+Now, we need a regular wallet from which we will deploy the contract:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -2408,35 +2472,42 @@ console.log(`Wallet address: ${wallet.address.toString()}`);
 ```js
 import { WalletContractV3R2 } from "@ton/ton";
 
-const deployerWalletMnemonicArray = 'put your mnemonic'.split(' ');
-const deployerWalletKeyPair = await mnemonicToWalletKey(deployerWalletMnemonicArray); // extract private and public keys from mnemonic
-const deployerWallet = client.open(WalletContractV3R2.create({
+const deployerWalletMnemonicArray = "put your mnemonic".split(" ");
+const deployerWalletKeyPair = await mnemonicToWalletKey(
+  deployerWalletMnemonicArray
+); // extract private and public keys from mnemonic
+const deployerWallet = client.open(
+  WalletContractV3R2.create({
     publicKey: deployerWalletKeyPair.publicKey,
-    workchain: 0
-}));
+    workchain: 0,
+  })
+);
 console.log(`Deployer wallet address: ${deployerWallet.address.toString()}`);
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-如果你有一个 V4 版本的钱包，你可以使用 `WalletContractV4` 类。现在，我们要做的就是部署合约：
+If you have a V4 version wallet, you can use the `WalletContractV4` class. Now, all we have to do is to deploy the contract:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-await wallet.sendDeploy(deployerWallet.sender(deployerWalletKeyPair.secretKey), toNano(0.05));
+await wallet.sendDeploy(
+  deployerWallet.sender(deployerWalletKeyPair.secretKey),
+  toNano(0.05)
+);
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-通过在资源管理器中查看输出到控制台的地址，我们可以验证钱包是否已部署。
+We can confirm that our wallet has been successfully deployed by checking the address output to the console in a blockchain explorer.
 
-### 发送高负载钱包 V3 信息
+### Sending high-load wallet v3 messages
 
-发送信息也是通过包装器完成的，但在这种情况下，我们需要额外保持查询 ID 的最新状态。首先，让我们获取一个钱包类的实例：
+Sending messages is also done through the wrapper, but we will need to keep the Query ID up to date. First, let's get an instance of our wallet class:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -2448,20 +2519,24 @@ import { HighloadWalletV3 } from "./wrappers/HighloadWalletV3";
 import { mnemonicToWalletKey } from "@ton/crypto";
 
 const client = new TonClient({
-    endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-    apiKey: 'put your api key' // you can get an api key from @tonapibot bot in Telegram
+  endpoint: "https://toncenter.com/api/v2/jsonRPC",
+  apiKey: "put your api key", // you can get an api key from @tonapibot bot in Telegram
 });
 
-const walletMnemonicArray = 'put your mnemonic'.split(' ');
+const walletMnemonicArray = "put your mnemonic".split(" ");
 const walletKeyPair = await mnemonicToWalletKey(walletMnemonicArray); // extract private and public keys from mnemonic
-const wallet = client.open(HighloadWalletV3.createFromAddress(Address.parse('put your high-load wallet address')));
+const wallet = client.open(
+  HighloadWalletV3.createFromAddress(
+    Address.parse("put your high-load wallet address")
+  )
+);
 console.log(`Wallet address: ${wallet.address.toString()}`);
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-这有助于我们独立于使用库，并以更深入的方式理解TON区块链的结构。我们还学习了如何使用高负载钱包，并分析了许多与不同数据类型和各种操作相关的细节。
+Now, we need to create an instance of the `HighloadQueryId` class. This class makes working with `shift` and `bit_number` easy. To create it, we use the `fromShiftAndBitNumber` method:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -2473,35 +2548,38 @@ const queryHandler = HighloadQueryId.fromShiftAndBitNumber(0n, 0n);
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-由于这是第一次请求，所以我们在这里输入零。但是，如果您之前发送过任何信息，则需要选择这些值中未使用的组合。现在，让我们创建一个数组来存储所有操作，并在其中添加一个操作来获取 TONs 返回值：
+We put zeros here since this is the first request. However, if you've sent any messages before, you'll need to pick an unused combination of these values. Now let's create an array where we will store all our actions and add one action to it to get our TONs back:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { beginCell, internal, OutActionSendMsg, SendMode, toNano } from "@ton/core";
+import {
+  beginCell,
+  internal,
+  OutActionSendMsg,
+  SendMode,
+  toNano,
+} from "@ton/core";
 
 const actions: OutActionSendMsg[] = [];
 actions.push({
-    type: 'sendMsg',
-    mode: SendMode.CARRY_ALL_REMAINING_BALANCE,
-    outMsg: internal({
-        to: Address.parse('put address of deployer wallet'),
-        value: toNano(0),
-        body: beginCell()
-            .storeUint(0, 32)
-            .storeStringTail('Hello, TON!')
-            .endCell()
-    })
+  type: "sendMsg",
+  mode: SendMode.CARRY_ALL_REMAINING_BALANCE,
+  outMsg: internal({
+    to: Address.parse("put address of deployer wallet"),
+    value: toNano(0),
+    body: beginCell().storeUint(0, 32).storeStringTail("Hello, TON!").endCell(),
+  }),
 });
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-代码的主要来源：
+Next, we need to fill in the `subwalletId`, `timeout`, `internalMessageValue`, and `createdAt` fields to send the message:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -2509,24 +2587,24 @@ actions.push({
 ```js
 const subwalletId = 0x10ad;
 const timeout = 60 * 60; // must be same as in the contract
-const internalMessageValue = toNano(0.01); // in real case it is recommended to set the value to 1 TON
+const internalMessageValue = toNano(0.01); // in the real case, it is recommended to set the value to 1 TON
 const createdAt = Math.floor(Date.now() / 1000) - 60; // LiteServers have some delay in time
 await wallet.sendBatch(
-    walletKeyPair.secretKey,
-    actions,
-    subwalletId,
-    queryHandler,
-    timeout,
-    internalMessageValue,
-    SendMode.PAY_GAS_SEPARATELY,
-    createdAt
+  walletKeyPair.secretKey,
+  actions,
+  subwalletId,
+  queryHandler,
+  timeout,
+  internalMessageValue,
+  SendMode.PAY_GAS_SEPARATELY,
+  createdAt
 );
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-外部参考：
+After submitting, we should use the `getNext` method in `queryHandler` and save the current value. In a real case, this value should be stored in the database and reset after the `timeout * 2` time.
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -2536,54 +2614,56 @@ queryHandler.getNext();
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
-## 🔥 高负载钱包 V2（已过时）
+## 🔥 High-load wallet v2
 
-在某些情况下，每笔交易可能需要发送大量信息。如前所述，普通钱包通过在单个 cell 中存储 [最多 4 个引用](/v3/documentation/data-formats/tlb/cell-boc#cell)，一次最多支持发送 4 条信息。高负载钱包只允许同时发送 255 条信息。之所以存在这一限制，是因为区块链配置设置中的最大发送消息（操作）数被设置为 255。
+:::warning
+High-load wallet v2 is outdated. Do not use this for new projects.
+:::
 
-交易所可能是大规模使用高负载钱包的最佳例子。像 Binance 这样的老牌交易所拥有极其庞大的用户群，这意味着需要在短时间内处理大量的取款信息。高负载钱包有助于处理这些取款请求。
+In some situations, sending a large number of messages per transaction may be necessary. As previously mentioned, ordinary wallets support sending up to 4 messages simultaneously by storing [a maximum of 4 references](/v3/documentation/data-formats/tlb/cell-boc#cell) in a single cell. High-load wallets only allow 255 messages to be sent at once. This restriction exists because the maximum number of outgoing messages (actions) in the blockchain’s config settings is set to 255.
 
-### 高负载钱包 FunC 代码
+Exchanges are probably the best example of a large-scale use of high-load wallets. Established exchanges like Binance and others have extremely large user bases, which means that a large number of withdrawal messages are processed in short time periods. High-load wallets help address these withdrawal requests.
 
-首先，我们来看看 [高负载钱包智能合约的代码结构](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/new-highload-wallet-v2.fif)：
+### High-load wallet FunC code
+
+First, let’s examine [the code structure of a high-load wallet smart contract](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/new-highload-wallet-v2.fif):
 
 ```func
 () recv_external(slice in_msg) impure {
-  var signature = in_msg~load_bits(512); ;; get signature from the message body
-  var cs = in_msg;
-  var (subwallet_id, query_id) = (cs~load_uint(32), cs~load_uint(64)); ;; get rest values from the message body
-  var bound = (now() << 32); ;; bitwise left shift operation
-  throw_if(35, query_id < bound); ;; throw an error if message has expired
-  var ds = get_data().begin_parse();
-  var (stored_subwallet, last_cleaned, public_key, old_queries) = (ds~load_uint(32), ds~load_uint(64), ds~load_uint(256), ds~load_dict()); ;; read values from storage
-  ds.end_parse(); ;; make sure we do not have anything in ds
-  (_, var found?) = old_queries.udict_get?(64, query_id); ;; check if we have already had such a request
-  throw_if(32, found?); ;; if yes throw an error
-  throw_unless(34, subwallet_id == stored_subwallet);
-  throw_unless(35, check_signature(slice_hash(in_msg), signature, public_key));
-  var dict = cs~load_dict(); ;; get dictionary with messages
-  cs.end_parse(); ;; make sure we do not have anything in cs
-  accept_message();
+ var signature = in_msg~load_bits(512); ;; get signature from the message body
+ var cs = in_msg;
+ var (subwallet_id, query_id) = (cs~load_uint(32), cs~load_uint(64)); ;; get rest values from the message body
+ var bound = (now() << 32); ;; bitwise left shift operation
+ throw_if(35, query_id < bound); ;; throw an error if message has expired
+ var ds = get_data().begin_parse();
+ var (stored_subwallet, last_cleaned, public_key, old_queries) = (ds~load_uint(32), ds~load_uint(64), ds~load_uint(256), ds~load_dict()); ;; read values from storage
+ ds.end_parse(); ;; make sure we do not have anything in ds
+ (_, var found?) = old_queries.udict_get?(64, query_id); ;; check if we have already had such a request
+ throw_if(32, found?); ;; if yes throw an error
+ throw_unless(34, subwallet_id == stored_subwallet);
+ throw_unless(35, check_signature(slice_hash(in_msg), signature, public_key));
+ var dict = cs~load_dict(); ;; get dictionary with messages
+ cs.end_parse(); ;; make sure we do not have anything in cs
+ accept_message();
 ```
 
 > 💡 Useful links:
 >
-> [文档中的 "位运算"](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_get)
+> [Bitwise operations](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_get)
 >
-> [文档中的"load_dict()"](/v3/documentation/smart-contracts/func/docs/stdlib/#load_dict)
+> [load_dict()](/v3/documentation/smart-contracts/func/docs/stdlib/#load_dict)
 >
-> [文档中的"udict_get?()"](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_get)
+> [udict_get?()](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_get)
 
-如我们之前讨论的，普通钱包在每次交易后 seqno 增加 `1`。在使用钱包序列时，我们必须等待这个值更新，然后使用 GET 方法检索它并发送新的交易。
-这个过程需要很长时间，高负载钱包不是为此设计的（如上所述，它们旨在快速发送大量交易）。因此，TON上的高负载钱包使用了 `query_id`。
+You notice some differences from ordinary wallets. Now, let’s take a closer look at more details of how high-load wallets work on TON (except subwallets, as we have gone over this previously).
 
-### 使用 Query ID 代替 Seqno
+### Using a query id in place of a seqno
 
-正如我们之前讨论过的，普通钱包 seqno 在每次交易后都会增加 `1`。在使用钱包序列时，我们必须等待该值更新，然后使用 GET 方法检索该值并发送新消息。
-这个过程需要花费大量时间，而高负载钱包的设计并不适合这个过程（如上所述，它们的目的是快速发送大量信息）。因此，TON 上的高负载钱包使用了 `query_id`。
+As mentioned, ordinary wallets increment their `seqno` by `1` after each transaction. When using a wallet sequence, we had to wait for this value to update, retrieve it using the GET method, and then send a new message. This process takes a significant amount of time, which high-load wallets are not designed for (as discussed earlier, they are built to send a large number of messages quickly). To address this, high-load wallets on TON use the `query_id`.
 
-如果同一信息请求已经存在，合约将不会接受它，因为它已经被处理过了：
+If the same message request already exists, the contract won’t accept it, as it has already been processed:
 
 ```func
 var (stored_subwallet, last_cleaned, public_key, old_queries) = (ds~load_uint(32), ds~load_uint(64), ds~load_uint(256), ds~load_dict()); ;; read values from storage
@@ -2592,164 +2672,165 @@ ds.end_parse(); ;; make sure we do not have anything in ds
 throw_if(32, found?); ;; if yes throw an error
 ```
 
-这样，我们就能**防止重复信息**，而这正是 seqno 在普通钱包中的作用。
+This way, we are **being protected from repeat messages**, which was the role of seqno in ordinary wallets.
 
-### 发送信息
+### Sending messages
 
-合约接受外部报文后，就会开始一个循环，在循环中提取字典中存储的 `slices`。这些片段存储消息的模式和消息本身。发送新信息直到字典清空为止。
+Once the contract accepts the external message, it initiates a loop. During this loop, the contract retrieves the `slices` stored in the dictionary, which contain the message modes and the messages themselves. The contract continues sending new messages until the dictionary is empty.
 
 ```func
 int i = -1; ;; we write -1 because it will be the smallest value among all dictionary keys
 do {
-  (i, var cs, var f) = dict.idict_get_next?(16, i); ;; get the key and its corresponding value with the smallest key, which is greater than i
-  if (f) { ;; check if any value was found
-    var mode = cs~load_uint(8); ;; load message mode
-    send_raw_message(cs~load_ref(), mode); ;; load message itself and send it
-  }
+ (i, var cs, var f) = dict.idict_get_next?(16, i); ;; get the key and its corresponding value with the smallest key, which is greater than i
+ if (f) { ;; check if any value was found
+ var mode = cs~load_uint(8); ;; load message mode
+ send_raw_message(cs~load_ref(), mode); ;; load message itself and send it
+ }
 } until (~ f); ;; if any value was found continue
 ```
 
 > 💡 Useful link:
 >
-> [文档中的"idict_get_next()"](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_get_next)
+> ["idict_get_next()" in docs](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_get_next)
 
-请注意，如果找到一个值，`f` 总是等于-1（true）。`~ -1` 操作（比特非 (bitwise not)）总是返回值为 0，这意味着循环应该继续。同时，当字典中充满了信息时，有必要开始计算那些 **值大于-1**（例如 0）的信息，并随着每条信息继续增加 1。这种结构可以使报文按照正确的顺序发送。
+Note that if a value is found, `f` always equals `-1` (true). The `~ -1` operation (bitwise NOT) will always return `0`, meaning the loop should continue. However, when filling the dictionary with messages, you must start calculating values **greater than `-1`** (e.g., `0`) and increment the value by `1` for each subsequent message. This structure ensures that messages are sent in the correct sequential order.
 
-### 删除过期查询
+### Removing expired queries
 
-通常情况下，[TON 上的智能合约为自己的存储付费](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#storage-fee)。这意味着智能合约可存储的数据量是有限的，以防止出现高网络负载。为了提高系统效率，存储时间超过 64 秒的信息会被删除。具体操作如下
+Typically, [smart contracts on TON pay for their storage](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#storage-fee). This limits the amount of data smart contracts can store, preventing excessive network load. Messages older than 64 seconds are automatically removed from storage to improve system efficiency. This process works as follows:
 
 ```func
 bound -= (64 << 32);   ;; clean up records that have expired more than 64 seconds ago
 old_queries~udict_set_builder(64, query_id, begin_cell()); ;; add current query to dictionary
 var queries = old_queries; ;; copy dictionary to another variable
 do {
-  var (old_queries', i, _, f) = old_queries.udict_delete_get_min(64);
-  f~touch();
-  if (f) { ;; check if any value was found
-    f = (i < bound); ;; check if more than 64 seconds have elapsed after expiration
-  }
-  if (f) { 
-    old_queries = old_queries'; ;; if yes save changes in our dictionary
-    last_cleaned = i; ;; save last removed query
-  }
+ var (old_queries', i, _, f) = old_queries.udict_delete_get_min(64);
+ f~touch();
+ if (f) { ;; check if any value was found
+ f = (i < bound); ;; check if more than 64 seconds have elapsed after the expiration
+ }
+ if (f) {
+ old_queries = old_queries'; ;; if yes, save changes in our dictionary
+ last_cleaned = i; ;; save last removed query
+ }
 } until (~ f);
 ```
 
 > 💡 Useful link:
 >
-> [文档中的"udict_delete_get_min()"](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_delete_get_min)
+> [udict_delete_get_min()](/v3/documentation/smart-contracts/func/docs/stdlib/#dict_delete_get_min)
 
-请注意，有必要多次与 `f` 变量交互。由于 [TVM 是堆栈机器](/v3/documentation/tvm/tvm-overview#tvm-is-a-stack-machine)，在每次与 `f` 变量交互时，都需要弹出所有值以获得所需的变量。f~touch()\` 操作将 f 变量置于栈顶，以优化代码执行。
+It is necessary to interact with the `f` variable several times. Since the [TVM is a stack machine](/v3/documentation/tvm/tvm-overview#tvm-is-a-stack-machine), during each interaction with the `f` variable, it is necessary to pop all values to get the desired variable. The `f~touch()` operation places the f variable at the top of the stack to optimize code execution.
 
-### 位操作
+### Bitwise operations
 
-结果，在右侧的数字上添加了 32 位。这意味着 **现有值向左移动 32 位**。举例来说，让我们考虑数字 3 并将其翻译成二进制形式，结果是 11。应用 `3 << 2` 操作，11 移动了 2 位。这意味着在字符串的右侧添加了两位。最后，我们得到了 1100，即 12。
+This section might be challenging for those unfamiliar with bitwise operations. The following line of code appears in the smart contract:
 
 ```func
 var bound = (now() << 32); ;; bitwise left shift operation
 ```
 
-接下来，让我们考虑以下代码行：
+As a result, 32 bits are added to the number on the right side. This means **existing values are shifted 32 bits to the left**. For example, let’s take the number `3` and convert it to binary, resulting in `11`. Applying the `3 << 2` operation shifts `11` two bit positions to the left, adding two `0`s to the right. This gives us `1100`, which equals `12`.
 
-要了解这一过程，首先要记住 `now()` 函数返回的结果是 uint32，这意味着结果值将是 32 位。通过向左移动 32 位，可以为另一个 uint32 打开空间，从而得到正确的 query_id。这样，**timestamp 和 query_id 就可以合并**到一个变量中进行优化。
+The first thing to understand about this process is to remember that the `now()` function returns a result of uint32, meaning that the resulting value will be 32 bits. Shifting 32 bits to the left opens space for another uint32, resulting in the correct query_id. This way, the **timestamp and query_id can be combined** within one variable for optimization.
 
-在上面，我们执行了一个操作，将数字 64 向左移动 32 位，以**减去 64 秒**的时间戳。这样我们就可以比较过去的 query_ids，看看它们是否小于接收到的值。如果是这样，它们就超过了 64 秒：
+Next, let’s consider the following line of code:
 
 ```func
 bound -= (64 << 32); ;; clean up the records that have expired more than 64 seconds ago
 ```
 
-为了更好地理解，让我们使用 `1625918400` 作为时间戳的示例。它的二进制表示（左侧添加零以得到 32 位）是 01100000111010011000101111000000。执行 32 位位左移操作后，我们数字的二进制表示末尾会出现 32 个零。
+Above, we performed a bitwise shift operation on the number `64` by 32 bits to **subtract 64 seconds** from our timestamp. This allows us to compare past `query_id`s and determine if they are less than the calculated value. If they are, it means they expired more than 64 seconds ago:
 
 ```func
 if (f) { ;; check if any value has been found
-  f = (i < bound); ;; check if more than 64 seconds have elapsed after expiration
+ f = (i < bound); ;; check if more than 64 seconds have elapsed after the expiration
 }
 ```
 
-为了更好地理解这一点，我们以数字 `1625918400` 为例来说明时间戳。它的二进制表示法（32 位左移加零）是 011000001110100110001111000000。通过执行 32 位左移，我们的数字二进制表示法的末尾是 32 个零。
+To better understand this, let’s use the number `1625918400` as an example of a timestamp. Its binary representation (with 32 bits, padded with zeros on the left) is `01100000111010011000101111000000`. By performing a 32-bit left shift, we add 32 zeros to the end of the binary representation of our number.
 
-所有操作完成后，剩下的唯一任务就是将新的值保存在存储中：
+After this operation, **we can add any `query_id` (uint32)**. By subtracting `64 << 32`, we obtain a timestamp representing the same `query_id` 64 seconds ago. This can be verified by performing the calculation `((1625918400 << 32) - (64 << 32)) >> 32`. This approach allows us to compare the relevant portions of our number (the timestamp) without interference from the `query_id`.
 
-### 存储更新
+### Storage updates
 
-所有操作完成后，剩下的任务就是将新值保存到存储器中：
+After all operations are complete, the only task remaining is to save the new values in the storage:
 
 ```func
-  set_data(begin_cell()
-    .store_uint(stored_subwallet, 32)
-    .store_uint(last_cleaned, 64)
-    .store_uint(public_key, 256)
-    .store_dict(old_queries)
-    .end_cell());
+ set_data(begin_cell()
+ .store_uint(stored_subwallet, 32)
+ .store_uint(last_cleaned, 64)
+ .store_uint(public_key, 256)
+ .store_dict(old_queries)
+ .end_cell());
 }
 ```
 
-### GET 方法
+### GET methods
 
-在深入研究钱包部署和信息创建之前，我们必须考虑的最后一件事是高负载钱包 GET 方法：
+The last thing we have to consider before we dive into wallet deployment and message creation is high-load wallet GET methods:
 
-|                                         方法                                        |                                               说明                                               |
-| :-------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
-|        int processed?(int query_id)       | 通知用户某个请求是否已处理。也就是说，如果请求已处理，则返回 `-1`；如果未处理，则返回 `0`。此外，如果由于请求是旧请求且不再存储在合约中，因此答案未知，则此方法可能会返回 `1`。 |
-| int get_public_key() |                                       重获公钥我们之前已经考虑过这种方法。                                       |
+|                                       Method                                      |                                                                                                                                                   Explanation                                                                                                                                                   |
+| :-------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|        int processed?(int query_id)       | Notifies the user if a request has been processed. This means it returns `-1` if the request has been processed and `0` if it has not. Also, this method may return `1` if the answer is unknown since the request is old and no longer stored in the contract. |
+| int get_public_key() |                                                                                                           Rerive a public key. We have considered this method before.                                                                                                           |
 
-`last_cleaned` 从合约的存储和旧查询字典中检索。如果找到了查询，它应返回 true；如果没有，则表达式 `- (query_id <= last_cleaned)`。last_cleaned 包含最后一个被删除的、**时间戳最高**的请求，因为我们开始时从最小时间戳删除请求。
+Let’s look at the `int processed?(int query_id)` method closely to help us understand why we need to make use of the last_cleaned:
 
 ```func
 int processed?(int query_id) method_id {
-  var ds = get_data().begin_parse();
-  var (_, last_cleaned, _, old_queries) = (ds~load_uint(32), ds~load_uint(64), ds~load_uint(256), ds~load_dict());
-  ds.end_parse();
-  (_, var found) = old_queries.udict_get?(64, query_id);
-  return found ? true : - (query_id <= last_cleaned);
+ var ds = get_data().begin_parse();
+ var (_, last_cleaned, _, old_queries) = (ds~load_uint(32), ds~load_uint(64), ds~load_uint(256), ds~load_dict());
+ ds.end_parse();
+ (_, var found) = old_queries.udict_get?(64, query_id);
+ return found ? true : - (query_id <= last_cleaned);
 }
 ```
 
-`最后一次清理` 是从合约存储和旧查询字典中获取的。如果找到查询，则返回 true；如果找不到，则返回表达式 `- (query_id <= last_cleaned)`。last_cleaned 包含最后删除的**个时间戳最高**的请求，因为我们在删除请求时是从最小时间戳开始的。
+The `last_cleaned` value is retrieved from the contract storage and the dictionary of old queries. If the query is found, the method returns `true`. If not, it evaluates the expression `- (query_id <= last_cleaned)`. The `last_cleaned` value contains the last removed request **with the highest timestamp**, as we started deleting requests from the minimum timestamp.
 
-为了部署高负载钱包，必须提前生成一个助记词密钥，用户将使用此密钥。可以使用在本教程之前部分中使用的相同密钥。
+If the `query_id` passed to the method is smaller than the `last_cleaned` value, it’s impossible to determine whether it was ever in the contract. Therefore, the expression `query_id <= last_cleaned` returns `-1`, and the minus before it changes the result to `1`. If the `query_id` is larger than `last_cleaned`, the method confirms that it hasn’t been processed yet.
 
-### 部署高负载钱包 V2
+### Deploying high-load wallet v2
 
-为了部署高负载钱包，有必要提前生成一个记忆密钥，供用户使用。可以使用本教程前几节中使用的相同密钥。
+To deploy a high-load wallet, you need to generate a mnemonic key in advance, which the user will use. You can reuse the same key from previous sections of this tutorial.
 
-要开始部署高负载钱包所需的过程，需要将[智能合约代码](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/new-highload-wallet-v2.fif)复制到stdlib.fc和wallet_v3所在的同一目录，并记住在代码开头添加 `#include "stdlib.fc";`。接下来，我们将按照 [section three](/v3/guidelines/smart-contracts/howto/wallet#compiling-wallet-code) 中的方法编译高负载钱包代码：
+To begin the process required to deploy a high-load wallet it's necessary to copy [the code of the smart contract](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/new-highload-wallet-v2.fif) to the same directory where the stdlib.fc and wallet_v3 are located and remember to add `#include "stdlib.fc";` to the beginning of the code. Next, we’ll compile the high-load wallet code as we did in [section three](/v3/guidelines/smart-contracts/howto/wallet#compiling-wallet-code):
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { compileFunc } from '@ton-community/func-js';
-import fs from 'fs'
-import { Cell } from '@ton/core';
+import { compileFunc } from "@ton-community/func-js";
+import fs from "fs";
+import { Cell } from "@ton/core";
 
 const result = await compileFunc({
-    targets: ['highload_wallet.fc'], // targets of your project
-    sources: {
-        'stdlib.fc': fs.readFileSync('./src/stdlib.fc', { encoding: 'utf-8' }),
-        'highload_wallet.fc': fs.readFileSync('./src/highload_wallet.fc', { encoding: 'utf-8' }),
-    }
+  targets: ["highload_wallet.fc"], // targets of your project
+  sources: {
+    "stdlib.fc": fs.readFileSync("./src/stdlib.fc", { encoding: "utf-8" }),
+    "highload_wallet.fc": fs.readFileSync("./src/highload_wallet.fc", {
+      encoding: "utf-8",
+    }),
+  },
 });
 
-if (result.status === 'error') {
-console.error(result.message)
-return;
+if (result.status === "error") {
+  console.error(result.message);
+  return;
 }
 
-const codeCell = Cell.fromBoc(Buffer.from(result.codeBoc, 'base64'))[0];
+const codeCell = Cell.fromBoc(Buffer.from(result.codeBoc, "base64"))[0];
 
-// now we have base64 encoded BOC with compiled code in result.codeBoc
-console.log('Code BOC: ' + result.codeBoc);
-console.log('\nHash: ' + codeCell.hash().toString('base64')); // get the hash of cell and convert in to base64 encoded string
-
+// now we have base64 encoded BOC with compiled code in the result.codeBoc
+console.log("Code BOC: " + result.codeBoc);
+console.log("\nHash: " + codeCell.hash().toString("base64")); // get the hash of cell and convert in to base64 encoded string
 ```
 
 </TabItem>
 </Tabs>
 
-在上述结果的基础上，我们可以使用base64编码的输出，在其他库和语言中检索包含我们钱包代码的cell，具体操作如下：
+The result will be the following output in the terminal:
 
 ```text
 Code BOC: te6ccgEBCQEA5QABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQHq8oMI1xgg0x/TP/gjqh9TILnyY+1E0NMf0z/T//QE0VNggED0Dm+hMfJgUXO68qIH+QFUEIf5EPKjAvQE0fgAf44WIYAQ9HhvpSCYAtMH1DAB+wCRMuIBs+ZbgyWhyEA0gED0Q4rmMQHIyx8Tyz/L//QAye1UCAAE0DACASAGBwAXvZznaiaGmvmOuF/8AEG+X5dqJoaY+Y6Z/p/5j6AmipEEAgegc30JjJLb/JXdHxQANCCAQPSWb6VsEiCUMFMDud4gkzM2AZJsIeKz
@@ -2757,7 +2838,7 @@ Code BOC: te6ccgEBCQEA5QABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQHq8oMI1xgg0x/TP/gjqh9TIL
 Hash: lJTRzI7fEvBWcaGpugmSEJbrUIEeGSTsZcPGKfu4CBI=
 ```
 
-有了上述结果，我们就可以使用 base64 编码输出，在其他库和语言中用我们的钱包代码检索 cell ，如下所示：
+With the above result, it is possible to use the base64 encoded output to retrieve the cell with our wallet code in other libraries and languages as follows:
 
 <Tabs groupId="code-examples">
 <TabItem value="go" label="Golang">
@@ -2773,43 +2854,44 @@ base64BOC := "te6ccgEBCQEA5QABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQHq8oMI1xgg0x/TP/gjqh
 codeCellBytes, _ := base64.StdEncoding.DecodeString(base64BOC) // decode base64 in order to get byte array
 codeCell, err := cell.FromBOC(codeCellBytes) // get cell with code from byte array
 if err != nil { // check if there is any error
-  panic(err) 
+  panic(err)
 }
 
-log.Println("Hash:", base64.StdEncoding.EncodeToString(codeCell.Hash())) // get the hash of our cell, encode it to base64 because it has []byte type and output to the terminal
+log.Println("Hash:", base64.StdEncoding.EncodeToString(codeCell.Hash())) // get the hash of our cell, encode it to base64 because it has []byte type, and output to the terminal
 ```
 
 </TabItem>
 </Tabs>
 
-现在，我们需要检索一个由其初始数据组成的 cell ，建立一个状态初始，并计算出一个高负载钱包地址。在研究了智能合约代码后，我们发现 subwallet_id、last_cleaned、public_key 和 old_queries 是按顺序存储在存储器中的：
+Next, we need to retrieve a cell containing its initial data, build a State Init, and calculate the high-load wallet address. After analyzing the smart contract code, we determined that the `subwallet_id`, `last_cleaned`, `public_key`, and `old_queries` are stored sequentially in the storage:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { Address, beginCell } from '@ton/core';
-import { mnemonicToWalletKey } from '@ton/crypto';
+import { Address, beginCell } from "@ton/core";
+import { mnemonicToWalletKey } from "@ton/crypto";
 
-const highloadMnemonicArray = 'put your mnemonic that you have generated and saved before'.split(' ');
+const highloadMnemonicArray =
+  "put your mnemonic that you have generated and saved before".split(" ");
 const highloadKeyPair = await mnemonicToWalletKey(highloadMnemonicArray); // extract private and public keys from mnemonic
 
 const dataCell = beginCell()
-    .storeUint(698983191, 32) // Subwallet ID
-    .storeUint(0, 64) // Last cleaned
-    .storeBuffer(highloadKeyPair.publicKey) // Public Key
-    .storeBit(0) // indicate that the dictionary is empty
-    .endCell();
+  .storeUint(698983191, 32) // Subwallet ID
+  .storeUint(0, 64) // Last cleaned
+  .storeBuffer(highloadKeyPair.publicKey) // Public Key
+  .storeBit(0) // indicates that the dictionary is empty
+  .endCell();
 
 const stateInit = beginCell()
-    .storeBit(0) // No split_depth
-    .storeBit(0) // No special
-    .storeBit(1) // We have code
-    .storeRef(codeCell)
-    .storeBit(1) // We have data
-    .storeRef(dataCell)
-    .storeBit(0) // No library
-    .endCell();
+  .storeBit(0) // No split_depth
+  .storeBit(0) // No special
+  .storeBit(1) // We have code
+  .storeRef(codeCell)
+  .storeBit(1) // We have data
+  .storeRef(dataCell)
+  .storeBit(0) // No library
+  .endCell();
 
 const contractAddress = new Address(0, stateInit.hash()); // get the hash of stateInit to get the address of our smart contract in workchain with ID 0
 console.log(`Contract address: ${contractAddress.toString()}`); // Output contract address to console
@@ -2831,7 +2913,7 @@ import (
 highloadMnemonicArray := strings.Split("put your mnemonic that you have generated and saved before", " ") // word1 word2 word3
 mac := hmac.New(sha512.New, []byte(strings.Join(highloadMnemonicArray, " ")))
 hash := mac.Sum(nil)
-k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries "TON default seed" is used as salt when getting keys
+k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries, "TON default seed" is used as salt when getting keys
 // 32 is a key len
 highloadPrivateKey := ed25519.NewKeyFromSeed(k)                      // get private key
 highloadPublicKey := highloadPrivateKey.Public().(ed25519.PublicKey) // get public key from private key
@@ -2858,48 +2940,50 @@ log.Println("Contract address:", contractAddress.String())    // Output contract
 ```
 
 </TabItem>
-</Tabs> 
+</Tabs>
 
 :::caution
-上文详述的所有内容都与合约 [通过钱包部署](/v3/guidelines/smart-contracts/howto/wallet#contract-deployment-via-wallet) 部分的步骤相同。为了更好地理解，请阅读整个 [GitHub 源代码](https://github.com/aSpite/wallet-tutorial)。
+Everything we have detailed above follows the same steps as the contract [deployment via wallet](/v3/guidelines/smart-contracts/howto/wallet#contract-deployment-via-wallet) section. To better understand, read the entire [GitHub source code](https://github.com/aSpite/wallet-tutorial).
 :::
 
-### 发送高负载钱包 V2 信息
+### Sending high-load wallet v2 messages
 
-现在，让我们给高负载钱包编程，让它同时发送多条信息。例如，每笔交易发送 12 条信息，这样 gas 费就不会太高。
+Now, let’s program a high-load wallet to send several messages simultaneously. For example, let's take 12 messages per transaction so that the gas fees are small.
 
-:::info 高负荷平衡
-要完成交易，合约余额必须至少达到 0.5  TON 。
+:::info High-load balance
+The contract balance must be at least 0.5 TON to complete the transaction.
 :::
 
-每条信息都有自己的注释和代码，目标地址将是我们部署的钱包：
+Each message carries its own comment with code, and the destination address will be the wallet from which we deployed:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { Address, beginCell, Cell, toNano } from '@ton/core';
+import { Address, beginCell, Cell, toNano } from "@ton/core";
 
-let internalMessages:Cell[] = [];
-const walletAddress = Address.parse('put your wallet address from which you deployed high-load wallet');
+let internalMessages: Cell[] = [];
+const walletAddress = Address.parse(
+  "put your wallet address from which you deployed the high-load wallet"
+);
 
 for (let i = 0; i < 12; i++) {
-    const internalMessageBody = beginCell()
-        .storeUint(0, 32)
-        .storeStringTail(`Hello, TON! #${i}`)
-        .endCell();
+  const internalMessageBody = beginCell()
+    .storeUint(0, 32)
+    .storeStringTail(`Hello, TON! #${i}`)
+    .endCell();
 
-    const internalMessage = beginCell()
-        .storeUint(0x18, 6) // bounce
-        .storeAddress(walletAddress)
-        .storeCoins(toNano('0.01'))
-        .storeUint(0, 1 + 4 + 4 + 64 + 32)
-        .storeBit(0) // We do not have State Init
-        .storeBit(1) // We store Message Body as a reference
-        .storeRef(internalMessageBody) // Store Message Body Init as a reference
-        .endCell();
+  const internalMessage = beginCell()
+    .storeUint(0x18, 6) // bounce
+    .storeAddress(walletAddress)
+    .storeCoins(toNano("0.01"))
+    .storeUint(0, 1 + 4 + 4 + 64 + 32)
+    .storeBit(0) // We do not have State Init
+    .storeBit(1) // We store Message Body as a reference
+    .storeRef(internalMessageBody) // Store Message Body Init as a reference
+    .endCell();
 
-    internalMessages.push(internalMessage);
+  internalMessages.push(internalMessage);
 }
 ```
 
@@ -2939,14 +3023,14 @@ for i := 0; i < 12; i++ {
     MustStoreRef(internalMessage).
     EndCell()
 
-	internalMessages = append(internalMessages, messageData)
+  internalMessages = append(internalMessages, messageData)
 }
 ```
 
 </TabItem>
 </Tabs>
 
-完成上述过程后，结果就是一个内部报文数组。接下来，需要创建一个用于存储消息的字典，并准备和签署消息正文。具体步骤如下
+After completing the above process, the result is an array of internal messages. Next, creating a dictionary for message storage and preparing and signing the message body is necessary. This is completed as follows:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
@@ -2956,45 +3040,45 @@ import { Dictionary } from '@ton/core';
 import { mnemonicToWalletKey, sign } from '@ton/crypto';
 import * as crypto from 'crypto';
 
-const dictionary = Dictionary.empty<number, Cell>(); // create an empty dictionary with the key as a number and the value as a cell
+const dictionary = Dictionary.empty<number, cell>(); // create an empty dictionary with the key as a number and the value as a cell
 for (let i = 0; i < internalMessages.length; i++) {
     const internalMessage = internalMessages[i]; // get our message from an array
     dictionary.set(i, internalMessage); // save the message in the dictionary
 }
 
-const queryID = crypto.randomBytes(4).readUint32BE(); // create a random uint32 number, 4 bytes = 32 bits
+const queryID = crypto.randomBytes(4).readUint32BE(); // Create a random uint32 number, 4 bytes = 32 bits
 const now = Math.floor(Date.now() / 1000); // get current timestamp
 const timeout = 120; // timeout for message expiration, 120 seconds = 2 minutes
 const finalQueryID = (BigInt(now + timeout) << 32n) + BigInt(queryID); // get our final query_id
-console.log(finalQueryID); // print query_id. With this query_id we can call GET method to check if our request has been processed
+console.log(finalQueryID); // print query_id. With this query_id, we can call the GET method to check if our request has been processed
 
 const toSign = beginCell()
-    .storeUint(698983191, 32) // subwallet_id
-    .storeUint(finalQueryID, 64)
-    // Here we create our own method that will save the 
+ .storeUint(698983191, 32) // subwallet_id
+ .storeUint(finalQueryID, 64)
+    // Here, we create our own method that will save the
     // message mode and a reference to the message
-    .storeDict(dictionary, Dictionary.Keys.Int(16), {
-        serialize: (src, buidler) => {
+ .storeDict(dictionary, Dictionary.Keys.Int(16), {
+        serialize: (src, builder) => {
             buidler.storeUint(3, 8); // save message mode, mode = 3
-            buidler.storeRef(src); // save message as reference
-        },
-        // We won't actually use this, but this method 
-        // will help to read our dictionary that we saved
+            builder.storeRef(src); // save message as reference
+ },
+        // We won't actually use this, but this method
+        // will help to read the dictionary that we saved
         parse: (src) => {
             let cell = beginCell()
-                .storeUint(src.loadUint(8), 8)
-                .storeRef(src.loadRef())
-                .endCell();
+ .storeUint(src.loadUint(8), 8)
+ .storeRef(src.loadRef())
+ .endCell();
             return cell;
-        }
-    }
+ }
+ }
 );
 
 const highloadMnemonicArray = 'put your high-load wallet mnemonic'.split(' ');
 const highloadKeyPair = await mnemonicToWalletKey(highloadMnemonicArray); // extract private and public keys from mnemonic
 const highloadWalletAddress = Address.parse('put your high-load wallet address');
 
-const signature = sign(toSign.endCell().hash(), highloadKeyPair.secretKey); // get the hash of our message to wallet smart contract and sign it to get signature
+const signature = sign(toSign.endCell().hash(), highloadKeyPair.secretKey); // get the hash of our message to the wallet smart contract and sign it to get the signature
 ```
 
 </TabItem>
@@ -3019,14 +3103,14 @@ for i := 0; i < len(internalMessages); i++ {
   err := dictionary.SetIntKey(big.NewInt(int64(i)), internalMessage) // save the message in the dictionary
   if err != nil {
     return
-  }
+ }
 }
 
 queryID := rand.Uint32()
 timeout := 120                                                               // timeout for message expiration, 120 seconds = 2 minutes
 now := time.Now().Add(time.Duration(timeout)*time.Second).UTC().Unix() << 32 // get current timestamp + timeout
 finalQueryID := uint64(now) + uint64(queryID)                                // get our final query_id
-log.Println(finalQueryID)                                                    // print query_id. With this query_id we can call GET method to check if our request has been processed
+log.Println(finalQueryID)                                                    // print query_id. With this query_id, we can call the GET method to check if our request has been processed
 
 toSign := cell.BeginCell().
   MustStoreUInt(698983191, 32). // subwallet_id
@@ -3036,7 +3120,7 @@ toSign := cell.BeginCell().
 highloadMnemonicArray := strings.Split("put your high-load wallet mnemonic", " ") // word1 word2 word3
 mac := hmac.New(sha512.New, []byte(strings.Join(highloadMnemonicArray, " ")))
 hash := mac.Sum(nil)
-k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries "TON default seed" is used as salt when getting keys
+k := pbkdf2.Key(hash, []byte("TON default seed"), 100000, 32, sha512.New) // In TON libraries, "TON default seed" is used as salt when getting keys
 // 32 is a key len
 highloadPrivateKey := ed25519.NewKeyFromSeed(k) // get private key
 highloadWalletAddress := address.MustParseAddr("put your high-load wallet address")
@@ -3047,37 +3131,37 @@ signature := ed25519.Sign(highloadPrivateKey, toSign.EndCell().Hash())
 </TabItem>
 </Tabs>
 
-:::note 重要事项
-请注意，在使用 JavaScript 和 TypeScript 时，我们的信息被保存到了一个数组中，而没有使用发送模式。出现这种情况的原因是，在使用 @ton/ton 库时，预计开发人员将自行实现序列化和反序列化过程。因此，在保存消息本身后，会传递一个先保存消息模式的方法。如果我们使用 subwallet_id 规范的值方法，它就会将整个消息保存为 cell 引用，而不会单独保存模式。
+:::note IMPORTANT
+Note that when using JavaScript and TypeScript, our messages are saved into an array without a send mode. This happens because, when using the `@ton/ton` library, developers are expected to handle the serialization and deserialization process manually. As a result, the method first saves the message mode and then the message itself. Using the `Dictionary.Values.Cell()` specification for the value method saves the entire message as a cell reference without storing the mode separately.
 :::
 
-接下来，我们将创建一条外部消息，并使用以下代码将其发送到区块链：
+Next, we’ll create an external message and send it to the blockchain using the following code:
 
 <Tabs groupId="code-examples">
 <TabItem value="js" label="JavaScript">
 
 ```js
-import { TonClient } from '@ton/ton';
+import { TonClient } from "@ton/ton";
 
 const body = beginCell()
-    .storeBuffer(signature) // store signature
-    .storeBuilder(toSign) // store our message
-    .endCell();
+  .storeBuffer(signature) // store signature
+  .storeBuilder(toSign) // store our message
+  .endCell();
 
 const externalMessage = beginCell()
-    .storeUint(0b10, 2) // indicate that it is an incoming external message
-    .storeUint(0, 2) // src -> addr_none
-    .storeAddress(highloadWalletAddress)
-    .storeCoins(0) // Import fee
-    .storeBit(0) // We do not have State Init
-    .storeBit(1) // We store Message Body as a reference
-    .storeRef(body) // Store Message Body as a reference
-    .endCell();
+  .storeUint(0b10, 2) // indicate that it is an incoming external message
+  .storeUint(0, 2) // src -> addr_none
+  .storeAddress(highloadWalletAddress)
+  .storeCoins(0) // Import fee
+  .storeBit(0) // We do not have State Init
+  .storeBit(1) // We store Message Body as a reference
+  .storeRef(body) // Store Message Body as a reference
+  .endCell();
 
 // We do not need a key here as we will be sending 1 request per second
 const client = new TonClient({
-    endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-    // apiKey: 'put your api key' // you can get an api key from @tonapibot bot in Telegram
+  endpoint: "https://toncenter.com/api/v2/jsonRPC",
+  // apiKey: 'put your api key' // you can get an api key from @tonapibot bot in Telegram
 });
 
 client.sendFile(externalMessage.toBoc());
@@ -3129,53 +3213,55 @@ if err != nil {
 </TabItem>
 </Tabs>
 
-这个过程完成后，就可以查询我们的钱包，并验证我们的钱包是否发送了 12 条外发消息。是否还可以使用我们最初在控制台中使用的 query_id 调用 `processed?` GET 方法。如果该请求已被正确处理，则结果为 `-1` (true)。
+Once complete, you can look up your wallet and verify that 12 outgoing messages were sent. You can also call the `processed?` GET method using the `query_id` initially used in the console. If the request is processed correctly, it will return `-1` (true).
 
-## 🏁 结论
+## 🏁 Conclusion
 
-本教程让我们更好地了解了不同类型的钱包如何在 TON 区块链上运行。它还让我们学会了如何在不使用预定义库方法的情况下创建外部和内部消息。
+This tutorial helped us better understand how different wallet types operate on TON Blockchain. It also taught us how to create external and internal messages without using predefined library methods.
 
-阅读上述文档是一项复杂的任务，人们难以完全理解TON平台的全部内容。然而，这对于那些热衷于在TON上建设的人来说是一个很好的练习。另一个建议是开始学习如何在TON上编写智能合约，可以参考以下资源：[FunC概览](https://docs.ton.org/develop/func/overview)，[最佳实践](https://docs.ton.org/develop/smart-contracts/guidelines)，[智能合约示例](https://docs.ton.org/develop/smart-contracts/examples)，[FunC开发手册](https://docs.ton.org/develop/func/cookbook)
+This helps us be independent of libraries and to understand the structure of TON Blockchain more in-depth. We also learned how to use high-load wallets and analyzed many details related to different data types and various operations.
 
-## 接下来的步骤
+## 🧩 Next steps
 
-阅读上述文档是一项复杂的工作，很难理解 TON 平台的全部内容。不过，对于那些热衷于在 TON 上构建的人来说，这是一个很好的练习。另一个建议是参考以下资源，开始学习如何在 TON 上编写智能合约：[FunC 概述](/v3/documentation/smart-contracts/func/overview)、[最佳实践](/v3/guidelines/smart-contracts/guidelines)、[智能合约示例](/v3/documentation/smart-contracts/contracts-specs/examples)、[FunC Cookbook](/v3/documentation/smart-contracts/func/cookbook)
+Reading the documentation provided above is a complex undertaking, and it’s difficult to understand the entirety of the TON platform. However, it is a good exercise for those passionate about building on the TON. Another suggestion is to begin learning how to write smart contracts on TON by consulting the following resources: [FunC Overview](/v3/documentation/smart-contracts/func/overview), [Best Practices](/v3/guidelines/smart-contracts/guidelines), [Examples of Smart Contracts](/v3/documentation/smart-contracts/contracts-specs/examples), [FunC Cookbook](/v3/documentation/smart-contracts/func/cookbook)
 
-如果您有任何问题、评论或建议，请通过 [Telegram](https://t.me/aspite) (@aSpite 或 @SpiteMoriarty) 或 [GitHub](https://github.com/aSpite) 联系本文档部分的作者。
+Additionally, it is recommended that readers familiarize themselves with the following documents in more detail: [ton.pdf](https://docs.ton.org/ton.pdf) and [tblkch.pdf](https://ton.org/tblkch.pdf) documents.
 
-## 📖 参阅
+## 📬 About the author
 
-如果您有任何问题、意见或建议，请通过 [Telegram](https://t.me/aspite) (@aSpite 或 @SpiteMoriarty) 或 [GitHub](https://github.com/aSpite) 联系本文档的作者。
+If you have any questions, comments, or suggestions, please contact the author of this documentation section on [Telegram](https://t.me/aspite) (@aSpite or @SpiteMoriarty) or [GitHub](https://github.com/aSpite).
 
-## 📖 另请参见
+## 📖 See also
 
-- 钱包源代码：[V3](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/wallet3-code.fc), [V4](https://github.com/ton-blockchain/wallet-contract/blob/main/func/wallet-v4-code.fc), [High-load](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/new-highload-wallet-v2.fif)
+- Wallets' source code: [V3](https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/wallet3-code.fc), [V4](https://github.com/ton-blockchain/wallet-contract/blob/main/func/wallet-v4-code.fc), [High-load](https://github.com/ton-blockchain/highload-wallet-contract-v3)
 
+The primary sources of code:
+
+- [@ton/ton (JS/TS)](https://github.com/ton-org/ton)
 - [@ton/core (JS/TS)](https://github.com/ton-org/ton-core)
+- [@ton/crypto (JS/TS)](https://github.com/ton-org/ton-crypto)
+- [tonutils-go (GO)](https://github.com/xssnick/tonutils-go).
 
-官方文档：
+TON documentation:
 
-- [内部消息](/develop/smart-contracts/guidelines/internal-messages)
-- [外部消息](/develop/smart-contracts/guidelines/external-messages)
-- [钱包合约类型](/participate/wallets/contracts#wallet-v4)
-- [TL-B](/develop/data-formats/tl-b-language)
+- [Internal messages](/v3/documentation/smart-contracts/message-management/internal-messages)
 
-外部参考：
+- [External messages](/v3/documentation/smart-contracts/message-management/external-messages)
 
-- [内部信息](/v3/documentation/smart-contracts/message-management/internal-messages)
-
-- [外部信息](/v3/documentation/smart-contracts/message-management/external-messages)
-
-- [钱包合约类型](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#wallet-v4)
+- [Types of wallet contracts](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#wallet-v4)
 
 - [TL-B](/v3/documentation/data-formats/tlb/tl-b-language)
 
-- [区块链中的区块链](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains)
+- [Blockchain of blockchains](/v3/concepts/dive-into-ton/ton-blockchain/blockchain-of-blockchains)
 
-外部参考资料：
+External references:
 
-- [Ton Deep](https://github.com/xssnick/ton-deep-doc)
+- [Ton deep](https://github.com/xssnick/ton-deep-doc)
 
 - [Block.tlb](https://github.com/ton-blockchain/ton/blob/master/crypto/block/block.tlb)
 
-- [ TON 标准](https://github.com/ton-blockchain/TEPs)
+- [Standards in TON](https://github.com/ton-blockchain/TEPs)
+
+- Useful concept documents(may include outdated information): [ton.pdf](https://docs.ton.org/ton.pdf), [tblkch.pdf](https://ton.org/tblkch.pdf), [tvm.pdf](https://ton.org/tvm.pdf)
+
+<Feedback />
