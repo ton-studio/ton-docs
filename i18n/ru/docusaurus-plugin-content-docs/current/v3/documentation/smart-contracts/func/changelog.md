@@ -1,65 +1,67 @@
-# История FunC
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# History of FunC
 
-# Первоначальная версия
+## Initial version
 
-Первоначальная версия была создана Telegram, и активная разработка была прекращена после мая 2020 года. Мы называем версию мая 2020 года "начальной".
+The initial version of FunC was developed by Telegram, but active development stopped after May 2020.
+We refer to the May 2020 release as the "initial" version.
 
-# Версия 0.1.0
+## Version 0.1.0
 
-Выпущена в [обновлении 05.2022](https://github.com/ton-blockchain/ton/releases/tag/v2022.05).
+Released in [May 2022](https://github.com/ton-blockchain/ton/releases/tag/v2022.05/).
 
-В этой версии добавлены:
+**New features:**
 
-- [Константы](/v3/documentation/smart-contracts/func/docs/literals_identifiers#constants)
-- [Расширенные строковые литералы](/v3/documentation/smart-contracts/func/docs/literals_identifiers#string-literals)
-- [Семантическое версионирование](/v3/documentation/smart-contracts/func/docs/compiler_directives#pragma-version)
-- [Включения](/v3/documentation/smart-contracts/func/docs/compiler_directives#pragma-version)
+- [Constants](/v3/documentation/smart-contracts/func/docs/literals_identifiers#constants/)
+- [Extended string literals](/v3/documentation/smart-contracts/func/docs/literals_identifiers#string-literals/)
+- [Semver pragmas](/v3/documentation/smart-contracts/func/docs/compiler_directives#pragma-version/)
+- [Includes](/v3/documentation/smart-contracts/func/docs/compiler_directives#pragma-version/)
 
-Исправлено:
+**Fixes:**
 
-- Исправлены редко проявляющиеся ошибки в Asm.fif.
+- Resolved rare bugs in `Asm.fif`.
 
-# Версия 0.2.0
+## Version 0.2.0
 
-Выпущена в [обновлении 08.2022](https://github.com/ton-blockchain/ton/releases/tag/v2022.08).
+Released in [Aug 2022](https://github.com/ton-blockchain/ton/releases/tag/v2022.08/).
 
-В этой версии добавлено:
+**New features:**
 
-- Несбалансированные ветви if/else (когда некоторые ветви возвращаются, а некоторые нет)
+- Unbalanced `if/else` branches, where some branches return a value while others do not.
 
-Исправлено:
+**Fixes:**
 
-- [FunC неправильно обрабатывает циклы while(false) #377](https://github.com/ton-blockchain/ton/issues/377)
-- [FunC неправильно генерирует код для ветвей ifelse #374](https://github.com/ton-blockchain/ton/issues/374)
-- [FunC неправильно возвращает из условия во встроенных функциях #370](https://github.com/ton-blockchain/ton/issues/370)
-- [Asm.fif: разбиение больших функциональных блоков некорректно влияет на встроенные строки #375](https://github.com/ton-blockchain/ton/issues/375)
+- FunC incorrectly handles `while(false)` loops [(#377)](https://github.com/ton-blockchain/ton/issues/377/).
+- FunC generates incorrect code for `if/else` branches [(#374)](https://github.com/ton-blockchain/ton/issues/374/).
+- FunC incorrectly returns from conditions in inline functions [(#370)](https://github.com/ton-blockchain/ton/issues/370/).
+- `Asm.fif`: splitting large function bodies incorrectly interferes with inline [(#375)](https://github.com/ton-blockchain/ton/issues/375/).
 
-# Версия 0.3.0
+## Version 0.3.0
 
-Выпущено в [обновлении 10.2022](https://github.com/ton-blockchain/ton/releases/tag/v2022.10).
+Released in [Oct 2022](https://github.com/ton-blockchain/ton/releases/tag/v2022.10/).
 
-В этой версии добавлены:
+**New features:**
 
-- [Многострочные asms](/v3/documentation/smart-contracts/func/docs/functions#multiline-asms)
-- Разрешено дублирование идентичных определений для констант и asms
-- Разрешены побитовые операции с константами для констант
+- Support for [multiline `asm` statements](/v3/documentation/smart-contracts/func/docs/functions#multiline-asms).
+- Allow duplicate definitions of identical constants and `asm` statements.
+- Enable bitwise operations for constants.
 
-# Версия 0.4.0
+## Version 0.4.0
 
-Выпущено в [обновлении 01.2023](https://github.com/ton-blockchain/ton/releases/tag/v2023.01).
+Released in [Jan 2023](https://github.com/ton-blockchain/ton/releases/tag/v2023.01/).
 
-В этой версии добавлены:
+**New features:**
 
-- [Инструкции try/catch](/v3/documentation/smart-contracts/func/docs/statements#try-catch-statements)
-- [Функции throw_arg](/v3/documentation/smart-contracts/func/docs/builtins#throwing-exceptions)
-- Разрешены модификации и массовое присвоение глобальных переменных: `a~inc()` и `(a, b) = (3, 5)`, где `a` является глобальной
+- [`try/catch` statements](/v3/documentation/smart-contracts/func/docs/statements#try-catch-statements)
+- [`throw_arg` functions](/v3/documentation/smart-contracts/func/docs/builtins#throwing-exceptions)
+- Support for in-place modification and mass assignment of global variables, e.g., `a~inc()` and `(a, b) = (3, 5)`, where `a` is global.
 
-Исправлено:
+**Fixes:**
 
-- Запрещена неоднозначная модификация локальных переменных после их использования в том же выражении: `var x = (ds, ds~load_uint(32), ds~load_unit(64));` запрещены, а `var x = (ds~load_uint(32), ds~load_unit(64), ds);` нет
-- Разрешено пустые встроенные функции
-- Исправлена ​​редкая ошибка оптимизации `while`
+- Disallowed ambiguous modification of local variables after their usage in the same expression. For example, `var x = (ds, ds~load_uint(32), ds~load_unit(64));` is forbidden, while `var x = (ds~load_uint(32), ds~load_unit(64), ds);` is allowed.
+- Allowed empty inline functions.
+- Fixed a rare optimization bug in `while` loops.
+
+<Feedback />
+
