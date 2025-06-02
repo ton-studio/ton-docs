@@ -1,58 +1,59 @@
-# Руководство по внесению вклада
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Contribution Guide
 
 :::danger
-Эта страница устарела и скоро будет удалена.
-См. [Как внести вклад](/v3/contribute/).
+This page is outdated and will be deleted soon.
+See the [How to contribute](/v3/contribute/).
 :::
 
-Вот пошаговое руководство по внесению вклада в документацию TON с помощью учебных материалов.
+Here is a step-by-step guide of contributing to TON Documentation with Tutorials.
 
-:::tip возможности
-Это хорошая возможность улучшить экосистему TON здесь.
+:::tip opportunity
+You're lucky! It's a good opportunity to improve TON Ecosystem here.
 :::
 
-Если вы решите написать учебный материал, вы можете получить награду за выдающиеся работы:
+If you decide to write tutorial, you can get some reward for outstanding materials:
 
-- **Special TON Bounty NFT** за самый ценный вклад в TON
-- **Премия в TON** в качестве оплаты за одобренный высококачественный вклад, такой как учебный материал
+- **Special TON Bounty NFT** for the most valuable contributing to TON
+- **Reward in TON** as payment for approved high-quality contribution like tutorial
 
-Давайте посмотрим, как вы можете участвовать в процессе внесения вклада.
+Let's see how you can participate in contributing process.
 
-## Решите, что вы хотите написать
+## Decide what you want to write
 
-Найдите или напишите материал, который вы хотите описать.
+Find or write a material which you want to describe.
 
-1. Проверьте [список issues на GitHub TON Docs](https://github.com/ton-community/ton-docs/issues) с меткой 'tutorial'.
-2. *Или* предложите свою идею на GitHub TON Docs с помощью шаблона руководства.
+1. Check a [list of issues on TON Docs GitHub](https://github.com/ton-community/ton-docs/issues) with `tutorial` label.
+2. _OR_ write your own idea on TON Docs GitHub with tutorial template.
 
-## Опишите проблему, чтобы получить вознаграждение
+## Describe a problem to get a reward
 
-Напишите заявку в *ton-footstep*, чтобы получить финансирование за свой вклад.
+Write a _ton-footstep_ to receive a funding for your contributing.
 
-1. Подробнее о программе [TON Bounties](https://github.com/ton-society/grants-and-bounties/blob/main/bounties/BOUNTIES_PROGRAM_GUIDELINES.md).
-    1. **Кратко**: используйте статью [Improve TVM Instructions](https://github.com/ton-society/grants-and-bounties/issues/361) в качестве примера.
-2. Напишите [заявку на награду](https://github.com/ton-society/grants-and-bounties/issues/new/choose) за участие и ждите одобрения. [TON Bounties Creator Bot](https://t.me/footsteps_helper_bot) поможет вам.
-3. После получения метки `approved` начните писать свое руководство.
+1. Read about [TON Bounties](https://github.com/ton-society/grants-and-bounties/blob/main/bounties/BOUNTIES_PROGRAM_GUIDELINES.md) program more detailed.
+    1. **TLDR:** Use [Improve TVM Instructions article](https://github.com/ton-society/grants-and-bounties/issues/361) as an example.
+2. Write [your own bounty](https://github.com/ton-society/grants-and-bounties/issues/new/choose) to participate and wait for approve. [TON Bounties Creator Bot](https://t.me/footsteps_helper_bot) will help you.
+3. After received `approved` label start to write your tutorial.
 
-## Написание руководства
+## Writing a tutorial
 
-**Подготовка**. Минимизируйте количество запрашиваемых изменений в будущем, *сэкономьте свое время*:
+**Preparations**. Minimize future amount of requested changes, _save your time_:
 
-1. Следуйте [руководству по написанию инструкций](/v3/contribute/contribution-rules) и сверьте его с [образцом структуры инструкции](/v3/contribute/tutorials/sample-tutorial)
-2. Прочитайте [принципы хорошего руководства](/v3/contribute/tutorials/principles-of-a-good-tutorial), чтобы написать потрясающее руководство :)
-3. Вдохновитесь примером как [Создать свой первый жетон](/v3/guidelines/dapps/tutorials/mint-your-first-token).
-4. **Настройте среду**. [Проверьте руководство](/v3/contribute#online-one-click-contribution-setup), запустив свой fork локально или с помощью Gitpod.
-5. **Напишите руководство**. Используя среду, посмотрите, как руководство выглядит на вашем fork.
-6. **Сделайте запрос Pull Request**. Откройте PR, чтобы получить обратную связь от участников команды.
-7. Дождитесь слияния!
+1. Follow [Tutorial Guidelines](/v3/contribute/contribution-rules) and check them with [Sample Tutorial Structure](/v3/contribute/tutorials/sample-tutorial)
+2. Read [Principles of a Good Tutorial](/v3/contribute/tutorials/principles-of-a-good-tutorial) to write amazing tutorial :)
+3. Inspire with [Mint your first Jetton](/v3/guidelines/dapps/tutorials/mint-your-first-token) example in sources.
+4. **Setup environment**. [Check the tutorial](/v3/contribute#online-one-click-contribution-setup) running your fork locally or using Gitpod.
+5. **Write tutorial**. Using the environment, see how tutorial looks like on your fork.
+6. **Make a Pull Request**. Open PR to get some feedback from maintainers.
+7. Get merged!
 
-## Получение вознаграждения
+## Receiving a reward
 
-1. После того, как ваш PR в TON Docs был объединен, пожалуйста, напишите это в своей задаче ton-footsteps.
-2. Следуйте [руководству по завершению задания](https://github.com/ton-society/grants-and-bounties/blob/main/bounties/BOUNTIES_PROGRAM_GUIDELINES.md#got-assigned-submit-a-questbook-proposal), чтобы завершить работу и получить вознаграждение.
-3. В вашей задаче вас попросят указать кошелек для отправки вознаграждения.
-4. Получите вознаграждение!
+1. After your PR in TON Docs got merged, please write in your ton-footsteps task.
+2. Follow a guide [How to complete ton-bounty?](https://github.com/ton-society/grants-and-bounties/blob/main/bounties/BOUNTIES_PROGRAM_GUIDELINES.md#got-assigned-submit-a-questbook-proposal) to complete bounty and get reward.
+3. In your task, you will be asked for a wallet to send a reward.
+4. Get rewarded!
+
+<Feedback />
+
