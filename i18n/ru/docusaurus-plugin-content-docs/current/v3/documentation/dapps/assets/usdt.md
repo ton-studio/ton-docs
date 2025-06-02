@@ -1,55 +1,58 @@
+import Feedback from '@site/src/components/Feedback';
+
 import Button from '@site/src/components/button'
 
-# Обработка USDT
-
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# USDT processing
 
 ## Tether
 
-Стейблкоины — это тип криптовалюты, стоимость которой привязана 1:1 к другому активу, например, фиатной валюте или золоту, для поддержания стабильной цены. До недавнего времени существовал токен jUSDT, представляющий собой обернутый токен ERC-20 Ethereum, связанный с <a href="https://bridge.ton.org" target="_blank">bridge.ton.org</a>. Но 18.04.2023 состоялся публичный запуск **встроенного** токена USD₮, выпущенного компанией <a href="https://tether.to/en/" target="_blank">Tether</a>. После запуска USD₮, jUSDT перешел в статус второго приоритета, но по-прежнему используется в качестве альтернативы или дополнения к USD₮ в различных сервисах.
+[Apr 18, 2023](https://t.me/toncoin/824), the public launch of native USD₮ token issued by the company <a href="https://tether.to/en/" target="_blank">Tether</a>.
 
-В блокчейне TON USD₮ поддерживается как [жетон](/v3/guidelines/dapps/asset-processing/jettons).
+In TON Blockchain USD₮ supported as a [Jetton asset](/v3/guidelines/dapps/asset-processing/jettons).
 
 :::info
-Чтобы интегрировать токен Tether USD₮ в блокчейне TON, используйте адрес контракта: [EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs](https://tonviewer.com/EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs?section=jetton)
+To integrate Tether’s USD₮ Token on TON Blockchain use the contract address:
+[EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs](https://tonviewer.com/EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs?section=jetton)
 :::
 
 <Button href="https://github.com/ton-community/assets-sdk" colorType="primary" sizeType={'sm'}>Assets SDK</Button>
-<Button href="/v3/guidelines/dapps/asset-processing/jettons" colorType={'secondary'} sizeType={'sm'}>Jetton Processing</Button>
+<Button href="/v3/guidelines/dapps/asset-processing/jettons" colorType={'secondary'} sizeType={'sm'}>Jetton processing</Button>
 <Button href="https://github.com/ton-community/tma-usdt-payments-demo?tab=readme-ov-file#tma-usdt-payments-demo" colorType={'secondary'} sizeType={'sm'}>TMA USDT payments demo</Button>
 
-## Преимущества USD₮ на TON
+## Advantages of USD₮ on TON
 
-### Бесшовная интеграция Telegram
+### Seamless Telegram integration
 
-[USD₮ на TON](https://ton.org/borderless) будет бесшовно интегрирован в Telegram, предлагая уникальный удобный интерфейс, который позиционирует TON как самый удобный блокчейн для транзакций USDt. Эта интеграция упростит DeFi для пользователей Telegram, сделав его более доступным и понятным.
+[USD₮ on TON](https://ton.org/borderless) will be seamlessly integrated into Telegram, offering a uniquely user-friendly experience that positions TON as the most convenient blockchain for USDt transactions. This integration will simplify DeFi for Telegram users, making it more accessible and understandable.
 
-### Низкие комиссии за транзакции
+### Lower transaction fees
 
-Комиссии за переводы Ethereum USD₮ рассчитываются динамически в зависимости от нагрузки на сеть. Вот почему транзакции могут стать дорогими.
+Fees for Ethereum USD₮ transfers are calculated dynamically depending on network load. This is why transactions can become expensive.
 
-```cpp
-transaction_fee = gas_used * gas_price
-```
+ ```cpp
+ transaction_fee = gas_used * gas_price
+ ```
 
-- `gas_used` это количество газа, используемого при выполнении транзакции.
-- `gas_price` - это стоимость одной единицы газа в Gwei, рассчитываемая динамически.
+- `gas_used` is the amount of gas used during transaction execution.
+- `gas_price` is the cost of one unit of gas in Gwei, calculated dynamically.
 
-С другой стороны, средняя комиссия за отправку любой суммы USD₮ в блокчейне TON в настоящее время составляет около 0,0145 TON. Даже если цена TON увеличится в 100 раз, транзакции [останутся сверхдешевыми](/v3/documentation/smart-contracts/transaction-fees/fees#average-transaction-cost). Основная команда разработчиков TON оптимизировала смарт-контракт Tether, сделав его в три раза дешевле любого другого жетона.
+On the other hand average fee for sending any amount of USD₮ in TON Blockchain is about 0.0145 TON nowadays. Even if the price of TON increases 100 times, transactions will [remain ultra-cheap](/v3/documentation/smart-contracts/transaction-fees/fees#average-transaction-cost). The core TON development team has optimized Tether’s smart contract to make it three times cheaper than any other Jetton.
 
-### Более быстрый и масштабируемый
+### Faster and scalable
 
-Высокая пропускная способность TON и быстрое время подтверждения позволяют обрабатывать транзакции USD₮ быстрее, чем когда-либо прежде.
+TON’s high throughput and rapid confirmation times enable USD₮ transactions to be processed more quickly than ever before.
 
-## Дополнительные сведения
+## Advanced details
 
-:::caution ВАЖНО
+:::caution IMPORTANT
+In TON Blockchain jettons can be created with duplicate names. Technically, it will not differ in any way from the real USD₮ but it will have no value because of no security. You can verify legitimacy and check for fraud only by confirming the Jetton Master address.
 
-См. важные [рекомендации](/v3/guidelines/dapps/asset-processing/jettons).
+See important [recommendations](/v3/guidelines/dapps/asset-processing/jettons).
 :::
 
-## См. также
+## See also
 
-- [Обработка платежей](/v3/guidelines/dapps/asset-processing/payments-processing)
+- [Payments processing](/v3/guidelines/dapps/asset-processing/payments-processing)
+
+<Feedback />
+
