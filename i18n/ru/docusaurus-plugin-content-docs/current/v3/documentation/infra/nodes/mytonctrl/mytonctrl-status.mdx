@@ -1,157 +1,159 @@
-# Состояние MyTonCtrl
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# MyTonCtrl status
 
-Вот объяснение вывода команды `status`.
+This document serves as a comprehensive guide to help you understand the output of **MyTonCtrl**'s `status` command.
 
 ![status](/img/docs/mytonctrl/status.png)
 
-## Состояние сети TON
+## TON network status
 
-### Имя сети
+### Network name
 
-Возможные значения: `mainnet`, `testnet`, `unknown`. `unknown` никогда не должно печататься.
+Possible values are: `mainnet`, `testnet`, and `unknown`. However, the value `unknown` should never be displayed.
 
-### Количество валидаторов
+### Number of validators
 
-Есть два значения: одно зеленое и одно желтое. Зеленый — это количество валидаторов онлайн, желтый — это количество всех
-валидаторов.
-Должно быть целым числом больше 0, MyTonCtrl получает его с помощью команды `getconfig 34`,
-проверьте [этот раздел (param 32-34-and-36)](/v3/documentation/network/configs/blockchain-configs#param-32-34-and-36) для получения дополнительной информации.
+There are two key values: one represented in green and the other in yellow. The green value indicates the number of online validators, while the yellow value represents the total number of validators.
 
-### Количество шардчейнов
+Both values must be integers greater than 0. You can obtain the green value using the command `getconfig 34` with MyTonCtrl. For more information, please check the [relevant section here](/v3/documentation/network/configs/blockchain-configs#param-32-34-and-36) regarding parameters 32, 34, and 36.
 
-Должно быть целым числом больше 0, имеет зеленый цвет.
+### Number of shardchains
 
-### Количество предложений
+This value must be an integer greater than 0 and is displayed in green.
 
-Есть два значения: одно зеленое и одно желтое. Зеленый — это количество "новых предложений", желтый — это количество "всех предложений".
+### Number of offers
 
-### Количество жалоб
+- There are two values to note:
+  - **Green**: Represents the number of `new offers`.
+  - **Yellow**: Represents the total number of `all offers`.
 
-Есть два значения: одно зеленое и одно желтое. Зеленым обозначается количество "новых жалоб", желтым - количество
-"всех жалоб".
+### Number of complaints
 
-### Состояние выборов
+- Similarly, there are two values to consider:
+  - **Green**: Indicates the number of `new complaints`.
+  - **Yellow**: Indicates the total number of `all complaints`.
 
-Может быть зеленый текст `open` или желтый `closed`.
+### Election status
 
-## Статус локального валидатора
+The election status can be indicated with green text for `open` or yellow text for `closed`.
 
-### Индекс валидатора
+## Local validator status
 
-Если индекс валидатора больше или равен 0 (и так и должно быть, если режим валидатора активен), он должен быть зеленым, в противном случае — красным.
+### Validator index
 
-### Адрес ADNL локального валидатора
+The validator index should be greater than or equal to 0 (which is the case if the validator mode is active). If it meets this requirement, it should be displayed in green; otherwise, it should be red.
 
-Просто адрес ADNL.
+### ADNL address of local validator
 
-### Адрес кошелька локального валидатора
+This section contains only the ADNL address.
 
-Адрес, используемый для стейкинга, должен быть действительным адресом TON. 
+### Local validator wallet address
 
-### Баланс кошелька локального валидатора
+The wallet address used for staking must be a valid TON address.
 
-Баланс кошелька.
+### Local validator wallet balance
 
-### Средняя нагрузка
+This section shows the current balance of the wallet.
 
-Имеет формат `[int]: int, int, int`. Первый — это число процессоров, остальные представляют среднюю загрузку системы за последние 1, 5 и 15 минут.
+### Load average
 
-### Средняя нагрузка на сеть
+The `load average` format is `[int]: int, int, int`. The first integer represents the number of CPUs, while the subsequent integers indicate the system load average for the last 1, 5, and 15 minutes.
 
-Три целых числа, та же логика, что и для `load average`: средняя загрузка системы за последние 1, 5 и 15 минут.
+### Network load average
 
-### Загрузка памяти
+This section also displays three integers, following the same logic as the `load average`: it presents the system load average for the last 1, 5, and 15 minutes.
 
-Две пары целых чисел, абсолютное и относительное использование оперативной памяти и подкачки.
+### Memory load
 
-### Средняя загрузка дисков
+**Absolute and Relative Memory Usage:** This refers to the usage of RAM and swap memory in two pairs of integers.
 
-То же, что и для `memory load`, но для всех дисков.
+### Disk load average
 
-### Состояние Mytoncore
+This is similar to the `memory load`. However, it relates to the usage of all disk space instead.
 
-Должен быть зеленым, показывает, сколько времени работает Mytoncore.
+### Mytoncore status
 
-### Состояние локального валидатора
+The status indicator should be green, showing how long Mytoncore has been operational.
 
-Должен быть зеленым, показывает, сколько времени работает локальный валидатор.
+### Local validator status
 
-### Локальный валидатор не синхронизирован
+This indicator should also be green, displaying the uptime of the local validator.
 
-Целое число должно быть меньше 20 (в этом случае оно будет зеленым).
+### Local validator out of sync
 
-### Сериализация последнего состояния локального валидатора
+This integer value should be less than 20, indicating that it is functioning properly (it will appear green).
 
-Показывает количество неработающих блоков мастерчейна
+### Local validator last state serialization
 
-### Размер базы данных локального валидатора
+This entry displays the number of MasterChain blocks that are currently out of service.
 
-Абсолютная загрузка должна составлять менее 1000 ГБ, относительная - менее 80%.
+### Local Validator database size
 
-### Версия mytonctrl
+The absolute load size should be less than 1000 GB, and the relative load should be under 80%.
 
-Хэш коммита и имя ветки.
+### Version of MyTonCtrl
 
-### Версия валидатора
+This indicates the hash of the commit and the name of the branch.
 
-Хэш коммита и имя ветки.
+### Version of validator
 
-## Конфигурация сети TON
+This shows the hash of the commit and the name of the branch.
 
-### Адрес конфигуратора
+## TON network configuration
 
-Адрес конфигуратора, проверьте [этот параметр 0](/v3/documentation/network/configs/blockchain-configs#param-0) для получения дополнительной информации.
+### Configurator address
 
-### Адрес выборщика
+The address of the configurator. Refer to [this parameter-0](/v3/documentation/network/configs/blockchain-configs#param-0) for more information.
 
-Адрес выборщика, проверьте [этот параметр 1](/v3/documentation/network/configs/blockchain-configs#param-1) для получения дополнительной информации.
+### Elector address
 
-### Период проверки
+The address of the elector. Refer to [this parameter-1](/v3/documentation/network/configs/blockchain-configs#param-1) for additional details.
 
-Период проверки в секундах, проверьте [этот параметр 15](/v3/documentation/network/configs/blockchain-configs#param-15) для получения дополнительной информации.
+### Validation period
 
-### Продолжительность выборов
+The duration of the validation period in seconds. Check [this parameter-15](/v3/documentation/network/configs/blockchain-configs#param-15).
 
-Продолжительность выборов в секундах, проверьте [этот параметр 15](/v3/documentation/network/configs/blockchain-configs#param-15) для получения дополнительной информации.
+### Duration of elections
 
-### Период удержания
+This refers to the duration of elections in seconds. To know more, refer to [this parameter-15](/v3/documentation/network/configs/blockchain-configs#param-15).
 
-Период удержания в секундах, проверьте [этот параметр 15](/v3/documentation/network/configs/blockchain-configs#param-15) для получения дополнительной информации.
+### Hold period
 
-### Минимальная ставка
+The hold period in seconds, with details available at [this parameter-15](/v3/documentation/network/configs/blockchain-configs#param-15).
 
-Минимальная ставка в TON, проверьте [этот параметр 17](/v3/documentation/network/configs/blockchain-configs#param-17) для получения дополнительной информации.
+### Minimum stake
 
-### Максимальная ставка
+The minimum stake required in TONs. Check [this parameter-17](/v3/documentation/network/configs/blockchain-configs#param-17).
 
-Максимальная ставка в TON, проверьте [этот параметр 17](/v3/documentation/network/configs/blockchain-configs#param-17) для получения дополнительной информации.
+### Maximum stake
 
-## Временные метки TON
+The maximum stake allowed in TONs. Check [this parameter-17](/v3/documentation/network/configs/blockchain-configs#param-17).
 
-### Запуск сети TON
+## TON timestamps
 
-Время запуска текущей сети (основной или тестовой).
+### TON network launch
 
-### Начало цикла проверки
+This indicates the launch time of the current network, whether it is the Mainnet or Testnet.
 
-Временная метка для начала цикла проверки; она будет выделена зеленым цветом, если соответствует будущему моменту.
+### Start of the validation cycle
 
-### Окончание цикла проверки
+The timestamp indicates the beginning of the validation cycle. If it represents a future event, it will be displayed in green.
 
-Временная метка окончания цикла проверки; она будет выделена зеленым цветом, если соответствует будущему моменту.
+### End of the validation cycle
 
-### Начало выборов
+This is the timestamp for the end of the validation cycle; it will also appear green if it indicates a future date.
 
-Временная метка для начала выборов; она будет зеленого цвета, если она обозначает будущий момент.
+### Start of elections
 
-### Окончание выборов
+The timestamp for when elections begin. This will be green if it represents a future date.
 
-Временная метка для окончания выборов; она будет зеленого цвета, если она обозначает будущий момент.
+### End of elections
 
-### Начало следующих выборов
+The timestamp indicating the end of elections is displayed in green if it predicts a future date.
 
-Временная метка начала следующих выборов; она будет зеленой, если обозначает будущий момент.
+### Beginning of the next elections
+
+The timestamp for the start of the next elections will appear green if it signifies a future event.
+
+<Feedback />
