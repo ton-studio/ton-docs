@@ -1,109 +1,111 @@
-# Get-методы
+import Feedback from '@site/src/components/Feedback';
+
+# Get methods
 
 :::note
-Прежде чем продолжить, рекомендуется ознакомиться с основами [языка программирования FunC](/v3/documentation/smart-contracts/func/overview) на блокчейне TON. Это поможет лучше понять представленную ниже информацию.
+To fully benefit from this content, readers must understand the [FunC programming language](/v3/documentation/smart-contracts/func/overview/) on the TON Blockchain. This knowledge is crucial for grasping the information presented here.
 :::
 
-## Введение
+## Introduction
 
-Get-методы — это специальные функции, предназначенные для получения конкретных данных из состояния смарт-контракта. Их выполнение происходит вне блокчейна и не требует комиссии.
+Get methods are special functions in smart contracts that allow you to query specific data. Their execution doesn't cost any fees and happens outside of the blockchain.
 
-Эти функции встречаются во многих смарт-контрактах. Например, стандартный [смарт-контракт кошелька](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts) содержит несколько get-методов: `seqno()`, `get_subwallet_id()` и `get_public_key()`. Они позволяют получать данные о кошельке из самого контракта, SDK и API.
+These functions are widespread in most smart contracts. For example, the default [Wallet contract](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts/) has several get methods, such as `seqno()`, `get_subwallet_id()` and `get_public_key()`. Wallets, SDKs, and APIs use them to fetch data about wallets.
 
-## Шаблоны проектирования для get-методов
+## Design patterns for get methods
 
-### Базовые шаблоны
+### Basic get methods design patterns
 
-1. **Получение отдельных данных.** Данный шаблон представляет собой набор методов, которые позволяют получить в качестве результата вызова отдельные параметры из состояния контракта. Данные методы не содержат аргументов и возвращают только одно значение.
+1. **Single data point retrieval**: A fundamental design pattern is to create methods that return individual data points from the contract's state. These methods have no parameters and return a single value.
 
-    Например:
+Example:
 
-    ```func
-    int get_balance() method_id {
-        return get_data().begin_parse().preload_uint(64);
-    }
-    ```
+```func
+int get_balance() method_id {
+return get_data().begin_parse().preload_uint(64);
+}
+```
 
-2. **Получение агрегированных данных.** Ещё один распространённый шаблон - набор методов, позволяющих извлечь сразу массив данных из состояния контракта в рамках одиночного вызова. Это может быть удобно для случаев, когда для какой-то операции необходимо несколько параметров. Такие методы применяются, например, в контрактах [Jetton](#jettons) и [NFT](#nfts).
+2. **Aggregate data retrieval**: Another common method is to create methods that gather multiple pieces of data from a contract's state in one call. This is useful when specific data points are often used together. You can see this approach frequently in [Jetton](#jettons) and [NFT](#nfts) contracts.
 
-    Например:
+Example:
 
-    ```func
-    (int, slice, slice, cell) get_wallet_data() method_id {
-        return load_data();
-    }
-    ```
+```func
+(int, slice, slice, cell) get_wallet_data() method_id {
+return load_data();
+}
+```
 
-### Продвинутые шаблоны
+### Advanced get methods design patterns
 
-1. **Получение вычисляемых данных.** В некоторых случаях искомые данные не хранятся в текущем состоянии контракта, однако могут быть вычислены, если в метод будут переданы дополнительные аргументы для расчета.
+1. **Computed data retrieval**: In some cases, the data that needs to be retrieved isn't stored directly in the contract's state but calculated based on the state and the input arguments.
 
-    Например:
+Example:
 
-    ```func
-    slice get_wallet_address(slice owner_address) method_id {
-        (int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
-        return calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code);
-    }
-    ```
+```func
+slice get_wallet_address(slice owner_address) method_id {
+(int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
+return calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code);
+}
+```
 
-2. **Получение данных с учетом условий.** Иногда значения, которые нужно получить, зависят от каких-либо параметров, к примеру, от текущего времени.
+2. **Conditional data retrieval**: Sometimes, the data that needs to be retrieved depends on certain conditions, such as the current time.
 
-    Например:
+Example:
 
-    ```func
-    (int) get_ready_to_be_used() method_id {
-        int ready? = now() >= 1686459600;
-        return ready?;
-    }
-    ```
+```func
+(int) get_ready_to_be_used() method_id {
+int ready? = now() >= 1686459600;
+return ready?;
+}
+```
 
-## Наиболее распространенные get-методы
+## Most common get methods
 
-### Стандартные кошельки
+### Standard wallets
 
 #### seqno()
 
 ```func
 int seqno() method_id {
-    return get_data().begin_parse().preload_uint(32);
+ return get_data().begin_parse().preload_uint(32);
 }
 ```
 
-Возвращает порядковый номер транзакции в определённом кошельке. Этот метод в основном используется для [защиты от повторных отправок](/v3/guidelines/smart-contracts/howto/wallet#replay-protection---seqno).
+Returns the transaction's sequence number within a specific wallet. This method is primarily used for [replay protection](/v3/guidelines/smart-contracts/howto/wallet#replay-protection---seqno/).
 
 #### get_subwallet_id()
 
 ```func
 int get_subwallet_id() method_id {
-    return get_data().begin_parse().skip_bits(32).preload_uint(32);
+ return get_data().begin_parse().skip_bits(32).preload_uint(32);
 }
 ```
 
-- [Что такое Subwallet ID?](/v3/guidelines/smart-contracts/howto/wallet#subwallet-ids)
+- [What is subwallet ID?](/v3/guidelines/smart-contracts/howto/wallet#subwallet-ids/)
 
 #### get_public_key()
 
 ```func
 int get_public_key() method_id {
-    var cs = get_data().begin_parse().skip_bits(64);
-    return cs.preload_uint(256);
+ var cs = get_data().begin_parse().skip_bits(64);
+ return cs.preload_uint(256);
 }
 ```
 
-Получает публичный ключ, связанный с кошельком.
+This method retrieves the public key associated with the wallet.
 
-### Жетоны
+### Jettons
 
 #### get_wallet_data()
 
 ```func
 (int, slice, slice, cell) get_wallet_data() method_id {
-    return load_data();
+ return load_data();
 }
 ```
 
-Этот метод возвращает полный набор данных, связанных с кошельком Jetton:
+This method returns the complete set of data associated with a jetton wallet:
 
 - (int) balance
 - (slice) owner_address
@@ -114,155 +116,155 @@ int get_public_key() method_id {
 
 ```func
 (int, int, slice, cell, cell) get_jetton_data() method_id {
-    (int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
-    return (total_supply, -1, admin_address, content, jetton_wallet_code);
+ (int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
+ return (total_supply, -1, admin_address, content, jetton_wallet_code);
 }
 ```
 
-Возвращает данные мастер-контракта Jetton, включая общий объём, адрес администратора, содержимое жетона и код кошелька.
+Returns data of a jetton master, including its total supply, the address of its admin, the content of the jetton, and its wallet code.
 
 #### get_wallet_address(slice owner_address)
 
 ```func
 slice get_wallet_address(slice owner_address) method_id {
-    (int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
-    return calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code);
+ (int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
+ return calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code);
 }
 ```
 
-На основе адреса владельца этот метод вычисляет и возвращает адрес его кошелька Jetton.
+Given the owner's address, this method calculates and returns the address for the owner's jetton wallet contract.
 
-### NFT
+### NFTs
 
 #### get_nft_data()
 
 ```func
 (int, int, slice, slice, cell) get_nft_data() method_id {
-    (int init?, int index, slice collection_address, slice owner_address, cell content) = load_data();
-    return (init?, index, collection_address, owner_address, content);
+ (int init?, int index, slice collection_address, slice owner_address, cell content) = load_data();
+ return (init?, index, collection_address, owner_address, content);
 }
 ```
 
-Возвращает данные, связанные с невзаимозаменяемым токеном, включая информацию о том, был ли он инициализирован, индекс в коллекции, адрес коллекции, адрес владельца и индивидуальное содержимое.
+Returns the data associated with a non-fungible token, including whether it has been initialized, its index in a collection, the address of its collection, the owner's address, and its content.
 
 #### get_collection_data()
 
 ```func
 (int, cell, slice) get_collection_data() method_id {
-    var (owner_address, next_item_index, content, _, _) = load_data();
-    slice cs = content.begin_parse();
-    return (next_item_index, cs~load_ref(), owner_address);
+ var (owner_address, next_item_index, content, _, _) = load_data();
+ slice cs = content.begin_parse();
+ return (next_item_index, cs~load_ref(), owner_address);
 }
 ```
 
-Возвращает данные о коллекции NFT, включая индекс следующего элемента для минта, содержимое коллекции и адрес владельца.
+Returns the data of an NFT collection, including the index of the next item available for minting, the content of the collection, and the owner's address.
 
 #### get_nft_address_by_index(int index)
 
 ```func
 slice get_nft_address_by_index(int index) method_id {
-    var (_, _, _, nft_item_code, _) = load_data();
-    cell state_init = calculate_nft_item_state_init(index, nft_item_code);
-    return calculate_nft_item_address(workchain(), state_init);
+ var (_, _, _, nft_item_code, _) = load_data();
+ cell state_init = calculate_nft_item_state_init(index, nft_item_code);
+ return calculate_nft_item_address(workchain(), state_init);
 }
 ```
 
-С учетом индекса, этот метод вычисляет и возвращает адрес соответствующего контракта NFT-элемента этой коллекции.
+Given an index, this method calculates and returns the corresponding NFT item contract address within this collection.
 
 #### royalty_params()
 
 ```func
 (int, int, slice) royalty_params() method_id {
-    var (_, _, _, _, royalty) = load_data();
-    slice rs = royalty.begin_parse();
-    return (rs~load_uint(16), rs~load_uint(16), rs~load_msg_addr());
+ var (_, _, _, _, royalty) = load_data();
+ slice rs = royalty.begin_parse();
+ return (rs~load_uint(16), rs~load_uint(16), rs~load_msg_addr());
 }
 ```
 
-Получает параметры роялти для NFT. Эти параметры включают процент роялти, который выплачивается первоначальному создателю при продаже NFT.
+This method fetches the royalty parameters for an NFT. These parameters include the royalty percentage paid to the original creator whenever the NFT is sold.
 
 #### get_nft_content(int index, cell individual_nft_content)
 
 ```func
 cell get_nft_content(int index, cell individual_nft_content) method_id {
-    var (_, _, content, _, _) = load_data();
-    slice cs = content.begin_parse();
-    cs~load_ref();
-    slice common_content = cs~load_ref().begin_parse();
-    return (begin_cell()
-            .store_uint(1, 8) ;; offchain tag
-            .store_slice(common_content)
-            .store_ref(individual_nft_content)
-            .end_cell());
+ var (_, _, content, _, _) = load_data();
+ slice cs = content.begin_parse();
+ cs~load_ref();
+ slice common_content = cs~load_ref().begin_parse();
+ return (begin_cell()
+ .store_uint(1, 8) ;; offchain tag
+ .store_slice(common_content)
+ .store_ref(individual_nft_content)
+ .end_cell());
 }
 ```
 
-С учетом индекса и [индивидуального содержимого NFT](#get_nft_data), этот метод получает и возвращает объединённое общее и индивидуальное содержимое NFT.
+Given an index and [individual NFT content](#get_nft_data), this method fetches and returns the NFT's combined common and individual content.
 
-## Как работать с get-методами
+## How to work with get methods
 
-### Поиск get-методов на популярных обозревателях
+### Calling get methods on popular explorers
 
 #### Tonviewer
 
-Вы можете вызвать get-методы в нижней части страницы во вкладке "Methods"
+You can call get methods at the bottom of the page in the **Methods** tab.
 
 - https://tonviewer.com/EQAWrNGl875lXA6Fff7nIOwTIYuwiJMq0SmtJ5Txhgnz4tXI?section=method
 
 #### Ton.cx
 
-Вы можете вызвать get-методы во вкладке "Get methods"
+You can call get methods on the "Get methods" tab.
 
 - https://ton.cx/address/EQAWrNGl875lXA6Fff7nIOwTIYuwiJMq0SmtJ5Txhgnz4tXI
 
-### Вызов get-методов из кода
+### Calling get methods from code
 
-В примерах ниже мы будем использовать библиотеки и инструменты JavaScript:
+We will use Javascript libraries and tools for the examples below:
 
-- Библиотека [TON](https://github.com/ton-org/ton)
-- [Blueprint](/v3/documentation/smart-contracts/getting-started/javascript) SDK
+- [ton](https://github.com/ton-org/ton/) library
+- [Blueprint](/v3/documentation/smart-contracts/getting-started/javascript/)
 
-Представим, что у нас есть контракт со следующим get-методом:
+Let's say there is some contract with the following get method:
 
 ```func
 (int) get_total() method_id {
-    return get_data().begin_parse().preload_uint(32); ;; load and return the 32-bit number from the data
+ return get_data().begin_parse().preload_uint(32); ;; load and return the 32-bit number from the data
 }
 ```
 
-Этот метод возвращает значение в виде числа из данных контракта.
+This method returns a single number loaded from the contract data.
 
-Приведенный ниже фрагмент кода позволяет вызвать этот get-метод в контракте, развёрнутом по известному адресу:
+You can use the code snippet below to call this get method on a contract deployed at a known address:
 
 ```ts
-import { TonClient } from '@ton/ton';
-import { Address } from '@ton/core';
+import { TonClient } from "@ton/ton";
+import { Address } from "@ton/core";
 
 async function main() {
-    // Create Client
-    const client = new TonClient({
-        endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-    });
+  // Create Client
+  const client = new TonClient({
+    endpoint: "https://toncenter.com/api/v2/jsonRPC",
+  });
 
-    // Call get method
-    const result = await client.runMethod(
-        Address.parse('EQD4eA1SdQOivBbTczzElFmfiKu4SXNL4S29TReQwzzr_70k'),
-        'get_total'
-    );
-    const total = result.stack.readNumber();
-    console.log('Total:', total);
+  // Call get method
+  const result = await client.runMethod(
+    Address.parse("EQD4eA1SdQOivBbTczzElFmfiKu4SXNL4S29TReQwzzr_70k"),
+    "get_total"
+  );
+  const total = result.stack.readNumber();
+  console.log("Total:", total);
 }
 
 main();
 ```
 
-Этот код выдаст результат `Total: 123`. Число может быть другим, это просто пример.
+This code will produce an output in the format `Total: 123`. The number may vary, as this is just an example.
 
-### Тестирование get-методов
+### Testing get methods
 
-Для тестирования созданных смарт-контрактов можно использовать [Sandbox](https://github.com/ton-community/sandbox), который по умолчанию устанавливается в новые проекты Blueprint.
+We can use the [Sandbox](https://github.com/ton-community/sandbox/) to test smart contracts, which is installed by default in new Blueprint projects.
 
-Сначала добавьте специальный метод в оболочку контракта, который будет выполнять get-метод и возвращать введенный результат. Допустим, ваш контракт называется *Counter*, и в нем уже реализован метод обновления значения в виде числа. Откройте `wrappers/Counter.ts` и добавьте следующий метод:
+First, you must add a special method in the contract wrapper to execute the get method and return the typed result. Let's say your contract is called _Counter_, and you have already implemented the method to update the stored number. Open `wrappers/Counter.ts` and add the following method:
 
 ```ts
 async getTotal(provider: ContractProvider) {
@@ -271,102 +273,109 @@ async getTotal(provider: ContractProvider) {
 }
 ```
 
-Этот метод выполняет get-запрос и получает результирующий стек. В контексте get-методов стек - это результат вызова метода. В данном примере кода результат представлен в виде одного числа. В более сложных случаях, когда возвращается сразу несколько значений, для обработки всего результата, можно, к примеру, несколько раз вызвать метод `readSomething`.
+It executes the get method and retrieves the resulting stack. In this snippet, we read a single number from the stack. In more complex cases where multiple values are returned at once, you can simply call the `readSomething` type of method multiple times to parse the entire execution result from the stack.
 
-Теперь можно использовать этот метод в наших тестах. Перейдите в `tests/Counter.spec.ts` и добавьте новый тест:
+Finally, we can use this method in our tests. Navigate to the `tests/Counter.spec.ts` and add a new test:
 
 ```ts
-it('should return correct number from get method', async () => {
-    const caller = await blockchain.treasury('caller');
-    await counter.sendNumber(caller.getSender(), toNano('0.01'), 123);
-    expect(await counter.getTotal()).toEqual(123);
+it("should return correct number from get method", async () => {
+  const caller = await blockchain.treasury("caller");
+  await counter.sendNumber(caller.getSender(), toNano("0.01"), 123);
+  expect(await counter.getTotal()).toEqual(123);
 });
 ```
 
-Проверьте, запустив `npx blueprint test` в терминале. Если все сделано правильно, тест пройдёт успешно!
+You can check it by running `npx blueprint test` in your terminal. If you did everything correctly, this test should be marked as passed!
 
-## Вызов get-методов из других контрактов
+## Invoking get methods from other contracts
 
-Несмотря на кажущуюся очевидность, вызвать get-методы из других контрактов on-chain невозможно. Это связано с особенностями блокчейн-технологии и необходимостью консенсуса.
+Contrary to what might seem intuitive, invoking get methods from other contracts is impossible on-chain. This limitation stems primarily from the nature of blockchain technology and the need for consensus.
 
-Во-первых, получение данных из другого шардчейна может занять время. Такая задержка способна нарушить процесс выполнения контракта, так как операции в блокчейне должны выполняться детерминированно и без задержек.
+First, acquiring data from another ShardChain may introduce significant latency. Such delays could disrupt the contract execution flow, as blockchain operations are designed to execute in a deterministic and timely manner.
 
-Во-вторых, достичь консенсуса среди валидаторов будет сложно. Чтобы проверить корректность транзакции, валидаторы должны вызывать один и тот же get-метод. Однако если состояние целевого контракта изменится между вызовами, результат транзакции может отличаться у разных валидаторов.
+Second, achieving consensus among validators would be problematic. Validators would also need to invoke the same get method to verify a transaction's correctness. However, if the state of the target contract changes between these multiple invocations, validators could end up with differing versions of the transaction result.
 
-И, наконец - смарт-контракты в TON работают как чистые функции: при одинаковых входных данных они всегда возвращают одинаковый результат. Это упрощает достижение консенсуса при обработке сообщений. Если же включить в процесс выполнения метода произвольные, динамически меняющиеся данные, это нарушит детерминированность.
+Lastly, smart contracts in TON are designed to be pure functions: they will always produce the same output for the same input. This principle allows for straightforward consensus during message processing. Introducing runtime acquisition of arbitrary, dynamically changing data would break this deterministic property.
 
-### Влияние на разработку
+### Implications for developers
 
-Эти ограничения означают, что один контракт не может напрямую получать данные о состоянии другого контракта через его get-методы. Отсутствие возможности использовать внешние данные в реальном времени в детерминированном потоке контракта может показаться неудобным, но именно эти ограничения обеспечивают надежность и целостность блокчейна.
+These limitations mean that one contract cannot directly access the state of another contract via its get methods. While the inability to incorporate real-time, external data into a contract's deterministic flow might seem restrictive, it is precisely these constraints that ensure the integrity and reliability of blockchain technology.
 
-### Решения и обходные пути
+### Solutions and workarounds
 
-В блокчейне TON смарт-контракты взаимодейстсвуют с помощью сообщений, а не вызывают напрямую методы другого контракта. Целевому контракту можно отправить сообщение с запросом на выполнение определённого метода. Такие запросы обычно включают специальные [коды операций](/v3/documentation/smart-contracts/message-management/internal-messages).
+In the TON Blockchain, smart contracts communicate through messages rather than directly invoking methods from one another. One can send a message to another contract requesting the execution of a specific method. These requests usually begin with special [operation codes](/v3/documentation/smart-contracts/message-management/internal-messages/).
 
-Контракт, который принимает такие запросы, выполняет нужный метод и отправляет результат обратно в отдельном сообщении. Это может показаться сложным, но на практике упрощает взаимодействие между контрактами и повышает масштабируемость и производительность сети.
+A contract designed to handle such requests will execute the specified method and return the results in a separate message. While this approach may seem complex, it effectively streamlines communication between contracts, enhancing the scalability and performance of the blockchain network.
 
-Этот механизм передачи сообщений - ключевой элемент работы блокчейна TON, позволяющий сети масштабироваться без сложной синхронизации между шардами.
+This message-passing mechanism is integral to the TON Blockchain's operation, paving the way for scalable network growth without requiring extensive synchronization between shards.
 
-Для эффективного взаимодействия между контрактами важно, чтобы они были разработаны так, чтобы корректно принимать и обрабатывать запросы. Включая указание методов, которые могут быть вызваны on-chain для возврата ответа.
+For effective inter-contract communication, it is crucial to design your contracts so that they can properly accept and respond to requests. This involves implementing methods that can be invoked on-chain to return responses.
 
-Давайте рассмотрим простой пример:
+Let's consider a simple example:
 
 ```func
 #include "imports/stdlib.fc";
 
 int get_total() method_id {
-    return get_data().begin_parse().preload_uint(32);
+ return get_data().begin_parse().preload_uint(32);
 }
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
-    if (in_msg_body.slice_bits() < 32) {
-        return ();
-    }
+ if (in_msg_body.slice_bits() < 32) {
+ return ();
+ }
 
-    slice cs = in_msg_full.begin_parse();
-    cs~skip_bits(4);
-    slice sender = cs~load_msg_addr();
+ slice cs = in_msg_full.begin_parse();
+ cs~skip_bits(4);
+ slice sender = cs~load_msg_addr();
 
-    int op = in_msg_body~load_uint(32); ;; load the operation code
+ int op = in_msg_body~load_uint(32); ;; load the operation code
 
-    if (op == 1) { ;; increase and update the number
-        int number = in_msg_body~load_uint(32);
-        int total = get_total();
-        total += number;
-        set_data(begin_cell().store_uint(total, 32).end_cell());
-    }
-    elseif (op == 2) { ;; query the number
-        int total = get_total();
-        send_raw_message(begin_cell()
-            .store_uint(0x18, 6)
-            .store_slice(sender)
-            .store_coins(0)
-            .store_uint(0, 107) ;; default message headers (see sending messages page)
-            .store_uint(3, 32) ;; response operation code
-            .store_uint(total, 32) ;; the requested number
-        .end_cell(), 64);
-    }
+ if (op == 1) { ;; increase and update the number
+ int number = in_msg_body~load_uint(32);
+ int total = get_total();
+ total += number;
+ set_data(begin_cell().store_uint(total, 32).end_cell());
+ }
+ elseif (op == 2) { ;; query the number
+ int total = get_total();
+ send_raw_message(begin_cell()
+ .store_uint(0x18, 6)
+ .store_slice(sender)
+ .store_coins(0)
+ .store_uint(0, 107) ;; default message headers (see sending messages page)
+ .store_uint(3, 32) ;; response operation code
+ .store_uint(total, 32) ;; the requested number
+ .end_cell(), 64);
+ }
 }
 ```
 
-В этом примере контракт получает и обрабатывает внутренние сообщения, распознает коды операций (опкоды), выполняет нужные методы и отправляет соответствующие ответы:
+In this example, the contract receives and processes internal messages by interpreting operation codes, executing specific methods, and returning responses appropriately:
 
-- Oпкод `1` обозначает запрос на обновление числа в данных контракта
-- Опкод `2` обозначает запрос на получение числа из данных контракта
-- Опкод `3` используется в ответном сообщении, которое вызывающий смарт-контракт должен обработать, чтобы получить результат
+- Op-code `1` denotes a request to update the number in the contract's data.
+- Op-code `2` signifies a request to query the number from the contract's data.
+- Op-code `3` is used in the response message, which the calling smart contract must handle to receive the result.
 
-Для простоты мы использовали в качестве кодов операций (опкодов) простые числа 1, 2 и 3. Но для реальных проектов лучше использовать стандартные значения:
+For simplicity, we used just simple little numbers 1, 2, and 3 for the operation codes. But for real projects, consider setting them according to the standard:
 
-- [CRC32-хеши для опкодов](/v3/documentation/data-formats/tlb/crc32)
+- [CRC32 Hashes for op-codes](/v3/documentation/data-formats/tlb/crc32/)
 
-## Распространённые ошибки и как их избежать
+## Common pitfalls and how to avoid them
 
-1. **Неправильное использование get-методов.** Как уже упоминалось ранее, get-методы предназначены для получения данных из состояния контракта и не могут его изменять. Попытка изменить состояние контракта внутри get-метода не даст результата.
+1. **Misuse of get methods**: As mentioned earlier, get methods are designed to return data from the contract's state and are not meant to change the contract's state. Attempting to alter the contract's state within a get method will not do it.
 
-2. **Игнорирование возвращаемых типов.** Каждый get-метод должен иметь чётко определённый тип возвращаемых данных. Если метод должен возвращать данные определённого типа, убедитесь, что во всех сценариях выполнения возвращается именно этот тип. Избегайте использования несогласованных типов возвращаемых значений - это может привести к ошибкам и усложнить взаимодействие с контрактом.
+2. **Ignoring return types**: Every get method must have a clearly defined return type that matches the retrieved data. If a method is expected to return a specific type of data, ensure that all execution paths within the method return this type. Inconsistent return types should be avoided, as they can lead to errors and complications when interacting with the contract.
 
-3. **Ошибочное предположение о кросс-контрактных вызовах.** Распространённое заблуждение заключается в том, что get-методы можно вызывать из других контрактов on-chain. Однако, как уже говорилось, это невозможно из-за особенностей блокчейна и необходимости консенсуса. Всегда помните, что get-методы предназначены для использования off-chain, а взаимодействие между контрактами on-chain осуществляется через внутренние сообщения.
+3. **Assuming cross-contract calls**: A common misconception is that get methods can be called directly from other contracts on-chain. However, as previously discussed, this is not possible due to the inherent nature of blockchain technology and the requirement for consensus. Always remember that get methods are designed for off-chain use, while on-chain interactions between contracts are facilitated through internal messages.
 
-## Заключение
+## Conclusion
 
-Get-методы - это важный инструмент для запроса данных из смарт-контрактов в блокчейне TON. Хотя у них есть свои ограничения, понимание этих ограничений и умение их обходить - ключ к эффективному использованию get-методов в ваших смарт-контрактах.
+Get methods are vital for querying data from smart contracts on the TON Blockchain. While they have certain limitations, understanding these constraints and learning how to work around them is crucial for effectively utilizing get methods in your smart contracts.
+
+## See also
+
+- [Writing tests examples](/v3/guidelines/smart-contracts/testing/writing-test-examples/)
+
+<Feedback />
+
