@@ -1,36 +1,36 @@
-# Принципы хорошего руководства
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Principles of a good tutorial
 
 :::danger
-Эта страница устарела и скоро будет удалена.
-См. [Как внести вклад](/v3/contribute/).
+This page is outdated and will be updated soon.
+See the [How to contribute](/v3/contribute/).
 :::
 
-Оригинальный комментарий к этим принципам от [talkol](https://github.com/talkol):
+Original comment with these principles by [talkol](https://github.com/talkol):
 
-- [Оригинальный комментарий к TON Footstep #7](https://github.com/ton-society/ton-footsteps/issues/7#issuecomment-1187581181)
+- [Original comment on TON Footstep #7](https://github.com/ton-society/ton-footsteps/issues/7#issuecomment-1187581181)
 
-Вот краткое изложение этих пунктов для новых участников.
+Here is a summary of these points for new contributors.
 
-## Принципы
+## Principles
 
-1. Весь процесс должен выполняться на стороне пользователя. Не должно быть никаких сторонних сервисов. Вам нужно сделать все так, чтобы пользователь мог просто клонировать репозиторий и сразу же запустить его.
+1. The full flow should run on the user's client. There shouldn't be any third-party services involved. You need to do everything so that the user can simply clone the repository and immediately run it.
 
-2. README должен быть ОЧЕНЬ подробным. Не предполагайте, что пользователи что-то знают. Если руководство требует этого, оно также должно объяснять, как установить компилятор FunC или Lite-клиент на ваше устройство. Вы можете скопировать эти части из других руководств в этой документации.
+2. The README should be VERY detailed. Do not assume the users know anything. If the tutorial requires it, it should also explain how to install the FunC compiler or Lite-client on your device. You can copy these parts from other tutorials in this documentation.
 
-3. Было бы хорошо, если бы репозиторий включал весь исходный код используемых контрактов, чтобы пользователи могли вносить незначительные изменения в стандартный код. Например, смарт-контракт жетона позволяет пользователям экспериментировать с пользовательским поведением.
+3. It would be good if the repository included the whole source code for the contracts used, so that users could make minor changes to the standard code. For example, the Jetton smart contract allows users to experiment with custom behavior.
 
-4. Если это возможно, создайте удобный интерфейс, который позволит пользователям развертывать или запускать проект без необходимости загрузки кода или какой-либо настройки. Обратите внимание, что это все еще должно быть автономным и обслуживаться из GitHub Pages для запуска на 100% клиентской части, на устройстве пользователя. Пример: https://minter.ton.org/
+4. If it is possible, create a user-friendly interface that will allow users to deploy or run the project without having to download the code or configure anything. Notice that this should still be standalone and served from GitHub Pages to run 100% client-side on the user's device. Example: https://minter.ton.org/
 
-5. Объясните пользователям, что означает каждый выбор поля, и объясните лучшие практики.
+5. Explain to users what every field choice means and explain best practices.
 
-6. Объясните все, что нужно знать о безопасности. Вы должны объяснить достаточно, чтобы разработчики не совершали ошибок и не создавали опасные смарт-контракты/ботов/веб-сайты — вы обучаете их лучшим практикам безопасности.
+6. Explain everything there is to know about security. You must explain enough that creators do not make mistakes and create dangerous smart contracts/bots/websites—you are teaching them the best security practices.
 
-7. В идеале репозиторий должен включать хорошо написанные тесты, которые показывают читателю, как лучше всего реализовать их в контексте вашего руководства.
+7. Ideally, the repository should include well-written tests that show the reader how to best implement them in the context of your tutorial.
 
-8. Репозиторий должен иметь собственные простые для понимания скрипты компиляции/развертывания. Пользователь должен иметь возможность просто `npm install` и использовать их.
+8. The repository should have its own easy-to-understand compilation/deployment scripts. A user should be able to just `npm install` and use them.
 
-9. Иногда достаточно репозитория GitHub, и нет необходимости писать полную статью. Просто README со всем кодом, который вам нужен в репозитории. В этом случае код должен быть хорошо прокомментирован, чтобы пользователь мог легко его прочитать и понять.
+9. Sometimes a GitHub repository is enough and there is no need to write a full article. Just a README with all the code you need in the repository. In this case, the code should be well-commented so that the user can easily read and understand it.
+ <Feedback />
+
