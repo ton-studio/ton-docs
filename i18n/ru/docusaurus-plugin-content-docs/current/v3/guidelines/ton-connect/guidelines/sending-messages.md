@@ -1,20 +1,18 @@
-# Отправка сообщений
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Sending messages
 
-TON Connect 2.0 предоставляет гораздо больше возможностей, чем просто аутентификация пользователей в DApp: вы можете отправлять исходящие сообщения через подключенные кошельки!
+TON Connect has more powerful options than just authenticating users in the dApp; it also allows sending outgoing messages via connected wallets.
 
-Вы узнаете:
+You will understand:
 
-- как отправлять сообщения из DApp в блокчейн
-- как отправить несколько сообщений в одной транзакции
-- как развернуть контракт с помощью TON Connect
+- how to send messages from the DApp to the blockchain
+- how to send multiple messages in one transaction
+- how to deploy a contract using TON Connect
 
-## Страница для экспериментов
+## Playground page
 
-Мы будем использовать низкоуровневый [TON Connect SDK](https://github.com/ton-connect/sdk/tree/main/packages/sdk) на JavaScript. Мы поэкспериментируем в консоли браузера на странице, где кошелек уже подключен. Вот пример страницы:
+We will use the low level [TON Connect SDK](https://github.com/ton-connect/sdk/tree/main/packages/sdk) for JavaScript. We'll experiment in the browser console on a page where the wallet is already connected. Here is the sample page:
 
 ```html
 <!DOCTYPE html>
@@ -37,22 +35,22 @@ TON Connect 2.0 предоставляет гораздо больше возм�
 </html>
 ```
 
-Не стесняйтесь скопировать и вставить этот код в консоль вашего браузера и выполнить его.
+Feel free to copy-paste it into your browser console and run it.
 
-## Отправка нескольких сообщений
+## Sending multiple messages
 
-### 1. Понимание задачи
+### Understanding a task
 
-Мы отправим два отдельных сообщения в одной транзакции: одно на ваш собственный адрес с 0,2 TON и одно на другой адрес кошелька с 0,1 TON.
+We will send two messages in one transaction: one to your address, carrying 0.2 TON, and one to the other wallet address, carrying 0.1 TON.
 
-Обратите внимание, что есть ограничение по количеству сообщений, которые можно отправить в одной транзакции:
+By the way, there is a limit to the number of messages sent in one transaction:
 
-- стандартные ([v3](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#wallet-v3)/[v4](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#wallet-v4)) кошельки: 4 исходящих сообщения;
-- highload кошельки: 255 исходящих сообщений (близко к ограничениям блокчейна).
+- standard ([v3](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#wallet-v3)/[v4](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#wallet-v4)) wallets: 4 outgoing messages;
+- highload wallets: 255 outgoing messages (close to blockchain limitations).
 
-### 2. Отправка сообщений
+### Sending the messages
 
-Запустите следующий код:
+Run the following code:
 
 ```js
 console.log(await connector.sendTransaction({
@@ -63,20 +61,20 @@ console.log(await connector.sendTransaction({
       amount: "200000000"
     },
     {
-      address: "0:b2a1ecf5545e076cd36ae516ea7ebdf32aea008caa2b84af9866becb208895ad",
+      address: "EQCyoez1VF4HbNNq5Rbqfr3zKuoAjKorhK-YZr7LIIiVrSD7",
       amount: "100000000"
     }
   ]
 }));
 ```
 
-Вы заметите, что эта команда ничего не выводит в консоль, `null` или `undefined`, так как функции, которые ничего не возвращают, не выходят. Это означает, что `connector.sendTransaction` не завершается немедленно.
+You'll notice that this command does not print anything into the console, `null` or `undefined`, as functions returning nothing do. This means that `connector.sendTransaction` does not exit immediately.
 
-Откройте приложение кошелька, и посмотрите, почему. Там будет запрос, показывающий, что вы отправляете и куда будут отправлены монеты. Пожалуйста, одобрите его.
+Open your wallet application, and you'll see why. There is a request showing what you are sending and where the coins would go. Please, accept it.
 
-### 3. Получение результата
+### Getting the result
 
-Функция завершит работу, и будет выведен результат из блокчейна:
+The function will exit, and the output from the blockchain will be printed:
 
 ```json
 {
@@ -84,9 +82,9 @@ console.log(await connector.sendTransaction({
 }
 ```
 
-BOC - это [Bag of Cells](/v3/concepts/dive-into-ton/ton-blockchain/cells-as-data-storage), способ хранения данных в TON. Теперь мы можем его расшифровать.
+BoC is [bag of cells](/v3/concepts/dive-into-ton/ton-blockchain/cells-as-data-storage), the way data is stored in TON. Now, we can decode it.
 
-Расшифруйте этот BOC в инструменте по вашему выбору, и вы получите следующее дерево ячеек:
+Decode this BoC in the tool of your choice, and you'll get the following tree of cells:
 
 ```bash
 x{88016543D9EAA8BC0ED9A6D5CA2DD4FD7BE655D401195457095F30CD7D9641112B5A02501DD1A83C401673E97A8D7DD57FE38A29A7F41C27AB7CF0714FCC3231D134DE6C0B9B72CA6055DD2275AE3CB2B1C023AC30C500857F884F960724843CFF70094D4D18BB1F72F5600000024800181C_}
@@ -94,7 +92,7 @@ x{88016543D9EAA8BC0ED9A6D5CA2DD4FD7BE655D401195457095F30CD7D9641112B5A02501DD1A8
  x{42005950F67AAA2F03B669B5728B753F5EF9957500465515C257CC335F6590444AD69CC4B40000000000000000000000000000}
 ```
 
-Это сериализованное внешнее сообщение, а две ссылки — это представления исходящих сообщений.
+This is a serialized external message, and two references are outgoing messages representations.
 
 ```bash
 x{88016543D9EAA8BC0ED9A6D5CA2DD4FD7BE655D401195457095F30CD7D964111...
@@ -107,44 +105,66 @@ x{88016543D9EAA8BC0ED9A6D5CA2DD4FD7BE655D401195457095F30CD7D964111...
   ...
 ```
 
-Цель возврата BOC отправленной транзакции — отследить ее.
+Returning the BoC of the sent transaction is to track it.
 
-## Отправка сложных транзакций
+### Processing transactions initiated with TON Connect
 
-### Сериализация ячеек
+To find a transaction by `extInMsg`, you need to do the following:
 
-Прежде чем продолжить, давайте поговорим о формате сообщений, которые мы собираемся отправлять.
+1. Parse the received `extInMsg` as a cell.
+2. Calculate the `hash()` of the obtained cell.
 
-- **payload** (строка base64, необязательно): необработанный BoC из одной ячейки, закодированный в Base64.
- - мы будем использовать его для хранения текстового комментария при передаче
-- **stateInit** (строка base64, необязательно): необработанный BoC из одной ячейки, закодированный в Base64.
- - мы будем использовать его для развертывания смарт-контракта
+:::info
+The received hash is what the `sendBocReturnHash` methods of TON Center API are already returning to you.
+:::
 
-После создания сообщения вы можете сериализовать его в BOC.
+3. Search for the required transaction using this hash through an indexer:
+
+ - Using TON Center [api_v3_transactionsByMessage_get](https://toncenter.com/api/v3/#/default/get_transactions_by_message_api_v3_transactionsByMessage_get).
+
+ - Using the `/v2/blockchain/messages/{msg_id}/transaction` method from [TON API](https://tonapi.io/api-v2).
+
+ - Collect transactions independently and search for the required extInMsg by its hash: [see example](/v3/guidelines/dapps/cookbook#how-to-find-transaction-for-a-certain-ton-connect-result).
+
+It's important to note that `extInMsg` may not be unique, which means collisions can occur. However, all transactions are unique.
+If you are using this for an informative display, this method should be sufficient. With standard wallet contracts, collisions can occur only in exceptional situations.
+
+## Sending complex transactions
+
+### Serialization of cells
+
+Before we proceed, let's talk about the format of the messages we will send.
+
+- **payload** (string base64, optional): raw one-cell BoC encoded in Base64.
+ - We will use it to store text comments on transfer
+- **stateInit** (string base64, optional): raw one-cell BoC encoded in Base64.
+ - We will use it to deploy a smart contract
+
+After building a message, you can serialize it into BoC.
 
 ```js
 TonWeb.utils.bytesToBase64(await payloadCell.toBoc())
 ```
 
-### Перевод с комментарием
+### Transfer with comment
 
-Вы можете использовать [toncenter/tonweb](https://github.com/toncenter/tonweb) JS SDK или ваш любимый инструмент для сериализации ячеек в BOC.
+You can use [toncenter/tonweb](https://github.com/toncenter/tonweb) JS SDK or your favourite tool to serialize cells to BoC.
 
-Текстовый комментарий к передаче кодируется как опкод 0 (32 нулевых бита) + UTF-8 байт комментария. Вот пример того, как преобразовать его в пакет ячеек.
+Text comments on transfer are encoded as opcode 0 (32 zero bits) + UTF-8 bytes of comment. Here's an example of how to convert it into a bag of cells.
 
 ```js
 let a = new TonWeb.boc.Cell();
 a.bits.writeUint(0, 32);
-a.bits.writeString("TON Connect 2 tutorial!");
+a.bits.writeString("TON Connect tutorial!");
 let payload = TonWeb.utils.bytesToBase64(await a.toBoc());
 
 console.log(payload);
 // te6ccsEBAQEAHQAAADYAAAAAVE9OIENvbm5lY3QgMiB0dXRvcmlhbCFdy+mw
 ```
 
-### Развертывание смарт-контракта
+### Smart contract deployment
 
-Теперь мы развернем экземпляр простого [чатбота Doge](https://github.com/LaDoger/doge.fc), упомянутого как один из [примеров смарт-контрактов](/v3/documentation/smart-contracts/overview#examples-of-smart-contracts). Прежде всего, мы загружаем его код и сохраняем что-то уникальное в данных, чтобы получить наш собственный экземпляр, который не был развернут кем-то другим. Затем мы объединяем код и данные в stateInit.
+And we'll deploy an instance of super simple [chatbot Doge](https://github.com/LaDoger/doge.fc), mentioned as one of [smart contract examples](/v3/documentation/smart-contracts/overview#examples-of-smart-contracts). First of all, we load its code and store something unique in data to receive our very own instance that someone else has not deployed. Then, we combine code and data into stateInit.
 
 ```js
 let code = TonWeb.boc.Cell.oneFromBoc(TonWeb.utils.base64ToBytes('te6cckEBAgEARAABFP8A9KQT9LzyyAsBAGrTMAGCCGlJILmRMODQ0wMx+kAwi0ZG9nZYcCCAGMjLBVAEzxaARfoCE8tqEssfAc8WyXP7AN4uuM8='));
@@ -165,14 +185,14 @@ console.log(doge_address);
 //  0:1c7c35ed634e8fa796e02bbbe8a2605df0e2ab59d7ccb24ca42b1d5205c735ca
 ```
 
-И теперь пора отправить нашу транзакцию!
+And it's time to send our transaction:
 
 ```js
 console.log(await connector.sendTransaction({
   validUntil: Math.floor(new Date() / 1000) + 360,
   messages: [
     {
-      address: "0:1c7c35ed634e8fa796e02bbbe8a2605df0e2ab59d7ccb24ca42b1d5205c735ca",
+      address: "EQAcfDXtY06Pp5bgK7voomBd8OKrWdfMskykKx1SBcc1yh5O",
       amount: "69000000",
       payload: "te6ccsEBAQEAHQAAADYAAAAAVE9OIENvbm5lY3QgMiB0dXRvcmlhbCFdy+mw",
       stateInit: "te6ccsEBBAEAUwAABRJJAgE0AQMBFP8A9KQT9LzyyAsCAGrTMAGCCGlJILmRMODQ0wMx+kAwi0ZG9nZYcCCAGMjLBVAEzxaARfoCE8tqEssfAc8WyXP7AAAQAAABhltsPJ+MirEd"
@@ -182,17 +202,26 @@ console.log(await connector.sendTransaction({
 ```
 
 :::info
-Получите больше примеров на странице [Подготовка сообщений](/v3/guidelines/ton-connect/guidelines/preparing-messages) для отпраки NFT и жетонов.
+Get more examples on the [Preparing Messages](/v3/guidelines/ton-connect/guidelines/preparing-messages) page for Transfer NFT and Jettons.
 :::
 
-После подтверждения мы можем увидеть нашу транзакцию завершенной на сайте [tonscan.org](https://tonscan.org/tx/pCA8LzWlCRTBc33E2y-MYC7rhUiXkhODIobrZVVGORg=).
+After confirmation, we may see our transaction complete at [tonscan.org](https://tonscan.org/tx/pCA8LzWlCRTBc33E2y-MYC7rhUiXkhODIobrZVVGORg=).
 
-## Что произойдет, если пользователь отклонит запрос транзакции?
+## What happens if the user rejects a transaction request?
 
-Обработать отклонение запроса довольно просто, но когда вы разрабатываете какой-то проект, лучше знать заранее, что произойдет.
+It's pretty easy to handle request rejection, but it's better to know what would happen in advance when you're developing some project.
 
-Когда пользователь нажимает «Cancel» во всплывающем окне в приложении кошелька, выдается исключение: `Error: [TON_CONNECT_SDK_ERROR] Wallet declined the request`. Эту ошибку можно считать окончательной (в отличие от отмены соединения) — если она была вызвана, то запрошенная транзакция точно не произойдет до следующего запроса.
+When a user clicks **Cancel** in the popup in the wallet application, an exception is thrown:
 
-## См. также
+```ts
+Error: [TON_CONNECT_SDK_ERROR] The Wallet declined the request 
+```
 
-- [Подготовка сообщений](/v3/guidelines/ton-connect/guidelines/preparing-messages)
+This error can be considered final (unlike connection cancellation) - if it has been raised, then the requested transaction will definitely not happen until the next request is sent.
+
+## See also
+
+- [Preparing messages](/v3/guidelines/ton-connect/guidelines/preparing-messages)
+
+<Feedback />
+
