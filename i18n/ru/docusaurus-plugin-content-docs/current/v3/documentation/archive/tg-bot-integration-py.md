@@ -1,47 +1,45 @@
+import Feedback from '@site/src/components/Feedback';
+
 import Button from '@site/src/components/button'
 
-# TON Connect для Telegram ботов - Python
+# TON Connect for Telegram Bots - Python
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
+:::warning deprecated
+This guide explains an outdated method of integrating TON Connect with Telegram bots. For a more secure and modern approach, consider using [Telegram Mini Apps](/v3/guidelines/dapps/tma/overview for a more modern and secure integration.
 :::
 
-:::warning устаревшее
-В этом руководстве описан устаревший метод интеграции TON Connect с ботами Telegram. Для более безопасного и актуального способа рекомендуется использовать [Telegram Mini Apps](/v3/guidelines/dapps/tma/overview для более современной и безопасной интеграции.
-:::
-
-В этом руководтсве мы создадим пример telegram-бота, поддерживающего аутентификацию через TON Connect 2.0 с использованием Python TON Connect SDK [pytonconnect](https://github.com/XaBbl4/pytonconnect).
-Мы рассмотрим подключение кошелька, отправку транзакции, получение данных о подключенном кошельке и отключение кошелька.
+In this tutorial, we’ll create a sample telegram bot that supports TON Connect 2.0 authentication using Python TON Connect SDK [pytonconnect](https://github.com/XaBbl4/pytonconnect).
+We will analyze connecting a wallet, sending a transaction, getting data about the connected wallet, and disconnecting a wallet.
 
 <Button href="https://t.me/test_tonconnect_bot" colorType={'primary'} sizeType={'sm'}>
 
-Открыть демо-бот
+Open Demo Bot
 
 </Button>
 
 <Button href="https://github.com/yungwine/ton-connect-bot" colorType={'secondary'} sizeType={'sm'}>
 
-Ознакомиться с GitHub
+Check out GitHub
 
 </Button>
 
-## Подготовка
+## Preparing
 
-### Установка библиотек
+### Install libraries
 
-Для создания бота мы будем использовать библиотеку Python `aiogram` версии 3.0.
-Для начала интеграции TON Connect в ваш Telegram-бот необходимо установить пакет `pytonconnect`.
-А для использования примитивов TON и парсинга адреса пользователя нам понадобится `pytoniq-core`.
-Для этого вы можете использовать pip:
+To make bot we are going to use `aiogram` 3.0 Python library.
+To start integrating TON Connect into your Telegram bot, you need to install the `pytonconnect` package.
+And to use TON primitives and parse user address we need `pytoniq-core`.
+You can use pip for this purpose:
 
 ```bash
 pip install aiogram pytoniq-core python-dotenv
 pip install pytonconnect
 ```
 
-### Настройка конфигурации
+### Set up config
 
-Укажите в файле `.env` [токен бота](https://t.me/BotFather) и ссылку на [файл манифеста](https://github.com/ton-connect/sdk/tree/main/packages/sdk#add-the-tonconnect-manifest) TON Connect. Затем загрузите их в `config.py`:
+Specify in `.env` file [bot token](https://t.me/BotFather) and link to the TON Connect [manifest file](https://github.com/ton-connect/sdk/tree/main/packages/sdk#add-the-tonconnect-manifest). After load them in `config.py`:
 
 ```dotenv
 # .env
@@ -62,9 +60,9 @@ TOKEN = env['TOKEN']
 MANIFEST_URL = env['MANIFEST_URL']
 ```
 
-## Создание простого бота
+## Create simple bot
 
-Создайте файл `main.py`, который будет содержать основной код бота:
+Create `main.py` file which will contain the main bot code:
 
 ```python
 # main.py
@@ -102,11 +100,11 @@ if __name__ == "__main__":
 
 ```
 
-## Подключение кошелька
+## Wallet connection
 
-### Хранилище TON Connect
+### TON Connect Storage
 
-Давайте создадим простое хранилище для TON Connect
+Let's create simple storage for TON Connect
 
 ```python
 # tc_storage.py
@@ -136,9 +134,9 @@ class TcStorage(IStorage):
 
 ```
 
-### Обработчик подключения
+### Connection handler
 
-Во-первых, нам нужна функция, которая возвращает разные экземпляры для каждого пользователя:
+Firstly, we need function which returns different instances for each user:
 
 ```python
 # connector.py
@@ -154,7 +152,7 @@ def get_connector(chat_id: int):
 
 ```
 
-Во-вторых, давайте добавим обработчик подключения в `command_start_handler()`:
+Secondary, let's add connection handler in `command_start_handler()`:
 
 ```python
 # main.py
@@ -179,8 +177,8 @@ async def command_start_handler(message: Message):
 
 ```
 
-Теперь, если пользователь еще не подключил кошелек, бот отправляет сообщение с кнопками для всех доступных кошельков.
-Поэтому нам нужно написать функцию для обработки обратных вызовов `connect:{wallet["name"]}`:
+Now, for a user who has not yet connected a wallet, the bot sends a message with buttons for all available wallets.
+So we need to write function to handle `connect:{wallet["name"]}` callbacks:
 
 ```python
 # main.py
@@ -238,11 +236,11 @@ async def main_callback_handler(call: CallbackQuery):
             await connect_wallet(message, data[1])
 ```
 
-Бот предоставляет пользователю 3 минуты для подключения кошелька, после чего сообщает об ошибке тайм-аута.
+Bot gives user 3 minutes to connect a wallet, after which it reports a timeout error.
 
-## Реализация запроса транзакции
+## Implement Transaction requesting
 
-Давайте рассмотрим один из примеров из статьи ["Подготовка сообщений"](/v3/guidelines/ton-connect/guidelines/preparing-messages):
+Let's take one of examples from the [Message builders](/v3/guidelines/ton-connect/guidelines/preparing-messages) article:
 
 ```python
 # messages.py
@@ -271,7 +269,7 @@ def get_comment_message(destination_address: str, amount: int, comment: str) -> 
 
 ```
 
-И добавим функцию `send_transaction()` в файл `main.py`:
+And add `send_transaction()` function in the `main.py` file:
 
 ```python
 # main.py
@@ -301,7 +299,7 @@ async def send_transaction(message: Message):
     )
 ```
 
-Но мы также должны обработать возможные ошибки, поэтому обернем метод `send_transaction` в выражение `try - except`:
+But we also should handle possible errors, so we wrap the `send_transaction` method into `try - except` statement:
 
 ```python
 @dp.message(Command('transaction'))
@@ -320,9 +318,9 @@ async def send_transaction(message: Message):
         await message.answer(text=f'Unknown error: {e}')
 ```
 
-## Добавление обработчика отключения
+## Add disconnect handler
 
-Реализация этой функции достаточно проста:
+This function implementation is simple enough:
 
 ```python
 async def disconnect_wallet(message: Message):
@@ -332,7 +330,7 @@ async def disconnect_wallet(message: Message):
     await message.answer('You have been successfully disconnected!')
 ```
 
-На данный момент проект имеет следующую структуру:
+Currently, the project has the following structure:
 
 ```bash
 .
@@ -344,10 +342,9 @@ async def disconnect_wallet(message: Message):
 └── tc_storage.py
 ```
 
-А `main.py` выглядит следующим образом:
+And the `main.py` looks like this:
 
-<details>
-<summary>Показать main.py</summary>
+<details><summary>Show main.py</summary>
 
 ```python
 # main.py
@@ -503,20 +500,20 @@ if __name__ == "__main__":
 
 </details>
 
-## Улучшение
+## Improving
 
-### Добавление постоянного хранилища - Redis
+### Add permanent storage - Redis
 
-В настоящее время наше хранилище TON Connect использует dict, что приводит к потере сессий после перезапуска бота.
-Давайте добавим постоянное хранилище базы данных с помощью Redis:
+Currently, our TON Connect Storage uses dict which causes to lost sessions after bot restart.
+Let's add permanent database storage with Redis:
 
-После запуска базы данных Redis установите библиотеку Python для взаимодействия с ней:
+After you launched Redis database install python library to interact with it:
 
 ```bash
 pip install redis
 ```
 
-И обновите класс `TcStorage` в `tc_storage.py`:
+And update `TcStorage` class in `tc_storage.py`:
 
 ```python
 import redis.asyncio as redis
@@ -543,15 +540,15 @@ class TcStorage(IStorage):
         await client.delete(self._get_key(key))
 ```
 
-### Добавление QR-кода
+### Add QR Code
 
-Установите пакет python `qrcode` для их генерации:
+Install python `qrcode` package to generate them:
 
 ```bash
 pip install qrcode
 ```
 
-Измените функцию `connect_wallet()` так, чтобы она генерировала QR-код и отправляла его в виде фотографии пользователю:
+Change `connect_wallet()` function so it generates qrcode and sends it as a photo to the user:
 
 ```python
 from io import BytesIO
@@ -572,14 +569,17 @@ async def connect_wallet(message: Message, wallet_name: str):
     ...
 ```
 
-## Краткие сведения
+## Summary
 
-Что дальше?
+What is next?
 
-- Вы можете улучшить обработку ошибок в боте.
-- Вы можете добавить приветственное сообщение и, например, команду `/connect_wallet`.
+- You can add better errors handling in the bot.
+- You can add start text and something like `/connect_wallet` command.
 
-## См. также
+## See Also
 
-- [Полный код бота](https://github.com/yungwine/ton-connect-bot)
-- [Подготовка сообщений](/v3/guidelines/ton-connect/guidelines/preparing-messages)
+- [Full bot code](https://github.com/yungwine/ton-connect-bot)
+- [Preparing messages](/v3/guidelines/ton-connect/guidelines/preparing-messages)
+
+<Feedback />
+
