@@ -1,43 +1,44 @@
-# Участвовать в качестве Мейнтейнера
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Participate as a Maintainer
 
-Событие Hacktoberfest - лучшее время года для получения поддержки от сообщества!
+The Hacktoberfest event is the best time of year to receive support from the community!
 
-Если ваш репозиторий относится к Экосистеме TON, многие контрибьюторы будут заинтересованы в этом. Давай поможем им погрузиться в ваш проект!
+If your repository is relevant to the TON Ecosystem, many contributors will be interested in it. Let's help them dive right into your project!
 
-## Приготовьтесь к вечеринке
+## Prepare to party
 
-Чтобы правильно работать с участниками, у Вас должен быть репозиторий с хорошей репутацией.
+To handle contributors in the right way, you need to have a repository in good standing.
 
-Следуйте этим лучшим практикам, чтобы подготовить свой проект к содействию:
+Follow these best practices to prepare your project for contributions:
 
-1. Добавьте тему "hacktoberfest" в свой репозиторий для **OPT-IN TO HACKTOBERFEST** и укажите, что Вам нужно содействие.
-2. Примените ярлык "hacktoberfest" к issues, с которыми Вы хотите, чтобы контрибьюторы помогли Вам в Вашем проекте на GitHub или GitLab.
-3. Пожалуйста, прочтите и используйте [основные советы для новых мейнтейнеров открытого исходного кода](https://blog.ton.org/essential-tips-for-new-open-source-maintainers) от TON Society.
-4. Подготовьтесь принимать соответствующие pull/merge запросы, делая merge, оставляя одобряющий ревью или добавляя метку "hacktoberfest-accepted".
-5. Отклоняйте все спам запросы, помечая их как "spam", и закрывайте или помечайте любые другие недействительные вклады как "invalid"
+1. Add the “hacktoberfest” topic to your repository to **OPT-IN TO HACKTOBERFEST** and indicate you are looking for contributions.
+2. Apply the “hacktoberfest” label to issues you want contributors to help you with in your GitHub or GitLab project.
+3. Please read and use [the essential tips for new open source maintainers](https://blog.ton.org/essential-tips-for-new-open-source-maintainers) by TON Society.
+4. Prepare to accept legitimate pull/merge requests by merging them, leaving an overall approving review, or adding the "hacktoberfest-accepted" label.
+5. Reject any spam requests you receive by labeling them as “spam,” and close or label any other invalid contributions as "invalid."
 
-Вот пример полного репозитория: [ton-community/ton-compiler](https://github.com/ton-community/ton-compiler)
+Here is an example of a full repository: [ton-community/ton-compiler](https://github.com/ton-community/ton-compiler)
 
-После этого можете добавить свой репозиторий в список.
+After that, feel free to add your repository to the list.
 
-## Награды для мейнтейнеров
+## Rewards for Maintainers
 
-Как мейнтейнер репозитория в экосистеме TON, Вы сможете получать два вида вознаграждений:
+As a repository maintainer in the TON Ecosystem, you will be able to receive two types of rewards:
 
-1. [Hacktoberfest Reward Kit](https://hacktoberfest.com/participation/#maintainers) (*смотрите REWARD FOR MAINTAINERS*)
-2. [Ограниченный Hack-TON-berfest NFT](/v3/documentation/archive/hacktoberfest-2022#what-are-the-rewards) (пожалуйста, зарегистрируйте адрес кошелька в [@toncontests_bot](https://t.me/toncontests_bot)_)
+1. [Hacktoberfest Reward Kit](https://hacktoberfest.com/participation/#maintainers) (_see REWARD FOR MAINTAINERS_)
+2. [Limited Hack-TON-berfest NFT](/v3/documentation/archive/hacktoberfest-2022#what-are-the-rewards) (_please, register the wallet address in the [@toncontests_bot](https://t.me/toncontests_bot)_)
 
-## Как присоединиться и попасть в список?
+## How to join and be listed?
 
-Чтобы принять участие в Hack-TON-berfest, перейдите по этой ссылке:
+To participate in Hack-TON-berfest follow this link:
 
 <span className="DocsMarkdown--button-group-content">
   <a href="https://airtable.com/shrgXIgZdBKKX64NL"
      className="Button Button-is-docs-primary">
-    Добавьте репозиторий в список
+    Add a repository to the list
   </a>
 </span>
+
+<Feedback />
+
