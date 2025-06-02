@@ -1,108 +1,114 @@
+import Feedback from '@site/src/components/Feedback';
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Полный узел
+# Full node
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+## OS requirements
 
-## Требования к ОС
-
-Мы настоятельно рекомендуем установить mytonctrl с использованием поддерживаемых операционных систем:
+We highly recommend installing MyTonCtrl using the supported operating systems:
 
 - Ubuntu 20.04
 - Ubuntu 22.04
 - Debian 11
 
-## Требования к аппаратному обеспечению
+## Hardware requirements
 
-:::caution Использование узла на персональном локальном компьютере
-Не следует запускать какой-либо тип узла на вашем персональном локальном компьютере в течение длительного времени, даже если он удовлетворяет требованиям. Узлы активно используют диски и могут быстро их повредить.
+:::caution Node usage on personal local machine
+You shouldn't run any type of node on your personal local machine for extended periods, even if it meets the requirements. Nodes actively use disks, which can lead to rapid wear and potential damage.
 :::
 
-### С валидатором
+### With validator
 
-- 16-ядерный процессор
-- 128 ГБ оперативной памяти
-- Твердотельный накопитель объемом 1 ТБ _или_ Оборудованное хранилище с более 64 000 операций ввода/вывода в секунду (IOPS)
-- Подключение к сети со скоростью 1 Гбит/с
-- Общедоступный IP-адрес (фиксированный IP-адрес)
-- Трафик 64 ТБ/месяц (100 ТБ/месяц при пиковой нагрузке)
+- 16 cores CPU
+- 128 GB RAM
+- 1TB NVME SSD _OR_ Provisioned 64+k IOPS storage
+- 1 Gbit/s network connectivity
+- Public IP address (_fixed IP address_)
+- 64 TB/month traffic (100 TB/month on peak load)
 
-:::info Будьте готовы к пиковым нагрузкам
-Как правило, для обеспечения надежной работы с пиковыми нагрузками вам потребуется подключение со скоростью не менее 1 Гбит/с (средняя нагрузка, как ожидается, составит около 100 Мбит/с).
+:::info Be ready for peak loads
+To reliably handle peak loads, a connection of at least 1 Gbit/s is typically required, while the average load is expected to be around 100 Mbit/s.
 :::
 
-### Переадресация портов
+### Port forwarding
 
-Все типы узлов требуют статического внешнего IP-адреса, один UDP-порт для проброса входящих соединений и все исходящие соединения должны быть открыты - узел использует случайные порты для новых исходящих соединений. Необходимо, чтобы узел был виден извне через NAT.
+All types of nodes require a static external IP address, one UDP port forwarded for incoming connections, and all outgoing connections to be open—the node uses random ports for new outgoing connections. The node must also be visible to the outside world over the NAT.
 
-Это можно сделать с помощью вашего сетевого провайдера или [арендовав сервер](/v3/guidelines/nodes/running-nodes/full-node#recommended-providers) для запуска узла.
+You can accomplish this by contacting your network provider or [renting a server](/v3/guidelines/nodes/running-nodes/full-node#recommended-providers) to run a node.
 
 :::info
-Вы можете определить открытый UDP-порт с помощью команды `netstat -tulpn`.
+You can find out which UDP port is open using the `netstat -tulpn` command.
 :::
 
-### Рекомендованные провайдеры
+### Recommended providers
 
-TON Foundation рекомендует следующих провайдеров для запуска валидатора:
+The TON Foundation recommends the following providers for running a Validator:
 
-| Облачный провайдер            | Тип экземпляра                  | CPU                       | RAM      | Хранилище                                 | Сеть           | Общедоступный IP                                | Трафик         |
-| ----------------------------- | ------------------------------- | ------------------------- | -------- | ----------------------------------------- | -------------- | ----------------------------------------------- | -------------- |
-| GCP                           | `n2-standard-16`                | `32 vCPUs`                | `128 ГБ` | `1 ТБ NVMe SSD`                           | `16 Гбит/с`    | Зарезервируйте статический внешний IP           | `64 ТБ/месяц`. |
-| Alibaba Cloud                 | `ecs.g6.4xlarge`                | `32 vCPUs`                | `128 ГБ` | `1 ТБ NVMe SSD`                           | `До 10 Гбит/с` | Выделенный Elastic IP                           | `64 ТБ/месяц`. |
-| Tencent Cloud                 | `M5.4XLARGE`                    | `32 vCPUs`                | `128 ГБ` | `1 ТБ NVMe SSD`                           | `До 10 Гбит/с` | Доступ к Elastic IP                             | `64 ТБ/месяц`. |
-| Vultr                         | `bare metal Intel E-2388G`      | `16 ядер / 32 потока`     | `128 ГБ` | `1,92 ТБ NVMe SSD`                        | `10 Гбит/с`    | Фиксированный IP-адрес, включенный в экземпляр  | `64 ТБ/месяц`. |
-| DigitalOcean                  | `general purpose premium Intel` | `32 vCPUs`                | `128 ГБ` | `1 ТБ NVMe SSD`                           | `10 Гбит/с`    | Фиксированный IP-адрес, включенный в экземпляр  | `64 ТБ/месяц`. |
-| Latitude                      | `c3.medium.x86`                 | `16 ядер / 32 потока`     | `128 ГБ` | `1,9 ТБ NVMe SSD`                         | `10 Гбит/с`    | Фиксированный IP-адрес, включенный в экземпляр  | `64 ТБ/месяц`. |
-| AWS                           | `i4i.8xlarge`                   | `32 vCPUs`                | `256 ГБ` | `2 x 3,750 AWS Nitro SSD (фиксированный)` | `До 25 Гбит/с` | Выделенный Elastic IP                           | `64 ТБ/месяц`. |
+| Cloud Provider | Instance Type                   | CPU                     | RAM     | Storage                           | Network         | Public IP                               | Traffic       |
+| -------------- | ------------------------------- | ----------------------- | ------- | --------------------------------- | --------------- | --------------------------------------- | ------------- |
+| GCP            | `n2-standard-16`                | `32 vCPUs`              | `128GB` | `1TB NVMe SSD`                    | `16 Gbps`       | Reserve a static external IP            | `64 TB/month` |
+| Alibaba Cloud  | `ecs.g6.4xlarge`                | `32 vCPUs`              | `128GB` | `1TB NVMe SSD`                    | `Up to 10 Gbps` | Bind an Elastic IP                      | `64 TB/month` |
+| Tencent Cloud  | `M5.4XLARGE`                    | `32 vCPUs`              | `128GB` | `1TB NVMe SSD`                    | `Up to 10 Gbps` | Associate an Elastic IP                 | `64 TB/month` |
+| Vultr          | `bare metal Intel E-2388G`      | `16 Cores / 32 Threads` | `128GB` | `1.92TB NVMe SSD`                 | `10 Gbps`       | Fixed IP address included with instance | `64 TB/month` |
+| DigitalOcean   | `general purpose premium Intel` | `32 vCPUs`              | `128GB` | `1TB NVMe SSD`                    | `10 Gbps`       | Fixed IP address included with instance | `64 TB/month` |
+| Latitude       | `c3.medium.x86`                 | `16 Cores / 32 Threads` | `128GB` | `1.9TB NVMe SSD`                  | `10 Gbps`       | Fixed IP address included with instance | `64 TB/month` |
+| AWS            | `i4i.8xlarge`                   | `32 vCPUs`              | `256GB` | `2 x 3,750 AWS Nitro SSD (fixed)` | `Up to 25 Gbps` | Bind an Elastic IP                      | `64 TB/month` |
 
 :::info
-**Примечание:** Цены, конфигурации и доступность могут отличаться. Рекомендуется всегда проверять официальную документацию и страницы с ценами соответствующего облачного провайдера, прежде чем принимать какие-либо решения.
+**Note:** Prices, configurations, and availability can change. It is recommended to always refer to the official documentation and pricing pages of the respective cloud provider before making any decisions.
 :::
 
-## Запуск узла (видео)
+## Run a Node (video)
 
 [//]: # "<ReactPlayer controls={true} style={{borderRadius:'10pt', margin:'15pt auto', maxWidth: '100%'}} url='/docs/files/TON_nodes.mp4' />"
 
-Пожалуйста, ознакомьтесь с этим пошаговым видео-руководством, чтобы сразу приступить к работе:
+Please, check this video step-by-step tutorial to start promptly:
 
-<video style={{borderRadius:'10pt', margin:'auto', width: '100%', maxWidth: '100%'}} controls={true}>
-    <source src="/files/TON_nodes.mp4" type="video/mp4" />
+<video
+  style={{
+    borderRadius: "10pt",
+    margin: "auto",
+    width: "100%",
+    maxWidth: "100%",
+  }}
+  controls={true}
+>
+  <source src="/files/TON_nodes.mp4" type="video/mp4" />
 </video>
 
-## Запуск узла (текст)
+## Run a node (text)
 
-### Переключитесь на пользователя без root прав
+### Switch to non-root user
 
 :::warning
-Этот шаг **необходим ** для успешной установки и использования mytonctrl — не игнорируйте создание пользователя, без root прав\*\*. Без этого шага ошибок при установке не возникнет, но mytonctrl не будет работать должным образом.
+This step is required to successfully install and use MyTonCtrl—don't ignore non-root user creation. Without this step, there will be no errors during installation, but MyTonCtrl will not work properly.
 :::
 
-Если у вас нет пользователя **без root** прав, вы можете создать его с помощью следующих шагов (в противном случае пропустите первые два шага и перейдите к третьему).
+If you don't have a non-root user, you can create one with the following steps (otherwise, skip the first two steps and go to the third).
 
-1. Войдите в систему как пользователь root и создайте нового пользователя:
+1. Login as root and create new user:
 
 ```bash
 sudo adduser <username>
 ```
 
-2. Добавьте своего пользователя в группу sudo:
+2. Add your user to the sudo group:
 
 ```bash
 sudo usermod -aG sudo <username>
 ```
 
-3. Войдите под именем нового пользователя (если вы используете ssh, **необходимо будет завершить текущую сессию и переподключиться с правильным пользователем**)
+3. Log into the new user (if you are using ssh, **you will need to stop current session and reconnect with correct user**)
 
 ```bash
 ssh <username>@<server-ip-address>
 ```
 
-### Установите MyTonCtrl
+### Install the MyTonCtrl
 
-Скачайте и запустите скрипт установки из учетной записи пользователя **без root** привилегий, используя права **sudo**:
+Download and run the installation script from the **non-root** user account with **sudo** privileges:
 
 <Tabs groupId="operating-systems">
   <TabItem value="ubuntu" label="Ubuntu">
@@ -123,90 +129,92 @@ su root -c 'bash install.sh'
 </TabItem>
 </Tabs>
 
-- `-d` - **mytonctrl** загрузит [дамп](https://dump.ton.org/) последнего состояния блокчейна.
-  Это сократит время синхронизации в несколько раз.
-- `-c <path>` - если вы хотите использовать для синхронизации не общедоступные liteservers. _(не обязательно)_
-- `-i` - Игнорировать минимальные требования, используйте только для проверки процесса компиляции без реального использования узла.
-- `-m` - Режим, может быть `validator` или `liteserver`.
-- `-t` - Отключить телеметрию.
+- `-d` - **mytonctrl** will download a [dump](https://dump.ton.org/) of the latest blockchain state.
+  This will reduce synchronization time by several times.
+- `-c <path>` - If you want to use not public liteservers for synchronization. _(not required)_
+- `-i` - Ignore minimum requirements, use it only if you want to check compilation process without real node usage.
+- `-m` - Mode, can be `validator` or `liteserver`.
+- `-t` - Disable telemetry.
 
-**Чтобы использовать testnet**, флагу `-c` должно быть присвоено значение `https://ton.org/testnet-global.config.json`.
+**To use testnet**, `-c` flag should be provided with `https://ton.org/testnet-global.config.json` value.
 
-Значение по умолчанию для флага `-c` равно `https://ton-blockchain.github.io/global.config.json`, что является конфигурацией по умолчанию для основной сети (mainnet).
+Default `-c` flag value is `https://ton-blockchain.github.io/global.config.json`, which is default mainnet config.
 
-### Запуск mytonctrl
+### Running the MyTonCtrl
 
-1. Запустите консоль `MyTonCtrl` из **учетной записи локального пользователя, которая была использована при установке**:
+1. Run `MyTonCtrl` console **from the local user account used for installation**:
 
 ```sh
 mytonctrl
 ```
 
-2. Проверьте состояние `MyTonCtrl` с помощью команды `status`:
+2. Check the `MyTonCtrl` status using the `status` command:
 
 ```sh
 status
 ```
 
-**В testnet** вместо `status` необходимо использовать команду `status fast`.
+**In testnet** `status fast` command must be used instead of `status`.
 
-Должны отобразиться следующие статусы:
+The following statuses should be displayed:
 
-- **mytoncore status**: Должен быть зеленым.
-- **local validator status**: Должен быть также зеленым.
-- **local validator out of sync**: Сначала отображается строка `n/a`. Как только вновь созданный валидатор подключится к другим валидаторам, число будет около 250 000. По мере выполнения синхронизации это число уменьшается. Когда оно падает ниже 20, валидатор считается синхронизированным.
+- **mytoncore status**: should display in green.
+- **local validator status**: should also display in green.
+- **local validator out of sync**: initially, a `n/a` string is displayed. As soon as the newly created validator connects with other validators, the number will be around 250k. As synchronization progresses, this number decreases. When it falls below 20, the validator is synchronized.
 
-Пример вывода команды **status**:
+Example of the **status** command output:
 
 ![status](/img/docs/nodes-validator/mytonctrl-status.png)
 
-:::caution Убедитесь, что у вас такой же вывод для команды status
-Для всех узлов должен появиться раздел **Local Validator status**.
- Если это не так, проверьте раздел [устранения неполадок](/v3/guidelines/nodes/nodes-troubleshooting#status-command-displays-without-local-node-section) и [проверьте журналы узла](/v3/guidelines/nodes/running-nodes/full-node#check-the-node-logs).
+:::caution Make sure you have same output for status
+For all nodes type **Local Validator status** section should appear.
+Otherwise, [check troubleshooting section](/v3/guidelines/nodes/nodes-troubleshooting#status-command-displays-without-local-node-section) and [check node logs](/v3/guidelines/nodes/running-nodes/full-node#check-the-node-logs).
 :::
 
-Подождите, пока `Local validator out of sync` не станет меньше 20 секунд.
+Please wait until the `Local validator out of sync` status is less than 20 seconds.
 
-При запуске нового узла, даже из дампа, **необходимо подождать до 3 часов, прежде чем количество рассинхронизаций начнет уменьшаться**. Это связано с тем, что узел все еще должен установить свое положение в сети и распространить свои адреса через таблицы DHT.
+When a new node is started, even from a dump, it is important to wait up to 3 hours before the _out of sync_ number begins to decrease. This delay occurs because the node must establish its place in the network and propagate its addresses through the DHT tables, among other processes.
 
-### Удаление mytonctrl
+### Uninstall mytonctrl
 
-Загрузите скрипт и запустите его:
+Download script and run it:
 
 ```bash
-sudo bash /usr/src/mytonctrl/uninstall.sh
+sudo bash /usr/src/mytonctrl/scripts/uninstall.sh
 ```
 
-### Проверьте владельца mytonctrl
+### Check mytonctrl owner
 
-Выполните:
+Run:
 
 ```bash
 ls -lh /var/ton-work/keys/
 ```
 
-## Советы и рекомендации
+## Tips & tricks
 
-### Список доступных команд
+### List of available commands
 
-- Вы можете использовать `help`, чтобы получить список доступных команд:
+- You can use `help` to get a list of available commands:
 
-![Команда Help](/img/docs/full-node/help.jpg)
+![Help command](/img/docs/full-node/help.jpg)
 
-### Проверьте логи mytonctrl
+### Check the MyTonCtrl logs
 
-- Чтобы проверить логи **mytonctrl**, откройте `~/.local/share/mytoncore/mytoncore.log` для локальной учетной записи или `/usr/local/bin/mytoncore/mytoncore.log` для пользователя Root.
+- To check **MyTonCtrl** logs, open `~/.local/share/mytoncore/mytoncore.log` for a local user or `/usr/local/bin/mytoncore/mytoncore.log` for root.
 
-![Логи](/img/docs/nodes-validator/manual-ubuntu_mytoncore-log.png)
+![logs](/img/docs/nodes-validator/manual-ubuntu_mytoncore-log.png)
 
-### Проверьте логи узла
+### Check the node logs
 
-В случае сбоя проверьте логи узла:
+Check the node logs in case of failure:
 
 ```bash
 tail -f /var/ton-work/log.thread*
 ```
 
-## Поддержка
+## Support
 
-Обратитесь в службу технической поддержки по ссылке [@mytonctrl_help](https://t.me/mytonctrl_help).
+Contact technical support with [@ton_node_help](https://t.me/ton_node_help).
+
+<Feedback />
