@@ -1,47 +1,55 @@
-# Как открыть любой TON Site?
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# How to open any TON Site?
 
-В этой статье мы рассмотрим наиболее распространенные способы посещения TON Sites с различных устройств.
+This article explains the most common ways to access TON Sites from different devices.
 
-У каждого метода есть свои плюсы и минусы, которые мы проанализируем здесь.
+Each method has its advantages and limitations. The list begins with the most straightforward options and progresses to more advanced configurations.
 
-Мы начнем с самых простых методов и закончим более продвинутыми.
+## Easy methods
 
-## 😄 Простые методы
+### Browse through the ton.run or tonp.io
 
-### Просмотрите ton.run или tonp.io
+The simplest way to access a TON Site is through services like [ton.run](https://ton.run). No installation or setup is required — just open the **ton.run** or **tonp.io** and browse TON Sites.
 
-Самый простой способ открыть TON Site - это сайты вроде [ton.run](https://ton.run). Вам не нужно ничего устанавливать или настраивать на своем устройстве - просто откройте **ton.run** или **tonp.io** и вы готовы к изучению TON Sites.
+This method is helpful for casual browsing or quick checks. However, it is not recommended for regular use due to several drawbacks:
 
-Этот метод может подойти для случайного просмотра TON Sites или для некоторых проверок, но не для регулярного использования, поскольку у него тоже есть свои недостатки:
+- Your internet traffic is routed through a third-party service, e.g., ton.run.
+- The service may go offline or stop functioning at any time.
+- Your internet service provider may block it.
 
-- Вы доверяете свой интернет-трафик **ton.run**.
-- Он может отключиться или сломаться в любой момент
-- Он может быть заблокирован вашим интернет-провайдером
+### TON Wallet and MyTonWallet extensions
 
-### Расширения TON Wallet и MyTonWallet
+A more reliable and private method is to use a browser extension that connects directly to the TON Proxy without relying on third-party services.
+Currently:
 
-Немного сложнее, но лучше использовать расширение для браузера, которое подключит вас к TON Proxy и позволит просматривать TON Sites без каких-либо промежуточных сервисов, таких как ton.run.
+- [MyTonWallet](https://mytonwallet.io/) supports TON Proxy in its browser extension.
+- [TON Wallet](https://chrome.google.com/webstore/detail/ton-wallet/nphplpgoakhhjchkkhmiggakijnkhfnd) will support it soon.
 
-В настоящее время TON Proxy уже доступен в расширении [MyTonWallet](https://mytonwallet.io/), а также скоро будет доступен в расширении [TON Wallet](https://chrome.google.com/webstore/detail/ton-wallet/nphplpgoakhhjchkkhmiggakijnkhfnd).
+This method requires installing a browser extension and is suitable for regular use by most users.
 
-Этот способ также довольно прост, но для его применения необходимо установить расширение для браузера. Он подойдет для большинства пользователей.
+## Advanced methods
 
-## 🤓 Продвинутые методы
+### Using Tonutils-Proxy
 
-### Использование Tonutils-Proxy
+This is the most secure way of accessing TON Sites.
 
-Это самый безопасный способ доступа к TON Sites.
+1. Download the latest version [from here](https://github.com/xssnick/Tonutils-Proxy#download-precompiled-version)
 
-1. Загрузите последнюю версию [отсюда](https://github.com/xssnick/Tonutils-Proxy#download-precompiled-version)
+2. Launch it and press "Start Gateway"
 
-2. Запустите и нажмите "Start Gateway"
+3. Done!
 
-3. Готово!
+For the most secure and independent access to TON Sites, use Tonutils-Proxy.
 
-## См. также
+**To get started:**
 
-- [Запустить реализацию на C++](/v3/guidelines/web3/ton-proxy-sites/running-your-own-ton-proxy)
+1. Download the latest release from [GitHub](https://github.com/xssnick/Tonutils-Proxy#download-precompiled-version).
+2. Launch the application and click “Start Gateway”.
+
+## See also
+
+- [Run C++ implementation](/v3/guidelines/web3/ton-proxy-sites/running-your-own-ton-proxy)
+
+<Feedback />
+
