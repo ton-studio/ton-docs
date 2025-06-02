@@ -1,36 +1,34 @@
-# Метрики MyTonCtrl Prometheus
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# MyTonCtrl prometheus metrics
 
-MyTonCtrl можно настроить для предоставления метрик Prometheus для мониторинга и оповещений.
-Это руководство проведет вас через процесс включения метрик Prometheus в MyTonCtrl.
+MyTonCtrl can be configured to expose Prometheus metrics for monitoring and alerting purposes. 
+This guide will walk you through the process of enabling Prometheus metrics in MyTonCtrl.
 
-### Метод доставки метрик
+### Metrics delivery method
 
-В настоящее время MyTonCtrl может отправлять метрики только в Prometheus из соображений безопасности.
-Поэтому его следует использовать с сервисом [Prometheus Pushgateway](https://github.com/prometheus/pushgateway).
+Currently, MyTonCtrl can only push metrics to Prometheus because of security reasons. 
+So it should be used with the [Prometheus Pushgateway](https://github.com/prometheus/pushgateway) service.
 
-## Настройка
+## Setup
 
 :::caution
-Для валидаторов настоятельно рекомендуется запускать Prometheus и Pushgateway на отдельном сервере.
+For validators it's highly recommended to run Prometheus and Pushgateway on a separate server.
 :::
 
-1. Установите Pushgateway
+1. Install Pushgateway
 
-   Вы можете установить службу Pushgateway, следуя инструкциям в [официальной документации](https://github.com/prometheus/pushgateway?tab=readme-ov-file#run-it).
-   Самый простой способ сделать это — через docker:
+   You can install the Pushgateway service by following the instructions in the [official documentation](https://github.com/prometheus/pushgateway?tab=readme-ov-file#run-it).
+   The easiest way to do that is via docker:
 
    ```bash
    docker pull prom/pushgateway
    docker run -d -p 9091:9091 prom/pushgateway
    ```
 
-2. Настройте Prometheus
+2. Configure Prometheus
 
-   Создайте файл `prometheus.yml`, добавив задание Pushgateway в раздел scrape_configs. Пример файла конфигурации:
+   Create `prometheus.yml` file adding the Pushgateway job to the scrape_configs section. Example of the configuration file:
 
    ```yaml
    global:
@@ -48,10 +46,10 @@ MyTonCtrl можно настроить для предоставления ме
          - targets: ["localhost:9091"]  # or "host.docker.internal:9091" if you are using Docker
    ```
 
-3. Установите Prometheus
+3. Install Prometheus
 
-   Вы можете установить Prometheus, следуя инструкциям в [официальной документации](https://prometheus.io/docs/prometheus/latest/installation/).
-   Самый простой способ сделать это — через docker:
+   You can install Prometheus by following the instructions in the [official documentation](https://prometheus.io/docs/prometheus/latest/installation/).
+   The easiest way to do that is via docker:
 
    ```bash
    docker volume create prometheus-data
@@ -63,28 +61,30 @@ MyTonCtrl можно настроить для предоставления ме
      prom/prometheus
    ```
 
-4. Настройте MyTonCtrl
+4. Configure MyTonCtrl
 
-   Включите режим `prometheus` в MyTonCtrl:
+   Enable mode `prometheus` in MyTonCtrl:
 
    ```bash
    MyTonCtrl> enable_mode prometheus
    ```
 
-   Установите URL-адрес Pushgateway:
+   Set the Pushgateway url:
 
    ```bash
    MyTonCtrl> set prometheus_url http://<host>:9091/metrics/job/<jobname>
    ```
 
-   :::предупреждение
-   Обратите внимание, что очень важно использовать разные имена заданий для разных узлов, если вы хотите отслеживать несколько узлов с помощью одного и того же экземпляра Prometheus.
+   :::warning
+   Note that it is very important to use different job names for different nodes in case you want to monitor multiple nodes with the same Prometheus instance.
    :::
 
-5. Проверьте показатели
+5. Check the metrics
 
-   Вы можете проверить, собирает ли Prometheus показатели, открыв веб-интерфейс Prometheus:
+   You can check that Prometheus scrapes the metrics by opening the Prometheus web interface:
 
    ```bash
    http://<host>:9090/targets
    ```
+
+<Feedback />
