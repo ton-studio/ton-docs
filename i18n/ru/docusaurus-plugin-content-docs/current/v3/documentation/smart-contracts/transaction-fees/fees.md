@@ -1,70 +1,68 @@
-# Комиссии за транзакции
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Transaction fees
 
-Каждый пользователь TON должен иметь в виду, что *комиссия зависит от многих факторов*.
+Every TON user should keep in mind that _commission depends on many factors_.
 
-## Газ
+## Gas
 
-Все [вычислительные расходы](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#computation-fees) выражаются в единицах газа и фиксируются в определённом объёме газа.
+All [computation costs](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#computation-fees) are nominated in gas units and fixed in a certain gas amount.
 
-Цена единицы газа определяется [конфигурацией сети](https://tonviewer.com/config#20) и может быть изменена только по консенсусу валидаторов. Обратите внимание, что, в отличие от других систем, пользователь не может задать собственную цену на газ, и рынка комиссий не существует.
+The price of gas units is determined by the [chain configuration](https://tonviewer.com/config#20) and may be changed only by consensus of validators. Note that unlike in other systems, the user cannot set his own gas price, and there is no fee market.
 
-Текущие настройки в basechain: 1 единица газа стоит 400 нанотон.
+Current settings in basechain are as follows: 1 unit of gas costs 400 nanotons.
 
 ```cpp
-1 gas = 26214400 / 2^16 nanotons = 0,000 000 4 TON
+1 gas = 26214400 / 2^16 nanotons = 0.000 000 4 TON
 ```
 
-Текущие настройки в masterchain: 1 единица газа стоит 10 000 нанотон.
+Current settings in masterchain are as follows: 1 unit of gas costs 10000 nanotons.
 
 ```cpp
-1 gas = 655360000 / 2^16 nanotons = 0,000 01 TON
+1 gas = 655360000 / 2^16 nanotons = 0.000 01 TON
 ```
 
-### Средняя стоимость транзакции
+### Average transaction cost
 
-> **TLDR:** Сегодня базовая транзакция стоит около **~0.0025 TON**
+> **TLDR:** Today, basic transaction costs around **~0.0025 TON**
 
-Даже если цена TON увеличится в 100 раз, транзакции останутся ультрадешёвыми — около $0.01. узнайте, почему им это выгодно - [читайте, почему они заинтересованы в этом](#gas-changing-voting-process).
+Even if TON price increases 100 times, transactions will remain ultra-cheap; about $0.01. Moreover, validators may lower this value if they see commissions have become expensive [read why they're interested](#gas-changing-voting-process).
 
 :::info
-Текущее количество газа указано в [параметре 20](https://tonviewer.com/config#20) и [параметре 21](https://tonviewer.com/config#21) конфигурации сети для masterchain и basechain соответственно.
+The current gas amount is written in the Network Config [param 20](https://tonviewer.com/config#20) and [param 21](https://tonviewer.com/config#21) for masterchain and basechain respectively.
 :::
 
-### Процесс голосования за изменение газа
+### Gas changing voting process
 
-Комиссия за газ, как и многие другие параметры TON, настраивается и может быть изменена с помощью специального голосования в основной сети.
+The gas fee, like many other parameters of TON, is configurable and may be changed by a special vote made in the mainnet.
 
-Для изменения любого параметра требуется 66% голосов валидаторов.
+Changing any parameter requires approval from 66% of the validators' votes.
 
-#### Может ли газ стоить дороже?
+#### Could gas cost more?
 
-> *Значит ли это, что однажды цена на газ может вырасти в 1000 раз или больше?*
+> _Does it mean that one day gas prices could rise by 1,000 times or even more?_
 
-Технически да, но фактически нет.
+Technically, yes; but in fact, no.
 
-Валидаторы получают небольшую плату за обработку транзакций, и повышение комиссий приведёт к снижению количества транзакций, что сделает процесс валидации менее выгодным.
+Validators receive a small fee for processing transactions, and charging higher commissions would lead to a decrease in the number of transactions, making the validating process less beneficial.
 
-### Как рассчитываются комиссии?
+### How are fees calculated?
 
-Комиссии в TON сложно рассчитать заранее, так как их размер зависит от времени выполнения транзакции, статуса аккаунта, содержимого и размера сообщения, настроек сети блокчейна и множества других переменных, которые нельзя определить до отправки транзакции.
+Fees on TON are difficult to calculate in advance, as their amount depends on transaction run time, account status, message content and size, blockchain network settings, and a number of other variables that cannot be calculated until the transaction is sent.
 
-Поэтому даже NFT-маркеты обычно берут дополнительное количество TON (*~1 TON*) и возвращают (*`1 - transaction_fee`*) позже.
+That is why NFT marketplaces typically require an extra amount of TON (~1 TON) and refund the remaining amount (1 - transaction_fee) after the transaction.
 
 :::info
 Each contract should check incoming messages for the amount of TON attached to ensure it is enough to cover the fees.
 
-Ознакомьтесь с обзором [обзором низкоуровневых комиссий](/v3/documentation/smart-contracts/transaction-fees/fees-low-level), чтобы узнать больше о формулах для расчета комиссий и [рассвете комиссий](/v3/guidelines/smart-contracts/fee-calculation), чтобы понять, как рассчитывать комиссии в контрактах FunC с использованием новых опкодов TVM.
+Check the [low-level fees overview](/v3/documentation/smart-contracts/transaction-fees/fees-low-level) to learn more about the formulas for calculating commissions and [fees calculation](/v3/guidelines/smart-contracts/fee-calculation) to learn how to calculate fees in FunC contracts using the new TVM opcodes.
 :::
 
-Давайте подробнее разберёмся, как комиссии работают в сети TON.
+However, let's read more about how fees are supposed to function on TON.
 
-## Базовая формула расчёта комиссий
+## Basic fees formula
 
-Комиссии в TON рассчитываются по следующей формуле:
+Fees on TON are calculated by this formula:
 
 ```cpp
 transaction_fee = storage_fees
@@ -121,50 +119,53 @@ function FeeCalculator() {
 }
 ```
 
-## Элементы комиссии за транзакцию
+## Elements of transaction fee
 
-- `storage_fees` - это сумма, которую вы платите за хранение смарт-контракта в блокчейне. Фактически, вы платите за каждую секунду хранения смарт-контракта в блокчейне.
-  - *Пример*: ваш кошелёк TON - это тоже смарт-контракт, и он платит комиссию за хранение каждый раз, когда вы получаете или отправляете транзакцию. Подробнее о [расчёте комиссии за хранение](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#storage-fee).
-- `in_fwd_fees` - это плата за импорт сообщений только из внешних источников, например, `external` сообщений. Каждый раз, когда вы совершаете транзакцию, её необходимо доставить валидаторам для обработки. Для обычных сообщений от контракта к контракту эта плата не взимается. Чтобы узнать больше о входящих сообщениях, прочтите [документацию TON Blockchain](https://docs.ton.org/tblkch.pdf).
-  - *Пример*: каждая транзакция, которую вы совершаете через приложение-кошелёк (например, Tonkeeper), должна сначала распределиться между узлами валидации.
-- `computation_fees` - это плата за выполнение кода в виртуальной машине. Чем больше код, тем выше плата.
-  - *Пример*: каждый раз, когда вы отправляете транзакцию через кошелёк (который является смарт-контрактом), вы выполняете код вашего кошелька и платите за это.
-- `action_fees` - это плата за отправку исходящих сообщений смарт-контрактом, обновление кода смарт-контракта, библиотек и т. д.
-- `out_fwd_fees` - это плата за отправку сообщений за пределы блокчейна TON для взаимодействия с внешними сервисами (например, логами) и другими блокчейнами.
+- `storage_fees` is the amount you pay for storing a smart contract in the blockchain. In fact, you pay for every second the smart contract is stored on the blockchain.
+  - _Example_: your TON wallet is also a smart contract, and it pays a storage fee every time you receive or send a transaction. Read more about [how storage fees are calculated](/v3/documentation/smart-contracts/transaction-fees/fees-low-level#storage-fee).
+- `in_fwd_fees` is a charge for importing messages only from outside the blockchain, e.g. `external` messages. Every time you make a transaction, it must be delivered to the validators who will process it. For ordinary messages from contract to contract this fee is not applicable. Read [the TON Blockchain paper](https://docs.ton.org/tblkch.pdf) to learn more about inbound messages.
+  - _Example_: each transaction you make with your wallet app (like Tonkeeper) requires first to be distributed among validation nodes.
+- `computation_fees` is the amount you pay for executing code in the virtual machine. The larger the code, the more fees must be paid.
+  - _Example_: each time you send a transaction with your wallet (which is a smart contract), you execute the code of your wallet contract and pay for it.
+- `action_fees` is a charge for sending outgoing messages made by a smart contract, updating the smart contract code, updating the libraries, etc.
+- `out_fwd_fees` stands for a charge for sending messages outside the TON Blockchain to interact with off-chain services (e.g., logs) and external blockchains.
 
 ## FAQ
 
-Вот самые часто задаваемые вопросы пользователями TON:
+Here are the most frequently asked questions by visitors of TON:
 
-### Комиссия за отправку TON?
+### Fees for sending TON?
 
-Средняя комиссия за отправку любого количества TON составляет 0.0055 TON.
+The average fee for sending any amount of TON is 0.0055 TON.
 
-### Комиссия за отправку Jettons?
+### Fees for sending Jettons?
 
-Средняя комиссия за отправку любого количества пользовательских Jettons составляет 0.037 TON.
+The average fee for sending any amount of a custom Jettons is 0.037 TON.
 
-### Стоимость минта NFT?
+### Cost of minting NFTs?
 
-Средняя комиссия за минт одного NFT составляет 0.08 TON.
+The average fee for minting one NFT is 0.08 TON.
 
-### Стоимость хранения данных в TON?
+### Cost of saving data in TON?
 
-Хранение 1 МБ данных в течение года в TON обойдётся в 6.01 TON. Учтите, что обычно вам не нужно хранить большие объёмы данных on-chain. Если вам необходимо децентрализованное хранение, воспользуйтесь [TON Storage](/v3/guidelines/web3/ton-storage/storage-daemon).
+Saving 1 MB of data for one year on TON will cost 6.01 TON. Note that you usually don't need to store large amounts of data on-chain. Consider using [TON Storage](/v3/guidelines/web3/ton-storage/storage-daemon) if you need decentralized storage.
 
-### Можно ли отправить транзакцию без газа?
+### Is it possible to send a gasless transaction?
 
-В TON возможны транзакции без использования газа с помощью [wallet v5](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#preparing-for-gasless-transactions) - ретранслятора, который оплачивает комиссию за транзакцию.
+In TON, gasless transactions are possible using [wallet v5](/v3/documentation/smart-contracts/contracts-specs/wallet-contracts#preparing-for-gasless-transactions) a relayer that pays the gas fee for transaction.
 
-### Как рассчитать?
+### How to calculate fees?
 
-В блокчейне TON есть статья о [расчете комиссий](/v3/guidelines/smart-contracts/fee-calculation).
+There is an article about [fee calculation](/v3/guidelines/smart-contracts/fee-calculation) in TON Blockchain.
 
-## Ссылки
+## References
 
-- Основано на [статье @thedailyton](https://telegra.ph/Commissions-on-TON-07-22), изначально написанной [menschee](https://github.com/menschee)\*
+- Based on the [@thedailyton article](https://telegra.ph/Commissions-on-TON-07-22) - _[menschee](https://github.com/menschee)_
 
-## См. также
+## See also
 
-- ["Обзор низкоуровневых комиссий"](/v3/documentation/smart-contracts/transaction-fees/fees-low-level) - ознакомьтесь с формулами для расчёта комиссий.
-- [Функция смарт-контракта для расчета forward fees в FunC](https://github.com/ton-blockchain/token-contract/blob/main/misc/forward-fee-calc.fc)
+- [Low-level fees overview](/v3/documentation/smart-contracts/transaction-fees/fees-low-level)—read about the formulas for calculating commissions.
+- [Smart contract function to calculate forward fees in FunC](https://github.com/ton-blockchain/token-contract/blob/main/misc/forward-fee-calc.fc)
+
+<Feedback />
+
