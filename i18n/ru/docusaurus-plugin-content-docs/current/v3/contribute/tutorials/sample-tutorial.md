@@ -1,138 +1,141 @@
-# Пример структуры руководства
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Sample tutorial structure
 
 :::danger
-Эта страница устарела и скоро будет удалена.
-См. [Как внести вклад](/v3/contribute/).
+This page is outdated and will be updated soon.
+See the [How to contribute](/v3/contribute/).
 :::
 
-## Введение
+## Introduction
 
-Заголовок "Введение" **должен** быть H2: `## Введение`
+The Introduction heading **must** be H2: `## Introduction`
 
-Этот раздел предназначен для того, чтобы объяснить контекст этого руководства и почему это важно, что мы собираемся создать и изучить в этом руководстве.
+This section is for you to explain the context of this tutorial and why it is important, what we're going to build and learn in this tutorial.
 
-- Опишите этот раздел так, как будто вы объясняете его 5-летнему ребенку (**[ELI5](https://www.dictionary.com/e/slang/eli5/)**)
-- Объясните все максимум в 5–6 строках.
+- Explain this section like you're explaining it to a 5-year-old (**[ELI5](https://www.dictionary.com/e/slang/eli5/)**)
+- Explain everything in 5–6 lines maximum.
 
-*Например:*
+_For example:_
 
-> Смарт-контракт - это просто компьютерная программа, которая работает на блокчейне TON или, точнее, на его [TVM](/v3/documentation/tvm/tvm-overview) (*TON Virtual Machine*). Контракт состоит из кода (*скомпилированных инструкций TVM*) и данных (постоянного состояния), которые хранятся по некоторому адресу в TON.
+> A smart contract is just a computer program that runs on TON Blockchain, or more specifically on its [TVM](/v3/documentation/tvm/tvm-overview) (_TON Virtual Machine_). The contract is made of code (_compiled TVM instructions_) and data (_persistent state_) that are stored at some address on TON.
 
-## Требования
+## Prerequisites
 
-Заголовок "Условия" **должен** быть H2: `## Условия`
+The Prerequisites heading **must** be H2: `## Prerequisites`
 
-В этом разделе вы должны объяснить о любых необходимых предварительных знаниях или о любых существующих руководствах, которые необходимо выполнить в первую очередь. Любые необходимые токены — укажите их здесь.
+This section is for you to explain any prior knowledge needed or any existing tutorials that need to be completed first. Any tokens that are needed—mention them here.
 
-*Например:*
+_For example:_
 
-> В этом руководстве мы собираемся создать жетоны в тестовой сети. Прежде чем продолжить, убедитесь, что на вашем кошельке [тестовой сети](/v3/documentation/smart-contracts/getting-started/testnet) достаточно средств.
+> In this tutorial, we're going to mint Jetton on testnet. Before we continue, make sure that your [testnet](/v3/documentation/smart-contracts/getting-started/testnet) wallet has sufficient balance.
 
-## Требования
+## Requirements
 
-Заголовок "Требования" **должен** быть H2: `## Требования`
+The Requirements heading **must** be H2: `## Requirements`
 
-**ДОПОЛНИТЕЛЬНО :** вставьте любой видеоконтент в этот раздел, если он есть в вашем руководстве.
+**OPTIONAL :** Embed any video content in this section if your tutorial has any.
 
-Любая технология, которую необходимо установить перед началом руководства и которую руководство не будет рассматривать (`TON Wallet Extension`, `node`, и т. д.). Не перечисляйте пакеты, которые будут установлены во время руководства.
+Any technology that needs to be installed **prior** to starting the tutorial and that the tutorial will not cover (`TON Wallet Extension`, `node`, etc.). Do not list packages that will be installed during the tutorial.
 
-*Например:*
+_For example:_
 
-- В этом руководстве нам понадобится расширение TON Wallet; установите его [ЗДЕСЬ](https://chrome.google.com/webstore/detail/ton-wallet/nphplpgoakhhjchkkhmiggakijnkhfnd).
-- Убедитесь, что у вас установлен NodeJS 12.0.1+.
+- We'll need the TON Wallet extension in this tutorial; install it from [HERE](https://chrome.google.com/webstore/detail/ton-wallet/nphplpgoakhhjchkkhmiggakijnkhfnd).
+- Make sure to have NodeJS 12.0.1+ installed.
 
-## Основная часть руководства
+## Body of the Tutorial
 
-- Пожалуйста, не используйте "Основная часть руководства" в качестве заголовка, используйте собственный заголовок, который соответствует материалу.
-  - "Начало работы" приемлемо, если вы не можете придумать ничего другого 😉
-- Добавьте любой текст, который поможет читателям разобраться в вашем учебном пособии, и **не забудьте проверить его на орфографию** и грамматику, прежде чем отправлять учебное пособие.
-  - [Grammarly](http://grammarly.com) -- хорошая бесплатная программа, которая поможет вам избежать грамматических ошибок.
+- Please do not use "Body of the Tutorial" as a heading, use your own heading that is relevant to the material.
+  - "Getting started" is acceptable if you can't think of anything else 😉
+- Add any text content necessary to guide readers through your tutorial, and _**remember to proofread your content**_ for spelling and grammar before you submit your tutorial.
+  - [Grammarly](http://grammarly.com) is a good free program that can help you avoid grammar mistakes.
 
-### Ключевые моменты
+### Key points
 
-- Не используйте "Основную часть руководства" в качестве заголовка!
+- Do not use "Body of the Tutorial" as a heading!
 
-- **Все подзаголовки оставляйте на уровне H3**, не используйте H4 или ниже.
-  - В синтаксисе Markdown для заголовков H2 используются два хэш-знака: ##
-  - Три хэш-знака используются для заголовков H3: ###
+- **Keep all subheadings at H3,** don't go for H4 or any lower.
+  - In Markdown syntax, two hashmarks are used for H2 headings: ##
+  - Three hashmarks are used for H3 headings: ###
 
-- Добавляйте только необходимые комментарии к блокам кода. ***Не*** добавляйте комментарии в стиле # к блокам кода ввода терминала.
+- Add only necessary comments to code blocks. _**Do not**_ add # style comments to terminal input code blocks.
 
-- Добавляйте все соответствующие блоки кода:
-  - ## Синтаксис Markdown для блоков кода состоит из трех обратных кавычек в начале и конце блока кода. Также убедитесь, что перед и после обратных кавычек во всех блоках кода есть новая строка. **Например**:
+- Add all relevant code blocks:
+  - ## Markdown syntax for code blocks consists of three backticks at the beginning and end of the code block.  Also, make sure that there is a newline before and after the backticks in all code blocks. _For example_:
     \`js  
-    сonst testVariable = 'some string';  
-    someFunctionCall();  
-    \`
+          const testVariable = 'some string';  
+          someFunctionCall();  
+          \`
 
-  - Все блоки кода ***должны*** иметь тип подсветки синтаксиса. Используйте \`\`\\`text, если вы не уверены.
+  - ALL code blocks _**must**_ have a syntax highlight type. Use \`\`\`text if you are not sure.
 
-  - \\`\`\\`text должен использоваться для вывода терминала, команд терминала и обычного текста.
+  - \\`\`\`text must be used for terminal output, terminal commands, and plaintext.
 
-  - \`javascript *или* `js можно использовать для любого кода JavaScript.
+  - \`javascript *or* `js can be used for any JavaScript code.
 
-  - \`typescript или `ts можно использовать для любого кода TypeScript.
+  - \`typescript or `ts can be used for any TypeScript code.
 
-  - \\`\`\\`jsx для кода ReactJS.
+  - \\`\`\`jsx is for ReactJS code.
 
-  - \\`\`cpp для кода Func.
+  - \\`\`\`cpp is for Func code.
 
-  - Используйте \\`\`\\`graphql при подсветки синтаксиса GraphQL.
+  - Use \\`\`\`graphql when highlighting GraphQL syntax.
 
-  - Используйте \`json при подсветке допустимого JSON. (Для недопустимых примеров JSON используйте \`text.)
+  - Use \`json when highlighting valid JSON. (For invalid JSON examples use \`text instead.)
 
-  - \\`\`\\`bash следует использовать только в тех блоках кода, где вам нужны комментарии в стиле #. Это нужно делать осторожно, потому что во многих ситуациях символ # будет отображаться как заголовок markdown. Как правило, это повлияет на оглавление.
+  - \\`\`\`bash should _only_ be used in code blocks where you need to have # style comments. This must be done carefully because in many situations the # character will render as a markdown heading. Typically, the Table of Contents will be affected if this occurs.
 
-- Не используйте `предварительно отформатированный текст` для выделения текста; вместо этого используйте только **жирный** шрифт или *курсив*.
+- Do not use `pre-formatted text` for emphasis; instead, use only **bold** or _italic_ text.
 
-- Добавьте изображения или блоки кода, чтобы отразить ожидаемый результат работы терминала.
+- Add images or code blocks to reflect the expected terminal output.
 
-- При написании руководства используйте подход, основанный на ошибках. Добавьте распространенные ошибки и шаги по устранению неполадок. *Например:*
+- Take an error-driven approach when writing your tutorial. Add common errors and troubleshooting steps. _For example:_
 
-> **Не удается подключиться к Testnet из-за ошибки при выполнении команды `node deploy:testnet`.**
+> **Unable to connect to Testnet due to an error when executing the
+> `node deploy:testnet` command.**
 >
-> Давайте рассмотрим некоторые распространенные причины:
+> Let's look at some common causes:
 
-- Убедитесь, что у вас достаточно средств в сгенерированном тестовом кошельке в `.env`. Если нет, добавьте несколько тестовых монет из Faucet Giver.
-- Если у вас все еще возникает та же проблема, обратитесь за помощью к разработчикам в [чат разработчиков](https://t.me/TonDev).
-
->
-
-## Заключение
-
-Заголовок "Заключение" **должен** быть H2: `## Заключение`
-
-В этом разделе следует обобщить то, что было изучено в руководстве, закрепить ключевые моменты и поздравить обучающегося с завершением руководства. Используйте максимум 5–6 строк.
-*Например*:
-
-> Мы создали простой новый контракт FunC с функциональностью счетчика. Затем мы построили и развернули его on-chain и, наконец, взаимодействовали с ним, вызвав геттер и отправив сообщение.
-
-Пожалуйста, помните, что этот код не предназначен для производственной среды; есть еще несколько вещей, которые следует учесть, если вы хотите развернуть это в основной сети, например, отключение метода передачи, если токен размещается на рынке, и т. д.
+- Make sure you have enough funds in your generated testnet wallet in `.env`. If not, please add some testnet coins from the faucet giver.
+- If you're still experiencing the same issue, reach out to the devs in the [Dev Chat](https://t.me/TonDev_eng/) for help.
 
 >
 
-## См. также
+## Conclusion
 
-Заголовок "Смотрите также" **должен** быть H2: `## См. также`
+The Conclusion heading **must** be H2: `## Conclusion`
 
-Используйте этот раздел, чтобы объяснить, что можно сделать дальше после этого руководства, чтобы продолжить обучение. Не стесняйтесь добавлять рекомендуемые проекты и статьи, относящиеся к этому руководству. Если вы работаете над другими расширенными руководствами, вы можете кратко упомянуть их здесь. Обычно здесь размещаются только связанные страницы с docs.ton.org.
+This section should summarize what was learned in the tutorial, reinforce key points, and congratulate the learner on completing the tutorial. Use a maximum of 5–6 lines.
+_For example_:
 
-## Об авторе *(Необязательно)*
+> We created a simple new FunC contract with counter functionality. We then built and deployed it on-chain, and finally interacted with it by calling a getter and sending a message.
 
-Заголовок "Об авторе" **должен** быть H2: `## Об авторе`
+Please remember that this code is not meant for production; there are still a few other things to consider if you wanted to deploy this to mainnet, such as disabling the transfer method if the token is listed on the market, and so on.
 
-Должен быть коротким. Не более одной-двух строк. Вы можете указать ссылку на свой профиль на GitHub или в Telegram. Пожалуйста, не добавляйте сюда свой LinkedIn или Twitter.
+>
 
-## Ссылки *(необязательно)*
+## See Also
 
-Заголовок "Ссылки" **должен** быть H2: `## Ссылки`
+The Next Steps heading **must** be H2: `## See Also`
 
-Этот раздел ***должен*** присутствовать, если при написании этого руководства вы использовали какую-либо помощь из других документов, репозиториев GitHub или уже существующих руководств.
+Use this section to explain what can be done next after this tutorial to continue learning.
+Feel free to add recommended projects and articles relating to this tutorial.
+If you're working on any other advanced tutorials, you can briefly mention them here.
+Typically, only related pages from docs.ton.org are placed here.
 
-Укажите источники, добавив их имя и ссылку на документ, когда это возможно.
+## About the Author _(Optional)_
 
-Если это не цифровой документ, включите ISBN или другую форму ссылки.
+The About the Author heading **must** be H2: `## About the Author`
+
+Keep it short. One or two lines at most. You can include a link to your GitHub profile + Telegram profile. Please refrain from adding your LinkedIn or Twitter here.
+
+## References _(Optional)_
+
+The References heading **must** be H2: `## References`
+
+This section _**must**_ be present if you have taken any help in writing this tutorial from other documents, GitHub repos or pre-existing tutorials.
+
+Credit sources by adding their name and a link to the document when possible.
+
+If it is not a digital document, include an ISBN or other form of reference. <Feedback />
+
