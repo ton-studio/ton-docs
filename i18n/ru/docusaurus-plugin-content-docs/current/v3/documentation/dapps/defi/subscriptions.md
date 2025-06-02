@@ -1,42 +1,41 @@
-# Подписки на контент
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Content subscriptions
 
-Благодаря тому, что транзакции в блокчейне TON выполняются быстро, а сетевые сборы низкие, вы можете обрабатывать повторяющиеся платежи on-chain с помощью смарт-контрактов.
+Due to the fact that transactions in TON Blockchain are fast and the network fees are low, you can process recurring payments on-chain via smart contracts.
 
-Например, пользователи могут подписываться на цифровой контент (или что-либо еще) и получать ежемесячную плату в размере 1 TON.
+For example, users can subscribe to digital content (or anything else) and be charged a monthly fee of 1 TON.
 
 :::tip
-Эта информация относится только к кошелькам версии v4. В старых кошельках этой функции нет; она также может быть изменена в будущих версиях.
+This content is specific for wallets of version v4. Older wallets don't have this functionality; it is eligible to change in future versions as well.
 :::
 
 :::warning
 Subscription contract requires authorization exactly once, on installation; then it can withdraw TON as it pleases. Do your own research before attaching unknown subscriptions.
 
-С другой стороны, пользователь не может установить подписку без своего ведома.
+On the other hand, user can't get subscription installed without their knowledge.
 :::
 
-## Пример процесса
+## Example flow
 
-- Пользователи используют кошелек v4. Он позволяет использовать дополнительные смарт-контракты, известные как плагины, для расширения его функциональности.
+- Users use a v4 wallet. It allows additional smart contracts, known as plugins, to extend its functionality.
 
-   После проверки их функциональности пользователь может одобрить адреса доверенных смарт-контрактов (плагинов) для своего кошелька. После этого доверенные смарт-контракты могут вывести Toncoin из кошелька. Это похоже на «Бесконечное одобрение» в некоторых других блокчейнах.
+   After ensuring their functionality, the user can approve the addresses of trusted smart contracts (plugins) for his wallet. Following that, the trusted smart contracts can withdraw Toncoin from the wallet. This is similar to "Infinite Approval" in some other blockchains.
 
-- Промежуточный смарт-контракт подписки, используется между каждым пользователем и сервисом в качестве плагина кошелька.
+- An intermediate subscription smart contract is used between each user and service as a wallet plugin.
 
-   Этот смарт-контракт гарантирует, что указанная сумма Toncoin будет списана с кошелька пользователя не чаще одного раза в течение указанного периода.
+   This smart contract guarantees that a specified amount of Toncoin will be debited from a user's wallet no more than once within a specified period.
 
-- Backend сервиса инициирует платежи на регулярной основе, отправляя внешнее сообщение в смарт-контракты подписки.
+- The service's backend initiates payments on a regular basis by sending an external message to subscription smart contracts.
 
-- И пользователь, и сервис могут решить, что подписка им больше не нужна, и прекратить ее.
+- Either user or service can decide they no longer need a subscription and terminate it.
 
-## Примеры смарт-контрактов
+## Smart contract examples
 
-- [Исходный код смарт-контракта Wallet v4](https://github.com/ton-blockchain/wallet-contract/blob/main/func/wallet-v4-code.fc)
-- [Исходный код смарт-контракта Subscription](https://github.com/ton-blockchain/wallet-contract/blob/main/func/simple-subscription-plugin.fc)
+- [Wallet v4 smart contract source code](https://github.com/ton-blockchain/wallet-contract/blob/main/func/wallet-v4-code.fc)
+- [Subscription smart contract source code](https://github.com/ton-blockchain/wallet-contract/blob/main/func/simple-subscription-plugin.fc)
 
-## Реализация
+## Implementation
 
-Хорошим примером реализации являются децентрализованные подписки на Toncoin на приватные каналы в Telegram с помощью бота [@donate](https://t.me/donate) и кошелька [Tonkeeper](https://tonkeeper.com).
+A good example of implementation is decentralized subscriptions for Toncoin to private channels in Telegram by the [@donate](https://t.me/donate) bot and the [Tonkeeper wallet](https://tonkeeper.com). <Feedback />
+
