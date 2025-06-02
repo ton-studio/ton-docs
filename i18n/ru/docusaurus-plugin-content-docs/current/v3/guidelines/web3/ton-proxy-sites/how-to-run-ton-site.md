@@ -1,56 +1,58 @@
-# Как создавать TON Sites
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# How to run TON Sites
 
-## 👋 Введение
+## Introduction
 
-[TON-сайты](https://blog.ton.org/ton-sites) работают почти как обычные сайты, за исключением их установки. Для их запуска требуется несколько дополнительных действий. В этом уроке я покажу вам, как это сделать.
+[TON Sites](https://blog.ton.org/ton-sites) work similarly to regular websites but require additional steps to start. This guide walks you through the setup process.
 
-## 🖥 Запуск TON-сайта
+## Running TON Site
 
-Установите [Tonutils Reverse Proxy](https://github.com/tonutils/reverse-proxy), чтобы использовать TON Proxy для вашего сайта.
+Install the [Tonutils reverse proxy](https://github.com/tonutils/reverse-proxy) to use TON Proxy for your website.
 
-### Установка на любой дистрибутив Linux
+### Installation on any Linux
 
-##### Скачивание
+##### Download
 
 ```bash
-wget https://github.com/ton-utils/reverse-proxy/releases/latest/download/tonutils-reverse-proxy-linux-amd64
+wget https://github.com/tonutils/reverse-proxy/releases/latest/download/tonutils-reverse-proxy-linux-amd64
 chmod +x tonutils-reverse-proxy-linux-amd64
 ```
 
-##### Запуск
+##### Run
 
-Запустите конфигурацию домена и выполните следующие действия:
+Run with domain configuration and follow the following steps:
 
 ```
 ./tonutils-reverse-proxy-linux-amd64 --domain your-domain.ton 
 ```
 
-Отсканируйте QR-код из вашего терминала с помощью Tonkeeper, Tonhub или любого другого кошелька, выполните транзакцию. Ваш домен будет привязан к вашему сайту.
+Scan the QR code shown in your terminal using Tonkeeper, Tonhub, or any other wallet. Confirm the transaction to link your domain to the site.
 
-###### Запуск без домена
+###### Run without domain
 
-Кроме того, вы можете запускать сайт в простом режиме с доменом .adnl, если у вас нет домена .ton или .t.me:
+Alternatively, you can run the proxy in simple mode with an .adnl domain if you do not have a `.ton` or `.t.me` domain:
 
 ```
 ./tonutils-reverse-proxy-linux-amd64
 ```
 
-##### Использование
+##### Use
 
-Теперь любой может открыть ваш TON-сайт, используя ADNL-адрес или домен.
+Your TON Site is now accessible via the ADNL address or the domain.
 
-Если вы хотите изменить некоторые настройки, например, URL прокси-пасса, откройте файл `config.json`, отредактируйте его и перезапустите прокси. По умолчанию URL прокси-пасса – `http://127.0.0.1:80/`
+To change settings such as the proxy pass URL, edit the `config.json` file and restart the proxy. The default proxy pass URL is: `http://127.0.0.1:80/`.
 
-Прокси добавляет дополнительные заголовки:
-`X-Adnl-Ip` – ip клиента, и `X-Adnl-Id` – adnl id клиента
+The proxy also adds the following headers:
 
-### Установка на любую другую ОС
+- `X-Adnl-Ip` – the client's IP address.
+- `X-Adnl-Id` – the client's ADNL ID.
 
-Соберите проект из исходников и запустите так же, как в шаге 2 для Linux. Для сборки требуется среда языка Go.
+### Installation on any other OS
+
+Build it from sources, and run it as in step 2 for linux. Go environment is required to build.
+
+To install it on other systems, build the project from the source and run it as in step 2 for Linux. A `Go` environment is required.
 
 ```bash
 git clone https://github.com/tonutils/reverse-proxy.git
@@ -58,22 +60,25 @@ cd reverse-proxy
 make build
 ```
 
-Сборка для других операционных систем выполняется командой `make all`
+To build for other operating systems, run `make all`.
 
-## 👀 Дальнейшие шаги
+## Further steps
 
-### 🔍 Проверка доступности сайта
+### Checking site availability
 
-После выполнения всех шагов выбранного вами метода TON Proxy должен был запуститься. Если все прошло успешно, ваш сайт будет доступен по адресу ADNL, полученному на соответствующем шаге.
+After completing the setup, the TON Proxy should be running. If the setup is successful, your site will be available at the ADNL address generated during the configuration.
 
-Вы можете проверить доступность сайта, открыв этот адрес с доменом `.adnl`. Также обратите внимание, что для того, чтобы сайт открылся, в вашем браузере должен быть запущен TON Proxy, например, через расширение [MyTonWallet](https://mytonwallet.io/).
+You can check availability by opening the address with the `.adnl` suffix. Ensure that a TON Proxy is active in your browser, such as via the [MyTonWallet](https://mytonwallet.io/) browser extension.
 
-## 📌 Материалы
+## References
 
-- [Сайты TON, TON WWW и TON Proxy](https://blog.ton.org/ton-sites)
-- [Tonutils Reverse Proxy](https://github.com/tonutils/reverse-proxy)
-- Авторы: [Андрей Бурносов](https://github.com/AndreyBurnosov) (TG: [@AndrewBurnosov](https://t.me/AndreyBurnosov)), [Даниил Седов](https://gusarich.com) (TG: [@sedov](https://t.me/sedov)), [Георгий Имедашвили](https://github.com/drforse)
+- [TON Sites, TON WWW and TON Proxy](https://blog.ton.org/ton-sites)
+- [Tonutils reverse proxy](https://github.com/tonutils/reverse-proxy)
+- Authors: [_Andrew Burnosov_](https://github.com/AndreyBurnosov) (TG: [@AndrewBurnosov](https://t.me/AndreyBurnosov)), [_Daniil Sedov_](https://gusarich.com) (TG: [@sedov](https://t.me/sedov)), [_George Imedashvili_](https://github.com/drforse)
 
-## См. также
+## See also
 
-- [Запустить реализацию на C++](/v3/guidelines/web3/ton-proxy-sites/running-your-own-ton-proxy)
+- [Run C++ implementation](/v3/guidelines/web3/ton-proxy-sites/running-your-own-ton-proxy)
+
+<Feedback />
+
