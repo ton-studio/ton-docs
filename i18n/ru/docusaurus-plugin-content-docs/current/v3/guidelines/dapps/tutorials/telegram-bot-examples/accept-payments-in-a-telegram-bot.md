@@ -1,43 +1,40 @@
 ---
-description: В этой статье мы расскажем о том, как принимать платежи в боте Telegram.
+description: In this article, we'll guide you through the process of accepting payments in a Telegram bot.
 ---
 
-# Бот-витрина магазина с оплатой в TON
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Storefront bot with payments in TON
 
-В этой статье мы расскажем о том, как принимать платежи в боте Telegram.
+In this article, we'll guide you through the process of accepting payments in a Telegram bot.
 
-## 📖 Чему вы научитесь
+## 📖 What you'll learn
 
-В этой статье вы узнаете, как:
+In this article, you'll learn how to:
 
-- создать Telegram-бота с помощью Python + Aiogram
-- работать с публичным API TON (TON Center)
-- работать с базой данных SQlite
+- Create a Telegram bot using Python and Aiogram,
+- Work with the public TON Center API,
+- Work with an SQlite database,
+- How to accept payments in a Telegram bot by applying the knowledge from previous steps.
 
-И наконец: как принимать платежи в Telegram-боте, используя знания из предыдущих шагов.
+## 📚 Before we begin
 
-## 📚 Прежде чем мы начнем
+Make sure you have installed the latest version of Python and the following packages:
 
-Убедитесь, что у вас установлена последняя версия Python и установлены следующие пакеты:
+- aiogram,
+- requests.
+- sqlite3.
 
-- aiogram
-- requests
-- sqlite3
+## 🚀 Let's get started!
 
-## 🚀 Давайте начнем!
+We'll follow this order:
 
-Мы будем действовать по нижеприведенному порядку:
+1. Work with an SQlite database.
+2. Work with the public TON API (TON Center).
+3. Create a Telegram bot using Python and Aiogram.
+4. Profit!
 
-1. Работа с базой данных SQlite
-2. Работа с публичным API TON (TON Center)
-3. Создание Telegram-бота с помощью Python + Aiogram
-4. Получаем прибыль!
-
-Давайте создадим следующие четыре файла в директории нашего проекта:
+Let's create the following four files in our project directory:
 
 ```
 telegram-bot
@@ -47,9 +44,9 @@ telegram-bot
 └── db.py
 ```
 
-## Конфигурация
+## Config
 
-В `config.json` мы сохраним токен нашего бота и наш публичный ключ TON API.
+In `config.json`, we store our bot token and public TON API key.
 
 ```json
 {
@@ -62,18 +59,17 @@ telegram-bot
 }
 ```
 
-В `config.json` мы решаем, какую сеть мы будем использовать: `testnet` или `mainnet`.
+In `config.json`, define whether you'll use use `Testnet` or `Mainnet`.
 
-## База данных
+## Database
 
-### Создаем базу данных
+### Create a database
 
-В этом примере используется локальная база данных Sqlite.
+This example uses a local Sqlite database.
 
-Создайте `db.py`.
+Create a file called `db.py`.
 
-Чтобы начать работу с базой данных, нам нужно импортировать модуль sqlite3
-и несколько модулей для работы со временем.
+To work with the database, import sqlite3 module and some modules for handling time.
 
 ```python
 import sqlite3
@@ -81,22 +77,22 @@ import datetime
 import pytz
 ```
 
-- `Sqlite3`-модуль для работы с базой данных sqlite
-- `datetime` - модуль для работы со временем
-- `pytz`- модуль для работы с часовыми поясами
+- `sqlite3`—module for working with sqlite database,
+- `datetime`—module for working with time.
+- `pytz`—module for working with timezones.
 
-Далее нам нужно создать соединение с базой данных и курсор для работы с ней:
+Next, establish a connection to the database and a cursor:
 
 ```python
 locCon = sqlite3.connect('local.db', check_same_thread=False)
 cur = locCon.cursor()
 ```
 
-Если база данных не существует, она будет создана автоматически.
+If the database does not exist, it will be created automatically.
 
-Теперь мы можем создать таблицы. У нас их две.
+We need two tables:
 
-#### Транзакции:
+#### Transactions:
 
 ```sql
 CREATE TABLE transactions (
@@ -108,12 +104,12 @@ CREATE TABLE transactions (
 );
 ```
 
-- `source` - адрес кошелька плательщика
-- `hash`- хэш транзакции
-- `value`- значение транзакции
-- `comment`- комментарий к транзакции
+- `source`—payer's wallet address,
+- `hash`—transaction hash,
+- `value`—transaction value,
+- `comment`—transaction comment.
 
-#### Пользователи:
+#### Users:
 
 ```sql
 CREATE TABLE users (
@@ -125,19 +121,19 @@ CREATE TABLE users (
 );
 ```
 
-- `id` - ID пользователя Telegram
-- `username` - имя пользователя Telegram
-- `first_name` - имя пользователя Telegram
-- `wallet`- адрес кошелька пользователя
+- `id`—Telegram user ID,
+- `username`—Telegram username,
+- `first_name`—Telegram user's first name,
+- `wallet`—user wallet address.
 
-В таблице `users` мы храним пользователей :) их Telegram ID, @логин,
-имя и кошелек. Кошелек добавляется в базу данных при первом
-успешном платеже.
+The `users` table stores Telegram users along with their Telegram ID, @username,
+first name, and wallet. The wallet is added to the database upon the first
+successful payment.
 
-В таблице `transactions` хранятся проверенные транзакции.
-Чтобы проверить транзакцию, нам нужны хеш, источник, значение и комментарий.
+The `transactions` table stores verified transactions.
+To verify a transaction, we need a unique transaction hash, source, value, and comment.
 
-Чтобы создать эти таблицы, нам нужно выполнить следующую функцию:
+To create these tables, we need to run the following function:
 
 ```python
 cur.execute('''CREATE TABLE IF NOT EXISTS transactions (
@@ -159,18 +155,18 @@ cur.execute('''CREATE TABLE IF NOT EXISTS users (
 locCon.commit()
 ```
 
-Этот код создаст таблицы, если они еще не созданы.
+This code will create the tables if they are not already created.
 
-### Работа с базой данных
+### Work with database
 
-Давайте проанализируем ситуацию.
-Пользователь совершил транзакцию. Как ее подтвердить? Как сделать так, чтобы одна и та же транзакция не была подтверждена дважды?
+Let's analyze the process:
+A user makes a transaction. How do we verify it? How do we ensure that the same transaction isn't confirmed twice?
 
-В транзакциях есть body_hash, с помощью которого мы можем легко понять, есть ли транзакция в базе данных или нет.
+Each transaction includes a `body_hash`, which allows us to easily check whether the transaction is already in the database.
 
-Мы добавляем транзакции в базу данных, в которых мы уверены. Функция `check_transaction` проверяет, есть ли найденная транзакция в базе данных или нет.
+We only add transactions that have been verified. The `check_transaction` function determines whether a given transaction is already in the database.
 
-`add_v_transaction` добавляет транзакцию в таблицу транзакций.
+`add_v_transaction` adds transaction to the transactions table.
 
 ```python
 def add_v_transaction(source, hash, value, comment):
@@ -188,7 +184,7 @@ def check_transaction(hash):
     return False
 ```
 
-`check_user` проверяет, есть ли пользователь в базе данных, и добавляет его, если нет.
+`check_user` verifies if the user exists in the database and adds them if not.
 
 ```python
 def check_user(user_id, username, first_name):
@@ -203,7 +199,7 @@ def check_user(user_id, username, first_name):
     return True
 ```
 
-Пользователь может сохранить кошелек в таблице. Он добавляется при первой успешной покупке. Функция `v_wallet` проверяет, есть ли у пользователя связанный с ним кошелек. Если есть, то возвращает его. Если нет, то добавляет.
+The user can store a wallet in the table. It is added with the first successful purchase. The `v_wallet` function checks if the user has an associated wallet. If not, it adds the wallet upon the user's first successful purchase.
 
 ```python
 def v_wallet(user_id, wallet):
@@ -218,7 +214,7 @@ def v_wallet(user_id, wallet):
         return result[0]
 ```
 
-`get_user_wallet` просто возвращает кошелек пользователя.
+`get_user_wallet` simply retrieves the user's wallet.
 
 ```python
 def get_user_wallet(user_id):
@@ -227,8 +223,8 @@ def get_user_wallet(user_id):
     return result[0]
 ```
 
-`get_user_payments` возвращает список платежей пользователя.
-Эта функция проверяет, есть ли у пользователя кошелек. Если есть, то она возвращает список платежей.
+`get_user_payments` returns the user's payment history.
+This function checks if the user has a wallet. If they do, it provides the list of their payments.
 
 ```python
 def get_user_payments(user_id):
@@ -256,26 +252,27 @@ def get_user_payments(user_id):
 
 ## API
 
-*У нас есть возможность взаимодействовать с блокчейном, используя сторонние API, предоставляемые некоторыми участниками сети. С помощью этих сервисов разработчики могут пропустить этап запуска собственного узла и настройки API.*
+_We can interact with the blockchain using third-party APIs provided by network members. These services allow developers to bypass the need their own node and customize their API._
 
-### Необходимые запросы
+### Required requests
 
-Фактически, что нам нужно, чтобы подтвердить, что пользователь перевел нам требуемую сумму?
+What do we need to confirm that a user has transferred the required amount?
 
-Нам просто нужно просмотреть последние входящие переводы на наш кошелек и найти среди них транзакцию с нужного адреса с нужной суммой (и, возможно, уникальным комментарием).
-Для всего этого в TON Center есть метод `getTransactions`.
+We simply need to check the latest incoming transfers to our wallet and find a transaction from the right address with the right amount (and possibly a unique comment).
+For this, TON Center provides the `getTransactions` method.
 
 ### getTransactions
 
-По умолчанию, если мы применим эту функцию, мы получим 10 последних транзакций. Однако мы также можем указать, что нам нужно больше, но это несколько увеличит время ответа. И, скорее всего, вам не нужно так много.
+By default, this method retrieves the last 10 transactions. However, we can request more, though this slightly increases the response time. In most cases, requestin additional transactions is unnecessary.
 
-Если вам нужно больше, то у каждой транзакции есть `lt` и `hash`. Вы можете просмотреть, например, 30 транзакций, и если среди них не найдется нужной, то взять `lt` и `hash` из последней и добавить их в запрос.
+If more transactions are required, each transaction includes `lt` and `hash`. We can fetch, for example, the last 30 transactions. If the required transaction is not found, we can take `lt` and `hash` of the last transaction in the list and include them in a new request.
 
-Таким образом, вы получаете следующие 30 транзакций и так далее.
+This allows us to retrieve the next 30 transactions, and so on.
 
-Например, в тестовой сети есть кошелек `EQAVKMzqtrvNB2SkcBONOijadqFZ1gMdjmzh1Y3HB1p_zai5`, в нем есть несколько транзакций:
+For example, consider the wallet in the test network `EQAVKMzqtrvNB2SkcBONOijadqFZ1gMdjmzh1Y3HB1p_zai5`.
 
-Используя запрос, мы получим ответ, содержащий две транзакции (часть информации, которая сейчас не нужна, была скрыта, полный ответ вы можете увидеть по ссылке выше).
+Using a query returns a response containing two transactions.
+Note that some details have been omitted for clarity.
 
 ```json
 {
@@ -317,7 +314,7 @@ def get_user_payments(user_id):
 }
 ```
 
-Мы получили две последние транзакции с этого адреса. Добавив в запрос `lt` и `hash`, мы снова получим две транзакции. Однако вторая станет следующей в ряду. То есть, мы получим вторую и третью транзакции для этого адреса.
+By adding `lt` and `hash` to the query, we can retrieve the next two two transactions in sequence. That is, instead of getting the first and second transactions, we will receive the second and third.
 
 ```json
 {
@@ -355,13 +352,13 @@ def get_user_payments(user_id):
 }
 ```
 
-Запрос будет выглядеть [вот так](https://testnet.toncenter.com/api/v2/getTransactions?address=EQAVKMzqtrvNB2SkcBONOijadqFZ1gMdjmzh1Y3HB1p_zai5\&limit=2\&lt=1943166000003\&hash=hxIQqn7lYD%2Fc%2FfNS7W%2FiVsg2kx0p%2FkNIGF6Ld0QEIxk%3D\&to_lt=0\&archival=true)
+The request will look like as follows [this.](https://testnet.toncenter.com/api/v2/getTransactions?address=EQAVKMzqtrvNB2SkcBONOijadqFZ1gMdjmzh1Y3HB1p_zai5&limit=2&lt=1943166000003&hash=hxIQqn7lYD%2Fc%2FfNS7W%2FiVsg2kx0p%2FkNIGF6Ld0QEIxk%3D&to_lt=0&archival=true)
 
-Нам также понадобится метод `detectAddress`.
+We will also need a method `detectAddress`.
 
-Вот пример адреса кошелька Tonkeeper в тестовой сети: `kQCzQJJBAQ-FrEFcvxO5sNxhV9CaOdK9CCfq2yCBnwZ4aCTb`. Если мы поищем транзакцию в проводнике, то вместо указанного выше адреса будет: `EQCzQJJBAQ-FrEFcvxO5sNxhV9CaOdK9CCfq2yCBnwZ4aJ9R`.
+Here is an example of a Tonkeeper wallet address on Testnet: `kQCzQJJBAQ-FrEFcvxO5sNxhV9CaOdK9CCfq2yCBnwZ4aCTb`. If we look for the transaction in the explorer, the address appears as: `EQCzQJJBAQ-FrEFcvxO5sNxhV9CaOdK9CCfq2yCBnwZ4aJ9R`.
 
-Этот метод возвращает нам "правильный" адрес.
+This method provides us with the correctly formatted address.
 
 ```json
 {
@@ -381,17 +378,15 @@ def get_user_payments(user_id):
 }
 ```
 
-Нам нужен `b64url`.
+Additionally, we need `b64url`, which allows us to validate the user's address.
 
-Этот метод позволяет нам подтвердить адрес пользователя.
+Basically, that's all we need.
 
-По большей части, это все, что нам нужно.
+### API requests and what to do with them
 
-### Запросы API и что с ними делать
+Now, let's move to the IDE andreate the `api.py` file.
 
-Давайте вернемся в IDE. Создайте файл `api.py`.
-
-Импортируйте необходимые библиотеки.
+Import the necessary libraries.
 
 ```python
 import requests
@@ -401,11 +396,11 @@ import json
 import db
 ```
 
-- `requests` - для выполнения запросов API
-- `json` для работы с json
-- `db` - для работы с нашей базой данных sqlite
+- `requests`—to make requests to the API,
+- `json`—to work with JSON,
+- `db`—to work with our sqlite database.
 
-Давайте создадим две переменные для хранения начала запросов.
+Let's create two variables to store the base URLs for our requests.
 
 ```python
 # This is the beginning of our requests
@@ -413,7 +408,7 @@ MAINNET_API_BASE = "https://toncenter.com/api/v2/"
 TESTNET_API_BASE = "https://testnet.toncenter.com/api/v2/"
 ```
 
-Получите все API-токены и кошельки из файла config.json.
+We get all API tokens and wallets from the config.json file.
 
 ```python
 # Find out which network we are working on
@@ -426,7 +421,7 @@ with open('config.json', 'r') as f:
     WORK_MODE = config_json['WORK_MODE']
 ```
 
-В зависимости от сети, мы берем необходимые данные.
+Depending on the network, we take the necessary data.
 
 ```python
 if WORK_MODE == "mainnet":
@@ -439,7 +434,7 @@ else:
     WALLET = TESTNET_WALLET
 ```
 
-Наша первая функция запроса `detectAddress`.
+Our first request function `detectAddress`.
 
 ```python
 def detect_address(address):
@@ -452,11 +447,11 @@ def detect_address(address):
         return False
 ```
 
-На входе мы имеем предполагаемый адрес, а на выходе - либо "correct" адрес, необходимый нам для дальнейшей работы, либо False.
+At the input, we have the estimated address, and at the output, we have either the "correct" address necessary for us to do further work or False.
 
-Вы можете заметить, что в конце запроса появился API-ключ. Он нужен для того, чтобы снять ограничение на количество запросов к API. Без него мы ограничены одним запросом в секунду.
+You may notice that an API key has appeared at the end of the request. It is needed to remove the limit on the number of requests to the API. Without it, we are limited to one request per second.
 
-Вот следующая функция для `getTransactions`:
+Here is next function for `getTransactions`:
 
 ```python
 def get_address_transactions():
@@ -466,13 +461,12 @@ def get_address_transactions():
     return response['result']
 ```
 
-Эта функция возвращает последние 30 транзакций в наш `WALLET`.
+This function returns the last 30 transactions for our `WALLET`.
 
-Здесь вы можете увидеть `archival=true`. Это необходимо для того, чтобы мы принимали транзакции только от узла с полной историей блокчейна.
+The `archival=true` parameter ensures that transactions are retrieved from a node with a complete blockchain history.
 
-На выходе мы получим список транзакций -[{0},{1},...,{29}]. Другими словами, список словарей.
-
-И, наконец, последняя функция:
+At the output, we get a list of transactions, such as `[{0},{1},...,{29}]` which are represented as a list of dictionaries.
+And finally the last function:
 
 ```python
 def find_transaction(user_wallet, value, comment):
@@ -503,25 +497,25 @@ def find_transaction(user_wallet, value, comment):
     return False
 ```
 
-На вход подаются "correct" адрес кошелька, сумма и комментарий. Если предполагаемая входящая транзакция найдена, результатом будет True; в противном случае - False.
+At the input, we get the correct wallet address, amount and comment. If the expected incoming transaction is found, the output is True; otherwise, it is False.
 
-## Telegram-бот
+## Telegram bot
 
-Во-первых, давайте создадим основу для бота.
+First, let's establish the bot's foundation.
 
-### Импорт
+### Imports
 
-В этой части мы импортируем необходимые библиотеки.
+In this part, we will import the required libraries.
 
-Из `aiogram` нам нужны `Bot`, `Dispatcher`, `types` и `executor`.
+From `aiogram` we need `Bot`, `Dispatcher`, `types` and `executor`.
 
 ```python
 from aiogram import Bot, Dispatcher, executor, types
 ```
 
-`MemoryStorage` необходима для временного хранения информации.
+`MemoryStorage` is needed for the temporary storage of information.
 
-`FSMContext`, `State` и `StatesGroup` необходимы для работы с машиной состояний.
+`FSMContext`, `State`, and `StatesGroup` are needed for working with the state machine.
 
 ```python
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -529,23 +523,23 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 ```
 
-`json` необходим для работы с json-файлами. `logging` необходим для регистрации ошибок.
+`json` is needed to work with json files. `logging` is needed to log errors.
 
 ```python
 import json
 import logging
 ```
 
-`api` и `db` - это наши собственные файлы, которые мы заполним позже.
+`api` and `db` are our own files which we will fill in later.
 
 ```python
 import db
 import api
 ```
 
-### Настройка конфигурации
+### Config setup
 
-Для удобства рекомендуется хранить такие данные, как `BOT_TOKEN` и ваши кошельки для получения платежей, в отдельном файле под названием `config.json`.
+It is recommended to store data such as `BOT_TOKEN` and wallet addresses for receiving payments in a separate file called `config.json` for convenience.
 
 ```json
 {
@@ -558,26 +552,24 @@ import api
 }
 ```
 
-#### Токен бота
+#### Bot token
 
-`BOT_TOKEN` - это токен вашего Telegram-бота от [@BotFather](https://t.me/BotFather)
+`BOT_TOKEN` is the Telegram bot token obtained from [@BotFather](https://t.me/BotFather)
 
-#### Режим работы
+#### Working mode
 
-В ключе `WORK_MODE` мы определим режим работы бота - тестовая или основная сеть; `testnet` или `mainnet` соответственно.
+The `WORK_MODE` key defines whether the bot operates in the test or main network; `testnet` or `mainnet` respectively.
 
-#### API-токены
+#### API tokens
 
-API-токены для `*_API_TOKEN` можно получить в ботах [TON Center](https://toncenter.com/):
+API tokens for `*_API_TOKEN` can be obtained from the [TON Center](https://toncenter.com/) bots:
 
-- для mainnet - [@tonapibot](https://t.me/tonapibot)
-- для testnet - [@tontestnetapibot](https://t.me/tontestnetapibot)
+- Mainnet — [@tonapibot](https://t.me/tonapibot)
+- Testnet — [@tontestnetapibot](https://t.me/tontestnetapibot)
 
-#### Подключите конфигурацию к боту
+#### Connecting the config to our bot
 
-Далее мы закончим настройку бота.
-
-Получите токен для работы бота из `config.json` :
+Next, we complete the bot setup by retrieving the bot token from `config.json` :
 
 ```python
 with open('config.json', 'r') as f:
@@ -596,7 +588,7 @@ else:
     WALLET = TESTNET_WALLET
 ```
 
-### Ведение журнала и настройка бота
+### Logging and bot setup
 
 ```python
 logging.basicConfig(level=logging.INFO)
@@ -604,9 +596,9 @@ bot = Bot(token=BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot, storage=MemoryStorage())
 ```
 
-### Состояния
+### States
 
-Нам нужны состояния, чтобы разделить рабочий процесс бота на этапы. Мы можем специализировать каждый этап для выполнения определенной задачи.
+States allow us to devide the bot workflow into stages, each designated for a specific task.
 
 ```python
 class DataInput (StatesGroup):
@@ -616,30 +608,30 @@ class DataInput (StatesGroup):
     PayState = State()
 ```
 
-Подробности и примеры смотрите в [документации по Aiogram](https://docs.aiogram.dev/en/latest/).
+For details and examples, refer to the [Aiogram documentation](https://docs.aiogram.dev/en/latest/).
 
-### Хендлеры сообщений
+### Message handlers
 
-В этой части мы напишем логику взаимодействия с ботом.
+This is the part where we will write the bot interaction logic.
 
-Мы будем использовать два типа хендлеров:
+We'll be using two types of handlers:
 
-- `message_handler` используется для обработки сообщений от пользователя.
-- `callback_query_handler` используется для обработки callback от инлайн-клавиатур.
+- `message_handler` is used to handle messages from users,
+- `callback_query_handler` is used to handle callbacks from inline keyboards.
 
-Если мы хотим обработать сообщение от пользователя, мы будем использовать `message_handler`, поместив декоратор `@dp.message_handler` над функцией. В этом случае функция будет вызываться, когда пользователь отправляет сообщение боту.
+If we want to handle a message from the user, we will use `message_handler` by placing `@dp.message_handler` decorator above the function. In this case, the function will be called when the user sends a message to the bot.
 
-В декораторе мы можем указать условия, при которых будет вызываться функция. Например, если мы хотим, чтобы функция вызывалась только тогда, когда пользователь отправляет сообщение с текстом `/start`, то мы напишем следующее:
+In the decorator, we can specify the conditions under which the function will be called. For example, if we want the function to be called only when the user sends a message with the text `/start`, then we will write the following:
 
 ```
 @dp.message_handler(commands=['start'])
 ```
 
-Хендлеры должны быть назначены на асинхронную функцию. В этом случае мы используем синтаксис `async def`. Синтаксис `async def` используется для определения функции, которая будет вызываться асинхронно.
+Handlers need to be assigned to an async function. In this case, we will use  `async def` syntax. The `async def` syntax is used to define the function that will be called asynchronously.
 
 #### /start
 
-Давайте начнем с хендлера команды `/start`.
+Let's start with `/start` command handler.
 
 ```python
 @dp.message_handler(commands=['start'], state='*')
@@ -658,13 +650,13 @@ async def cmd_start(message: types.Message):
     await DataInput.firstState.set()
 ```
 
-В декораторе этого хендлера мы видим `state='*'`. Это означает, что данный хендлер будет вызван независимо от состояния бота. Если мы хотим, чтобы хендлер вызывался только тогда, когда бот находится в определенном состоянии, мы напишем `state=DataInput.firstState`. В этом случае хендлер будет вызван только тогда, когда бот будет находиться в состоянии `firstState`.
+In the decorator of a handler, you may see `state='*'`, meaning the handler will be triggered regardless of the bot's state. If we want the handler to activate only in a specific state, we specify it, such as `state=DataInput.firstState`, ensuring the handler runs only when the bot is in `firstState`.
 
-После того, как пользователь отправит команду `/start`, бот проверит, есть ли пользователь в базе данных, используя функцию `db.check_user`. Если нет, он добавит его. Эта функция также вернет значение bool, и мы можем использовать его для другого обращения к пользователю. После этого бот установит состояние `firstState`.
+After the user sends `/start` command, the bot will check if the user is in database using `db.check_user` function. If not, it will add him. This function will also return the bool value and we can use it to address the user differently. After that, the bot will set the state to `firstState`.
 
 #### /cancel
 
-Далее следует хендлер команды /cancel. Он необходим для возвращения в состояние `firstState`.
+The /cancel command returns the bot to `firstState`.
 
 ```python
 @dp.message_handler(commands=['cancel'], state="*")
@@ -676,7 +668,7 @@ async def cmd_cancel(message: types.Message):
 
 #### /buy
 
-И, конечно же, хендлер команды `/buy`. В этом примере мы будем продавать разные виды воздуха. Для выбора типа воздуха мы будем использовать reply клавиатуру.
+And, of course, there is a `/buy` command handler. In this example, we sell different types of air and use the reply keyboard to choose the type.
 
 ```python
 # /buy command handler
@@ -693,11 +685,11 @@ async def cmd_buy(message: types.Message):
     await DataInput.secondState.set()
 ```
 
-Таким образом, когда пользователь отправляет команду `/buy`, бот отправляет ему клавиатуру с вариантами типов воздуха. После того как пользователь выберет тип воздуха, бот установит состояние `secondState`.
+So, when a user sends `/buy` command, the bot sends him a reply keyboard with air types. After the user chooses the type of air, the bot will set the state to `secondState`.
 
-Этот хендлер будет работать только тогда, когда установлено значение `secondState`, и будет ожидать сообщения от пользователя с типом воздуха.  В данном случае нам нужно сохранить тип воздуха, который выбрал пользователь, поэтому мы передаем FSMContext в качестве аргумента функции.
+This handler will work only when `secondState` is set and will be waiting for a message from the user with the air type.  In this case, we need to store the air type that the user choses, so we pass FSMContext as an argument to the function.
 
-FSMContext используется для хранения данных в памяти бота. Мы можем хранить в ней любые данные, но эта память не является постоянной, поэтому если бот будет перезапущен, данные будут потеряны. Но в ней хорошо хранить временные данные.
+FSMContext is used to store data in the bot's memory. We can store any data in it but this memory is not persistent, so if the bot is restarted, the data will be lost. But it's good to store temporary data in it.
 
 ```python
 # handle air type
@@ -719,33 +711,33 @@ async def air_type(message: types.Message, state: FSMContext):
     await message.answer(f"Send your wallet address")
 ```
 
-Используйте...
+Use...
 
 ```python
 await state.update_data(air_type="Just pure 🌫")
 ```
 
-...чтобы сохранить тип воздуха в FSMContext. После этого мы устанавливаем состояние в `WalletState` и просим пользователя отправить адрес своего кошелька.
+...to store the air type in FSMContext. After that, we set the state to `WalletState` and ask the user to send their wallet address.
 
-Этот хендлер будет работать только тогда, когда `WalletState` установлен и будет ожидать сообщения от пользователя с адресом кошелька.
+This handler activates only in WalletState, expecting a valid wallet address.
 
-Следующий хендлер кажется очень сложным, но это не так. Сначала мы проверяем, является ли сообщение действительным адресом кошелька, используя `len(message.text) == 48`, поскольку адрес кошелька состоит из 48 символов. После этого мы используем функцию `api.detect_address`, чтобы проверить, является ли адрес действительным. Как вы помните из части, посвященной API, эта функция также возвращает "Correct" адрес, который будет сохранен в базе данных.
+Consider the next handler. It may seem complex, but it isn’t. First, we verify whether the message contains a wallet address of the correct length using `len(message.text) == 48`. Then, we call the `api.detect_address` function to validate the address. This function also returns the standardized _correct_ address, which is stored in the database.
 
-После этого мы получаем тип воздуха из FSMContext с помощью `await state.get_data()` и сохраняем его в переменной `user_data`.
+After that, we get the air type from FSMContext using `await state.get_data()` and store it in  `user_data` variable.
 
-Теперь у нас есть все данные, необходимые для процесса оплаты. Осталось только сгенерировать ссылку на оплату и отправить ее пользователю. Давайте воспользуемся инлайн-клавиатурой.
+Now we have all the data required for the payment process. We just need to generate a payment link and send it to the user. Let's use the inline keyboard.
 
-В этом примере для оплаты будут созданы три кнопки:
+The bot provides three payment buttons:
 
-- для официального Кошелька TON
-- для Tonhub
-- для Tonkeeper
+- TON wallet,
+- Tonhub,
+- Tonkeeper.
 
-Преимущество специальных кнопок для кошельков заключается в том, что если у пользователя еще нет кошелька, то сайт предложит ему установить его.
+These buttons are advantageous of special buttons because they guide users to install a wallet if they don't have one
 
-Вы можете использовать все, что захотите.
+You are free to use whatever you want.
 
-Нам нужна кнопка, которую пользователь нажмет после транзакции, чтобы мы могли проверить, успешно ли прошла оплата.
+And we need a button that the user will press after tmaking a transaction, allowing the bot to verify the payment.
 
 ```python
 @dp.message_handler(state=DataInput.WalletState)
@@ -783,7 +775,7 @@ async def user_wallet(message: types.Message, state: FSMContext):
 
 #### /me
 
-Последний хендлер сообщений, который нам нужен, предназначен для команды `/me`. Он показывает платежи пользователя.
+One last message handler is `/me`. It shows the user's payments.
 
 ```python
 # /me command handler
@@ -800,11 +792,13 @@ async def cmd_me(message: types.Message):
             await message.answer(f"{int(transaction['value'])/1000000000} - {transaction['comment']}")
 ```
 
-### Хендлеры Callback
+### Callback handlers
 
-Мы можем установить callback-данные в кнопках, которые будут отправляться боту при нажатии пользователем на кнопку. В кнопке, которую пользователь нажмет после транзакции, мы установим callback data на "check". В результате нам нужно обработать этот callback.
+Callback data is embedded in buttons, allowing the bot to recognize user actions.
 
-Callback-хендлеры очень похожи на хендлеры сообщений, но вместо `message` в качестве аргумента у них используется `types.CallbackQuery`. Декоратор функции также отличается.
+For example, the “Payment Confirmed” button sends the callback "check", which the bot must process.
+
+Callback handlers are very similar to message handlers but they have `types.CallbackQuery` as an argument instead of `message`. Function decorator is also different.
 
 ```python
 @dp.callback_query_handler(lambda call: call.data == "check", state=DataInput.PayState)
@@ -824,48 +818,51 @@ async def check_transaction(call: types.CallbackQuery, state: FSMContext):
         await DataInput.firstState.set()
 ```
 
-В этом хендлере мы получаем данные пользователя из FSMContext и используем функцию `api.find_transaction`, чтобы проверить была ли транзакция успешной. Если да, то мы сохраняем адрес кошелька в базе данных и отправляем пользователю уведомление. После этого пользователь может найти свои транзакции с помощью команды `/me`.
+In this handler we get user data from FSMContext and use `api.find_transaction` to check if the transaction was successful. If so, the wallet address is stored in the database, and the bot notifies the user. After that, the user can check their transaction anytime using `/me`.
 
-### Последняя часть main.py
+### Finalizing main.py
 
-В конце не забудьте:
+At the end, don't forget:
 
 ```python
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
 ```
 
-Эта часть необходима для запуска бота.
-В `skip_updates=True` мы указываем, что не хотим обрабатывать старые сообщения. Но если вы хотите обрабатывать все сообщения, вы можете установить значение `False`.
+This part is needed to start the bot.
+In `skip_updates=True` we specify that we do not want to process old messages. But if you want to process all messages, you can set it to `False`.
 
 :::info
 
-Весь код `main.py` можно найти [здесь](https://github.com/LevZed/ton-payments-in-telegram-bot/blob/main/bot/main.py).
+All code of `main.py` can be found [here](https://github.com/LevZed/ton-payments-in-telegram-bot/blob/main/bot/main.py).
 
 :::
 
-## Бот запущен
+## Bot in action
 
-Мы наконец-то сделали это! Теперь у вас должен быть работающий бот. Вы можете протестировать его!
+Congratulations! The bot is ready. You can test it!
 
-Шаги для запуска бота:
+Steps to run the bot:
 
-1. Заполните файл `config.json`.
-2. Запустите `main.py`.
+1. Fill in the `config.json` file.
+2. Run `main.py`.
 
-Все файлы должны находиться в одной папке. Чтобы запустить бота, вам нужно запустить файл `main.py`. Вы можете сделать это в IDE или в терминале следующим образом:
+All files must be in the same folder. To start the bot, you need to run the `main.py` file. You can do it in your IDE or in the terminal like this:
 
 ```
 python main.py
 ```
 
-Если у вас возникли ошибки, вы можете проверить их в терминале. Возможно, вы что-то упустили в коде.
+If errors occur, check them in the terminal. Maybe you have missed something in the code.
 
-Пример работающего бота [@AirDealerBot](https://t.me/AirDealerBot)
+Example of a working bot [@AirDealerBot](https://t.me/AirDealerBot)
 
 ![bot](/img/tutorials/apiatb-bot.png)
 
-## Ссылки
+## References
 
-- Сделано для TON как часть [ton-footsteps/8](https://github.com/ton-society/ton-footsteps/issues/8)
-- By Lev ([Telegram @Revuza](https://t.me/revuza), [LevZed на GitHub](https://github.com/LevZed))
+- Made for TON as part of [ton-footsteps/8](https://github.com/ton-society/ton-footsteps/issues/8)
+- [Telegram @Revuza](https://t.me/revuza), [LevZed on GitHub](https://github.com/LevZed) - _Lev_
+
+<Feedback />
+
