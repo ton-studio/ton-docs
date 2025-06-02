@@ -1,60 +1,58 @@
 ---
-description: В этой статье мы создадим простого Telegram-бота для приема платежей в TON.
+description: In this article, we'll create a simple Telegram bot for accepting payments in TON.
 ---
 
-# Бот с внутренним балансом
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Bot with own balance
 
-В этой статье мы создадим простого Telegram-бота для приема платежей в TON.
+In this article, we'll create a simple Telegram bot for accepting payments in TON.
 
-## 🦄 Как это выглядит
+## 🦄 What it looks like
 
-Бот будет выглядеть следующим образом:
+The bot will look like this:
 
 ![image](/img/tutorials/bot1.png)
 
-### Исходный код
+### Source code
 
-Исходники доступны на GitHub:
+The sources are available on GitHub:
 
 - https://github.com/Gusarich/ton-bot-example
 
-## 📖 Чему Вы научитесь
+## 📖 What you'll learn
 
-Вы узнаете, как:
+You'll learn how to:
 
-- Создать Telegram бота в Python3 с помощью Aiogram
-- Работать с базами данных SQLITE
-- Работать с открытым API TON
+- Create a Telegram bot in Python3 using Aiogram,
+- Work with SQLITE databases,
+- Work with public TON API.
 
-## ✍️ Что нужно для начала работы
+## ✍️ What you need to get started
 
-Установите [Python](https://www.python.org/), если вы этого еще не сделали.
+Install [Python](https://www.python.org/) if you haven't already.
 
-Также вам понадобятся эти библиотеки PyPi:
+Install the required PyPi libraries:
 
-- aiogram
-- requests
+- aiogram,
+- requests.
 
-Вы можете установить их одной командой в терминале.
+You can install them with one command in the terminal.
 
 ```bash
 pip install aiogram==2.21 requests
 ```
 
-## 🚀 Давайте начнем!
+## 🚀 Let's get started!
 
-Создайте директорию для нашего бота с четырьмя файлами в ней:
+Create a directory for our bot with four files in it:
 
-- `bot.py`- программа для запуска Telegram бота
-- `config.py` - файл конфигурации
-- `db.py`- модуль для взаимодействия с базой данных sqlite3
-- `ton.py` - модуль для работы с платежами в TON
+- `bot.py`— Program to run the Telegram bot,
+- `config.py`— Configuration file,
+- `db.py`— Module for interacting with the SQLite database,
+- `ton.py`— Module for handling payments in TON.
 
-Директория должна выглядеть следующим образом:
+The directory should look like this:
 
 ```
 my_bot
@@ -64,11 +62,11 @@ my_bot
 └── ton.py
 ```
 
-Теперь давайте начнем писать код!
+Now, let’s start coding!
 
-## Конфигурация
+## Config
 
-Давайте начнем с `config.py`, потому что он самый маленький. Нам просто нужно задать в нем несколько параметров.
+We'll begin with `config.py` since it's the smallest file. We just need to set a few parameters in it.
 
 **config.py**
 
@@ -84,34 +82,34 @@ else:
     API_BASE_URL = 'https://testnet.toncenter.com'
 ```
 
-Здесь вам нужно заполнить значения в первых трех строках:
+Here you need to fill in the values in the first three lines:
 
-- `BOT_TOKEN` - это ваш токен Telegram бота, который вы можете получить после [создания бота] (https://t.me/BotFather).
-- `DEPOSIT_ADDRESS` - это адрес кошелька вашего проекта, который будет принимать все платежи. Вы можете просто создать новый кошелек TON и скопировать его адрес.
-- `API_KEY` - это ваш API-ключ от TON Center, который вы можете получить в [этом боте](https://t.me/tonapibot).
+- `BOT_TOKEN`- Your Telegram bot token [creating a bot](https://t.me/BotFather).
+- `DEPOSIT_ADDRESS` - Your project's wallet address for receiving payments. You can create a new TON Wallet and copy its address.
+- `API_KEY` - Your API key from TON Center which you can get in [this bot](https://t.me/tonapibot).
 
-Вы также можете выбрать, будет ли ваш бот работать в тестовой или в основной сети (4-я линия).
+You can also choose whether your bot will run on the Testnet or the Mainnet (4th line).
 
-Это все, что касается файла конфигурации, поэтому мы можем двигаться дальше!
+Once these values are set, we can move forward!
 
-## База данных
+## Database
 
-Теперь давайте отредактируем файл `db.py`, который будет работать с базой данных нашего бота.
+Now let's edit the `db.py` file to store user balances.
 
-Импортируйте библиотеку sqlite3.
+Import the sqlite3 library.
 
 ```python
 import sqlite3
 ```
 
-Инициализируйте подключение к базе данных и курсор (вы можете указать любое имя файла вместо `db.sqlite`).
+Initialize the database connection and cursor (you can choose any filename instead of `db.sqlite`).
 
 ```python
 con = sqlite3.connect('db.sqlite')
 cur = con.cursor()
 ```
 
-Чтобы хранить информацию о пользователях (в нашем случае их балансы), создайте таблицу "Users" со строками User ID и Balance.
+Create a table called **Users** with `uid` and `balance` columns to store information about users and their balances.
 
 ```python
 cur.execute('''CREATE TABLE IF NOT EXISTS Users (
@@ -121,9 +119,9 @@ cur.execute('''CREATE TABLE IF NOT EXISTS Users (
 con.commit()
 ```
 
-Теперь нам нужно декларировать несколько функций для работы с базой данных.
+Define helper functions to interact with the database:
 
-Функция `add_user` будет использоваться для вставки новых пользователей в базу данных.
+`add_user` function will be used to insert new users into the database.
 
 ```python
 def add_user(uid):
@@ -132,7 +130,7 @@ def add_user(uid):
     con.commit()
 ```
 
-Функция `check_user` будет использоваться для проверки того, существует ли пользователь в базе данных или нет.
+`check_user` function will be used to check if the user exists in the database or not.
 
 ```python
 def check_user(uid):
@@ -143,7 +141,7 @@ def check_user(uid):
     return False
 ```
 
-Функция `add_balance` будет использоваться для увеличения баланса пользователя.
+`add_balance` function will be used to increase the user's balance.
 
 ```python
 def add_balance(uid, amount):
@@ -151,7 +149,7 @@ def add_balance(uid, amount):
     con.commit()
 ```
 
-Функция `get_balance` будет использоваться для получения баланса пользователя.
+`get_balance` function will be used to retrieve the user's balance.
 
 ```python
 def get_balance(uid):
@@ -160,26 +158,25 @@ def get_balance(uid):
     return balance
 ```
 
-Вот и все для файла `db.py`!
+And that's all for the `db.py` file!
 
-Теперь мы можем использовать эти четыре функции в других компонентах бота для работы с базой данных.
+Once this file is set up, we can use these functions in other parts of the bot.
 
 ## TON Center API
 
-В файле `ton.py` мы декларируем функцию, которая будет обрабатывать все новые депозиты, увеличивать баланс пользователей и уведомлять их.
+In the `ton.py` file we'll declare a function that will process all new deposits, increase user balances, and notify users.
 
-### Метод getTransactions
+### getTransactions method
 
-Мы будем использовать TON Center API. Их документация доступна здесь:
-https://toncenter.com/api/v2/.
+We'll use the TON Center API. Their documentation is available here:
+https://toncenter.com/api/v2/
 
-Нам нужен метод [getTransactions](https://toncenter.com/api/v2/#/accounts/get_transactions_getTransactions_get), чтобы получить информацию о последних транзакциях по данному счету.
+We need the [getTransactions](https://toncenter.com/api/v2/#/accounts/get_transactions_getTransactions_get) method to retrieve information about the latest transactions of a given account.
+Let's review the input parameters this method requires and what it returns.
 
-Давайте посмотрим, что этот метод принимает в качестве входных параметров и что он возвращает.
+The only mandatory input field is `address`, but we also need the `limit` field to specify how many transactions we want to retrieve.
 
-Здесь есть только одно обязательное поле ввода `address`, но нам также нужно поле `limit`, чтобы указать, сколько транзакций мы хотим получить в ответ.
-
-Теперь давайте попробуем запустить этот метод на сайте [TON Center](https://toncenter.com/api/v2/#/accounts/get_transactions_getTransactions_get) с любым существующим адресом кошелька, чтобы понять, что мы должны получить на выходе.
+Let's test this method on the [TON Center website](https://toncenter.com/api/v2/#/accounts/get_transactions_getTransactions_get) website using any existing wallet address to see what the output looks like.
 
 ```json
 {
@@ -195,7 +192,7 @@ https://toncenter.com/api/v2/.
 }
 ```
 
-Итак, когда все в порядке, в поле `ok` устанавливается значение `true` и мы получаем массив `result` со списком последних транзакций `limit`. Теперь давайте рассмотрим одну единственную транзакцию:
+Well, so the `ok` field is set to `true` when everything is good, and we have an array `result` with the list of `limit` latest transactions. Now let's look at one single transaction:
 
 ```json
 {
@@ -229,15 +226,13 @@ https://toncenter.com/api/v2/.
 }
 ```
 
-Мы видим, что информация, которая может помочь нам точно идентифицировать транзакцию, хранится в поле `transaction_id`. Нам нужно поле `lt` из него, чтобы понять, какая транзакция произошла раньше, а какая позже.
+We can see that the key details for identifying a specific transaction are stored in the `transaction_id` field. We need the `lt` field from this to determine the chronological order of transactions.
 
-Информация о передаче монеты находится в поле `in_msg`. Нам понадобятся `value` и `message` из него.
+Now, we're ready to create a payment handler.
 
-Теперь мы готовы создать обработчик платежей.
+### Sending API requests from code
 
-### Отправка API-запросов из кода
-
-Давайте начнем с импорта необходимых библиотек и двух наших предыдущих файлов: `config.py` и `db.py`.
+Let's start by importing the required libraries along with the `config.py` and `db.py` files.
 
 ```python
 import requests
@@ -252,18 +247,17 @@ import config
 import db
 ```
 
-Давайте подумаем, как может быть реализована обработка платежей.
+Let's explore how payment processing can be implemented.
 
-Мы можем вызывать API каждые несколько секунд и проверять, есть ли новые транзакции по адресу нашего кошелька.
+We can call the API every few seconds to check if new transactions have been received in our wallet.
 
-Для этого нам нужно знать, какой была последняя обработанная транзакция. Самым простым подходом было бы просто сохранить информацию об этой транзакции в каком-нибудь файле и обновлять ее каждый раз, когда мы обрабатываем новую транзакцию.
+To do this, we need to track the last processed transaction. The simplest approach is to save this transaction’s details in a file and update it every time a new transaction is processed.
 
-Какую информацию о транзакции мы будем хранить в файле? На самом деле, нам нужно хранить только значение `lt` - logical time (логическое время).
-С помощью этого значения мы сможем понять, какие транзакции нам нужно обработать.
+What information should we store? We only need the `lt` (logical time) value, which will allow us to determine which transactions need to be processed.
 
-Поэтому нам нужно определить новую асинхронную функцию; назовем ее `start`. Почему эта функция должна быть асинхронной? Потому что библиотека Aiogram для ботов Telegram также является асинхронной, и в дальнейшем с асинхронными функциями будет проще работать.
+Next, we define an asynchronous function called `start`. Why async? Because the Aiogram library for Telegram bots is asynchronous, making it easier to work with async functions.
 
-Вот как должна выглядеть наша функция `start`:
+This is what our `start` function should look like:
 
 ```python
 async def start():
@@ -283,7 +277,7 @@ async def start():
         ...
 ```
 
-Теперь давайте напишем тело цикла while. Нам нужно вызывать TON Center API каждые несколько секунд.
+Within the `while` loop, we need to call the TON Center API every few seconds.
 
 ```python
 while True:
@@ -302,9 +296,9 @@ while True:
     ...
 ```
 
-После вызова `requests.get` у нас есть переменная `resp`, которая содержит ответ от API. `resp` - это объект, а `resp['result']` - список с последними 100 транзакциями для нашего адреса.
+After making a `requests.get` call, the response is stored in the `resp` variable. The resp object contains a result list with the 100 most recent transactions for our address.
 
-Теперь давайте просто пройдемся итерацией по этим транзакциям и найдем новые.
+Now, we iterate through these transactions and identify the new ones.
 
 ```python
 while True:
@@ -325,13 +319,13 @@ while True:
         ...
 ```
 
-Как нам обработать новую транзакцию? Нам необходимо:
+How to process a new transaction? We need to:
 
-- понять, какой пользователь отправил его
-- увеличить баланс этого пользователя
-- уведомить пользователя о его депозите
+- Identify which user sent the transaction,
+- Update that user's balance,
+- Notify the user about their deposit.
 
-Вот код, который все это сделает:
+Below is the code that handles this:
 
 ```python
 while True:
@@ -360,23 +354,22 @@ while True:
                                     parse_mode=ParseMode.MARKDOWN)
 ```
 
-Давайте посмотрим на него и разберемся, что он делает.
+Let's analyze what it does:
 
-Вся информация о передаче монеты находится в `tx['in_msg']`. Нам нужны только поля 'value' и 'message'.
+All the information about the coin transfer is in `tx['in_msg']`. We just need the `value` and `message` fields.
 
-Прежде всего, мы проверяем, больше ли значение нуля, и продолжаем только в том случае, если это так.
+First, we check if value is greater than zero—if not, we ignore the transaction.
 
-Затем мы ожидаем, что при передаче комментарий ( `tx['in_msg']['message']`) будет иметь идентификатор пользователя от нашего бота, поэтому мы проверяем, является ли он действительным номером и существует ли этот UID в нашей базе данных.
+Next, we verify that the ( `tx['in_msg']['message']` ) field contains a valid user ID from our bot and that the UID exists in our database.
 
-После этих простых проверок у нас есть переменная `value` с суммой депозита и переменная `uid` с идентификатором пользователя, который сделал этот депозит. Таким образом, мы можем просто добавить средства на его счет и отправить уведомление.
-
-Также обратите внимание, что по умолчанию значение указано в нанотонах, поэтому нам нужно разделить его на 1 миллиард. Мы делаем это в соответствии с уведомлением:
+After these checks, we extract the deposit amount `value` and the user ID `uid`. Then, we add the funds to the user’s account and send them a notification.
+Also note that value is in nanotons by default, so we need to divide it by 1 billion. We do that in line with notification:
 `{value / 1e9:.2f}`
-Здесь мы делим значение на `1e9` (1 миллиард) и оставляем только две цифры после запятой, чтобы показать его пользователю в удобном формате.
+Here we divide the value by `1e9` (1 billion) and leave only two digits after the decimal point to show it to the user in a friendly format.
 
-Отлично! Теперь программа может обрабатывать новые транзакции и уведомлять пользователей о депозитах. Но мы не должны забывать о сохранении `lt`, которое мы использовали ранее. Мы должны обновить последнее `lt`, потому что была обработана более новая транзакция.
+Once a transaction is processed, we must update the stored `lt` value to reflect the most recent transaction.
 
-Все просто:
+It's simple:
 
 ```python
 while True:
@@ -391,14 +384,14 @@ while True:
             f.write(str(last_lt))
 ```
 
-И это все для файла `ton.py`!
-Теперь наш бот готов на 3/4. Нам осталось только создать пользовательский интерфейс с несколькими кнопками в самом боте.
+And that's all for the `ton.py` file!
+Our bot is now 3/4 done; we only need to create a user interface with a few buttons in the bot itself.
 
-## Telegram бот
+## Telegram bot
 
-### Инициализация
+### Initialization
 
-Откройте файл `bot.py` и импортируйте все необходимые модули.
+Open the `bot.py` file and import all necessary modules.
 
 ```python
 # Logging module
@@ -417,28 +410,28 @@ import ton
 import db
 ```
 
-Давайте настроим ведение журнала в нашей программе, чтобы мы могли видеть, что происходит позже, для отладки.
+Let's set up logging to our program so that we can see what happens later for debugging.
 
 ```python
 logging.basicConfig(level=logging.INFO)
 ```
 
-Теперь нам нужно инициализировать bot object и dispatcher с помощью Aiogram.
+Next, we initialize the bot and dispatcher using Aiogram:
 
 ```python
 bot = Bot(token=config.BOT_TOKEN)
 dp = Dispatcher(bot)
 ```
 
-Здесь мы используем `BOT_TOKEN` из нашего файла конфигурации, который мы сделали в начале урока.
+Here we use the `BOT_TOKEN` from our config file.
 
-Мы инициализировали бота, но он все еще пуст. Мы должны добавить несколько функций для взаимодействия с пользователем.
+At this point, our bot is initialized but still lacks functionality. We now need to define interaction handlers.
 
-### Обработчики сообщений
+### Message handlers
 
-#### Команда /start
+#### /start Command
 
-Начнем с обработчика команд `/start` и `/help`. Эта функция будет вызываться, когда пользователь запускает бота в первый раз, перезапускает его или использует команду `/help`.
+Let's begin with the `/start` and `/help` commands handlers. This function will be triggered when the user launches the bot for the first time, restarts it, or uses the  `/help` command.
 
 ```python
 @dp.message_handler(commands=['start', 'help'])
@@ -464,13 +457,13 @@ async def welcome_handler(message: types.Message):
                          parse_mode=ParseMode.MARKDOWN)
 ```
 
-Приветственное сообщение может быть любым, каким вы захотите. Кнопки клавиатуры могут быть любыми, но в данном примере они обозначены наиболее понятным для нашего бота образом: `Deposit` и `Balance`.
+The welcome message can be customized to anything you prefer. The keyboard buttons can also be labeled as needed, but in this example, we use the most straightforward labels for our bot: `Deposit` and `Balance`.
 
-#### Кнопка баланса
+#### Balance button
 
-Теперь пользователь может запустить бота и увидеть клавиатуру с двумя кнопками. Но после вызова одной из них пользователь не получит никакого ответа, потому что мы не создали для нее никакой функции.
+Once the user starts the bot, they will see a keyboard with two buttons. However, pressing these buttons won't yield any response yet, as we haven't created functions for them.
 
-Поэтому давайте добавим функцию запроса баланса.
+Let's add a function to check the user's balance.
 
 ```python
 @dp.message_handler(commands='balance')
@@ -487,11 +480,11 @@ async def balance_handler(message: types.Message):
                          parse_mode=ParseMode.MARKDOWN)
 ```
 
-Все довольно просто. Мы просто получаем баланс из базы данных и отправляем сообщение пользователю.
+The implementation is simple: we retrieve the balance from the database and send a message displaying it to the user.
 
-#### Кнопка Deposit
+#### Deposit button
 
-А как насчет второй кнопки `Deposit`? Вот функция для нее:
+Let's implement the **Deposit** button. Here’s how it works:
 
 ```python
 @dp.message_handler(commands='deposit')
@@ -515,13 +508,11 @@ async def deposit_handler(message: types.Message):
                          parse_mode=ParseMode.MARKDOWN)
 ```
 
-То, что мы делаем здесь, также легко понять.
+This step is crucial because, in `ton.py` we identify which user made a deposit by extracting their UID from the transaction comment. Now, within the bot, we must guide the user to include their UID in the transaction comment.
 
-Помните, как в файле `ton.py` мы определяли, какой пользователь сделал депозит, по комментарию с его UID? Теперь здесь, в боте, нам нужно попросить пользователя отправить транзакцию с комментарием, содержащим его UID.
+### Bot start
 
-### Запуск бота
-
-Единственное, что нам теперь нужно сделать в `bot.py`, это запустить самого бота, а также выполнить функцию `start` из `ton.py`.
+The final step in `bot.py` is to launch the bot and also start the `start` function from `ton.py`.
 
 ```python
 if __name__ == '__main__':
@@ -535,11 +526,14 @@ if __name__ == '__main__':
     ex.start_polling()
 ```
 
-На данный момент мы написали весь необходимый код для нашего бота. Если вы все сделали правильно, он должен работать, когда вы запустите его с помощью команды `python my-bot/bot.py` в терминале.
+At this point, we have written all the necessary code for our bot. If everything is set up correctly, the bot should work when you run the following command in the terminal: `python my-bot/bot.py`.
 
-Если ваш бот работает некорректно, сравните свой код с кодом [из этого репозитория](https://github.com/Gusarich/ton-bot-example).
+If the bot does not function as expected, compare your code with the code [from this repository](https://github.com/Gusarich/ton-bot-example) to ensure there are no discrepancies.
 
-## Ссылки
+## References
 
-- Сделано для TON как часть [ton-footsteps/8](https://github.com/ton-society/ton-footsteps/issues/8)
-- By Gusarich ([Telegram @Gusarich](https://t.me/Gusarich), [Gusarich on GitHub](https://github.com/Gusarich))
+- Made for TON as part of [ton-footsteps/8](https://github.com/ton-society/ton-footsteps/issues/8)
+- [Telegram @Gusarich](https://t.me/Gusarich), [Gusarich on GitHub](https://github.com/Gusarich) - _Gusarich_
+
+<Feedback />
+
