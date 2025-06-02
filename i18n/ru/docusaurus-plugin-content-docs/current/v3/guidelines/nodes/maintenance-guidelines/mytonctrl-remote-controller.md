@@ -1,29 +1,28 @@
-# Удаленное управление MyTonCtrl
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# MyTonCtrl remote controller
 
-MyTonCtrl и ноду TON можно использовать на отдельных машинах. Есть некоторые преимущества использования этого:
+MyTonCtrl and TON Node can be used on separate machines. There are some advantages of using that:
 
-- Для участия в выборах MyTonCtrl требуется закрытый ключ кошелька валидатора. Если сервер узла скомпрометирован, это может привести к несанкционированному доступу к средствам кошелька. В качестве меры безопасности MyTonCtrl может быть размещен на отдельном сервере.
-- MyTonCtrl постоянно расширяет свою функциональность, что может потреблять ресурсы, критически важные для узла.
-- Вероятно, в будущем крупные валидаторы смогут размещать несколько экземпляров MyTonCtrl, управляющих несколькими узлами на одном сервере.
+- To participate in elections, the validator wallet's private key is required by MyTonCtrl. If the Node server
+  is compromised, it could lead to unauthorized access to the wallet funds. As a security measure, MyTonCtrl can be hosted on a separate server.
+- MyTonCtrl continually expands its functionality, which may consume resources crucial for the Node.
+- Probably in future big validators will be able to host several instances of MyTonCtrl controlling several nodes on one server.
 
-## Настройка
+## Setting up
 
-Подготовьте 2 сервера: один для запуска узла TON, отвечающего требованиям, и один для запуска MyTonCtrl, который не требует много ресурсов.
+Prepare 2 servers: one is for running TON Node that meets the requirements and one is for running MyTonCtrl which does not require a lot of resources.
 
-1. Узел сервера:
+1. Node server:
 
-Установите MyTonCtrl в режиме `only-node`:
+Install MyTonCtrl in `only-node` mode:
 
 ```
 wget https://raw.githubusercontent.com/ton-blockchain/mytonctrl/master/scripts/install.sh
 sudo bash install.sh -m validator -l
 ```
 
-Он установит узел TON и создаст файл резервной копии, который вам необходимо загрузить и перенести на сервер контроллера:
+It will install TON Node and create a backup file which you need to download and transfer to the Controller server:
 
 ```log
 ...
@@ -39,25 +38,25 @@ If you wish to use archive package to migrate node to different machine please m
 [5/5] Mytonctrl installation completed
 ```
 
-Обратите внимание, что у вас все еще есть доступ к консоли MyTonCtrl на этом сервере, которая вам нужна для обновления узла, просмотра метрик узла и т. д.
-Кроме того, он создает службу `mytoncore`, которая используется для отправки телеметрии (если она не была отключена).
-Если вы хотите вернуть управление узлом этому серверу, используйте команду
+Note, that you still got access to MyTonCtrl console on this server, which you need to update the Node, watch Node metrics, etc.
+Also, it creates a `mytoncore` service which is used to send telemetry (if it was not disabled).
+If you want to return control of the node to this server, use command
 
 ```bash
 MyTonCtrl> set onlyNode false
 systemctl restart mytoncore
 ```
 
-2. Контроллер сервера
+2. Controller server
 
-Установите MyTonCtrl в режиме `only-mtc`:
+Install MyTonCtrl in `only-mtc` mode:
 
 ```
 wget https://raw.githubusercontent.com/ton-blockchain/mytonctrl/master/scripts/install.sh
 sudo bash install.sh -p /home/user/mytonctrl_backup_hostname_timestamp.tar.gz -o
 ```
 
-Выполните команду `status`, должно появиться поле `IP-адрес узла`:
+Check the `status` command, there should appear `Node IP address` field:
 
 ```log
 MyTonCtrl> status
@@ -72,6 +71,9 @@ Validator index: n/a
 ...
 ```
 
-## Примечания
+## Notes
 
-При обновлениях вам необходимо `update` и `upgrade` как сервер узла, так и сервер контроллера
+On updates, you need to `update` and `upgrade` both Node server and Controller server
+
+<Feedback />
+
