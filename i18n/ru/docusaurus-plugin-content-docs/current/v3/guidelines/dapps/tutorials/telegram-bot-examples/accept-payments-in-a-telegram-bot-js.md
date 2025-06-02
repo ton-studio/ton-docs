@@ -1,52 +1,50 @@
 ---
-description: По итогу урока вы напишете красивого бота, который сможет принимать платежи за ваш товар прямо в TON.
+description: At the end of the tutorial, you will write a beautiful bot that will be able to accept payments for your product directly in TON.
 ---
 
-# Бот для продажи пельменей
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Bot for selling dumplings
 
-В этой статье мы создадим простого Telegram-бота для приема платежей в TON.
+In this article, we'll create a simple Telegram bot for accepting payments in TON.
 
-## 🦄 Как это выглядит
+## 🦄 What it looks like
 
-По окончанию урока вы напишете красивого бота, который сможет принимать платежи за ваш товар прямо в TON.
+By the end of the tutorial, you will have a fully functional bot that can accept payments for your product directly in TON.
 
-Бот будет выглядеть следующим образом:
+The bot will look like this:
 
-![предварительный просмотр бота](/img/tutorials/js-bot-preview.jpg)
+![bot preview](/img/tutorials/js-bot-preview.jpg)
 
-## 📖 Чему вы научитесь
+## 📖 What you'll learn
 
-Вы узнаете, как:
+You'll learn how to:
 
-- Создать Telegram-бота в NodeJS с помощью grammY
-- Работать с открытым TON Center API
+- Create a Telegram bot in NodeJS using grammY,
+- Work with the public TON Center API.
 
-> Почему мы используем grammY?
-> Потому что grammY - это современный, молодой, высокоуровневый фреймворк для удобной и быстрой разработки Telegram-ботов на JS/TS/Deno. Кроме того, у grammY отличная [документация] (https://grammy.dev) и активное сообщество, которое всегда сможет вам помочь.
+> Why use grammY?
+> grammY is a modern, high-level framework designed for fast and efficient development of Telegram bots using JavaScript, TypeScript, or Deno. It features excellent [documentation](https://grammy.dev) and an active community ready to help.
 
-## ✍️ Что нужно для начала работы
+## ✍️ What you need to get started
 
-Установите [NodeJS](https://nodejs.org/en/download/), если вы этого еще не сделали.
+Install [NodeJS](https://nodejs.org/en/download/) if you haven't yet.
 
-Также вам понадобятся эти библиотеки:
+You will also need the following libraries:
 
-- grammy
-- ton
-- dotenv
+- grammy,
+- ton,
+- dotenv.
 
-Вы можете установить их одной командой в терминале.
+You can install them with a single terminal command.
 
 ```bash npm2yarn
 npm install ton dotenv grammy @grammyjs/conversations
 ```
 
-## 🚀 Давайте начнем!
+## 🚀 Let's get started!
 
-Структура нашего проекта будет выглядеть следующим образом:
+The structure of our project will look like this:
 
 ```
 src
@@ -59,15 +57,15 @@ src
 .env
 ```
 
-- `bot/start.js` и `bot/payment.js` - файлы с обработчиками для Telegram-бота
-- `src/ton.js` - файл с business logic, связанной с TON
-- `app.js` - файл для инициализации и запуска бота
+- `bot/start.js` & `bot/payment.js` - Handlers for the Telegram bot,
+- `src/ton.js` - Business logic related to TON,
+- `app.js` - Initializes and launches the bot.
 
-Теперь давайте начнем писать код!
+Now let's start writing the code!
 
-## Конфигурация
+## Config
 
-Давайте начнем с `.env`. Нам просто нужно задать в нем несколько параметров.
+Let's begin with `.env`. You need to set the following parameters:
 
 **.env**
 
@@ -78,37 +76,35 @@ NETWORK=
 OWNER_WALLET= 
 ```
 
-Здесь вам нужно заполнить значения в первых четырех строках:
+Here you need to fill in the values in the first four lines:
 
-- `BOT_TOKEN` - это ваш токен Telegram-бота, который вы можете получить после [создания бота] (https://t.me/BotFather).
-- `OWNER_WALLET` - это адрес кошелька вашего проекта, который будет принимать все платежи. Вы можете просто создать новый кошелек TON и скопировать его адрес.
-- `API_KEY` - это ваш API-ключ от TON Center, который вы можете получить от [@tonapibot](https://t.me/tonapibot)/[@tontestnetapibot](https://t.me/tontestnetapibot) для основной и тестовой сетей, соответственно.
-- `NETWORK` - это информация о том, в какой сети будет работать ваш бот - тестовой или основной.
+- `BOT_TOKEN` - Your Telegram bot token, obtained after [creating a bot](https://t.me/BotFather).
+- `OWNER_WALLET` - Your project's wallet address for receiving payments. You can create a new TON wallet and copy its address.
+- `API_KEY` - Your API key from TON Center, available via [@tonapibot](https://t.me/tonapibot)/[@tontestnetapibot](https://t.me/tontestnetapibot) for the Mainnet and Testnet, respectively.
+- `NETWORK` - The network on which your bot will operate: Testnet or Mainnet.
 
-Это все, что касается файла конфигурации, так что мы можем двигаться дальше!
+With the config file set up, we can move forward!
 
 ## TON Center API
 
-В файле `src/services/ton.py` мы будем декларировать функции для проверки существования транзакции и генерирования ссылок для быстрого перехода к приложению кошелька для оплаты
+In `src/services/ton.py`, we will define functions to verify transactions and generate payment links.
 
-### Получение последних транзакций по кошельку
+### Getting the latest wallet transactions
 
-Наша задача - проверить доступность нужной нам транзакции с определенного кошелька.
+Our goal is to check whether a specific transaction exists in a wallet.
 
-Мы решим эту задачу следующим образом:
+How to solve it:
 
-1. Мы получим последние транзакции, поступившие на наш кошелек. Почему именно на наш? В этом случае нам не нужно беспокоиться об адресе кошелька пользователя, нам не нужно подтверждать, что это его кошелек, нам не нужно нигде хранить этот кошелек где-либо.
-2. Отсортируйте и оставьте только входящие транзакции
-3. Давайте пройдемся по всем транзакциям, и каждый раз будем проверять, равны ли комментарий и сумма тем данным, которые у нас есть
-4. Празднуем решение нашей проблемы🎉
+1. Retrieve the latest transactions for our wallet. Why our wallet? In this case, we do not have to worry about what the user's wallet address is, we do not have to confirm that it is their wallet, and we do not have to store this wallet.
+2. Filter incoming transactions only.
+3. Iterate through transactions and verify if the comment and amount match our data.
+4. Celebrate the solution to our problem.
 
-#### Получение последних транзакций
+#### Getting the latest transactions
 
-Если мы используем TON Center API, то мы можем обратиться к их [документации](https://toncenter.com/api/v2/) и найти метод, который идеально решает нашу проблему - [getTransactions](https://toncenter.com/api/v2/#/accounts/get_transactions_getTransactions_get).
+Using the TON Center API, we can refer to their [documentation](https://toncenter.com/api/v2/) and call the [getTransactions](https://toncenter.com/api/v2/#/accounts/get_transactions_getTransactions_get) method with just the wallet address. We also use the limit parameter to restrict the response to 100 transactions.
 
-Для получения транзакций нам достаточно одного параметра - адреса кошелька для приема платежей, но мы также будем использовать параметр limit, чтобы ограничить выдачу транзакций до 100 штук.
-
-Давайте попробуем вызвать тестовый запрос для адреса `EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N` (кстати, это адрес TON Foundation)
+For example, a test request for `EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N` (this is the TON Foundation address):
 
 ```bash
 curl -X 'GET' \
@@ -116,7 +112,7 @@ curl -X 'GET' \
   -H 'accept: application/json'
 ```
 
-Отлично, теперь у нас есть список транзакций в ["result"], теперь давайте рассмотрим подробнее 1 транзакцию
+Great, now we have a list of transactions on hand in `["result"]`, now let's take a closer look at 1 transaction.
 
 ```json
 {
@@ -150,26 +146,26 @@ curl -X 'GET' \
     }
 ```
 
-Из этого json-файла мы можем понять некоторую информацию, которая может быть нам полезна:
+From this JSON file, we can extract some insights:
 
-- Это входящая транзакция, поскольку поле "out_msgs" пустое.
-- Мы также можем получить комментарий к транзакции, ее отправителю и сумме транзакции.
+- The transaction is incoming, which is indicated by an empty `out_msgs` field.
+- We can extract the transaction comment, sender, and amount.
 
-Теперь мы готовы создать средство проверки транзакций
+Now, we're ready to create a transaction checker.
 
-### Работа с TON
+### Working with TON
 
-Давайте начнем с импорта необходимой библиотеки TON
+Start with importing the required TON library:
 
 ```js
 import { HttpApi, fromNano, toNano } from "ton";
 ```
 
-Давайте подумаем, как проверить, отправил ли пользователь нужную нам транзакцию.
+Think about how to check if the user has sent the transaction we need.
 
-Все элементарно просто. Мы можем просто отсортировать только входящие транзакции в наш кошелек, а затем просмотреть последние 100 транзакций, и если найдется транзакция с таким же комментарием и суммой, значит, мы нашли нужную нам транзакцию!
+It's all very simple. We can simply sort only incoming transactions to our wallet, and then go through the last 100 transactions, and if there is a transaction with the same comment and amount, then we have found the transaction we need!
 
-Давайте начнем с инициализации http-клиента, для удобства работы с TON
+Initialize the http client for convenient work with TON:
 
 ```js
 export async function verifyTransactionExistance(toWallet, amount, comment) {
@@ -184,9 +180,9 @@ export async function verifyTransactionExistance(toWallet, amount, comment) {
   );
 ```
 
-Здесь мы просто генерируем url конечной точки в зависимости от того, какая сеть выбрана в конфигурации. После этого мы инициализируем http-клиент.
+Here we simply generate the endpoint url based on which network is selected in the configuration. And after that we initialize the http client.
 
-Итак, теперь мы можем получить последние 100 транзакций из кошелька владельца
+So, now we can get the last 100 transactions from the owner's wallet.
 
 ```js
 const transactions = await httpClient.getTransactions(toWallet, {
@@ -194,7 +190,7 @@ const transactions = await httpClient.getTransactions(toWallet, {
   });
 ```
 
-и отфильтруйте, оставив только входящие транзакции (если out_msgs транзакции пуст, мы оставляем его)
+Filter, leaving only incoming transactions (if the out_msgs of the transaction is empty, we leave it).
 
 ```js
 let incomingTransactions = transactions.filter(
@@ -202,7 +198,7 @@ let incomingTransactions = transactions.filter(
   );
 ```
 
-Теперь нам остается пройтись по всем транзакциям, и если комментарий и значение транзакции совпадают, мы вернем true
+Now we just have to go through all the transactions. If a matching transaction is found, we return true.
 
 ```js
   for (let i = 0; i < incomingTransactions.length; i++) {
@@ -225,10 +221,10 @@ let incomingTransactions = transactions.filter(
   return false;
 ```
 
-Обратите внимание, что по умолчанию значение дается в нанотонах, поэтому нам нужно разделить его на 1 миллиард, или же мы можем просто использовать метод `fromNano` из библиотеки TON.
-Вот и все для функции `verifyTransactionExistance`!
+Since values are in nanotons by default, we divide by 1 billion or use the `fromNano` method from the TON library.
+And that's it for the `verifyTransactionExistance` function!
 
-Теперь мы можем создать функцию для генерации ссылки для быстрого перехода к приложению кошелька для оплаты
+Finally, we create a function to generate a payment link by embedding the transaction parameters in a URL.
 
 ```js
 export function generatePaymentLink(toWallet, amount, comment, app) {
@@ -243,13 +239,13 @@ export function generatePaymentLink(toWallet, amount, comment, app) {
 }
 ```
 
-Все, что нам нужно - это просто подставить параметры транзакции в URL. Не забыв при этом передать значение транзакции в nano.
+All we need is just to substitute the transaction parameters in the URL. Make sure to convert the transaction value to nano.
 
-## Telegram-бот
+## Telegram bot
 
-### Инициализация
+### Initialization
 
-Откройте файл `app.js` и импортируйте все необходимые нам обработчики и модули.
+Open the `app.js` file and import all the handlers and modules we need.
 
 ```js
 import dotenv from "dotenv";
@@ -263,13 +259,13 @@ import {
 import handleStart from "./bot/handlers/start.js";
 ```
 
-Давайте настроим модуль dotenv для удобной работы с переменными окружения, которые мы задали в файле .env
+Set up the dotenv module to work with environment variables:
 
 ```js
 dotenv.config();
 ```
 
-После этого мы создаем функцию, которая будет запускать наш проект. Чтобы наш бот не останавливался при возникновении ошибок, мы добавляем следующий код
+Now, define a function to run the bot. To prevent it from stopping due to errors, include:
 
 ```js
 async function runApp() {
@@ -281,7 +277,7 @@ async function runApp() {
   });
 ```
 
-Теперь инициализируйте бота и необходимые плагины
+Next, initialize the bot and the necessary plugins.
 
 ```js
   // Initialize the bot
@@ -295,9 +291,9 @@ async function runApp() {
   bot.use(createConversation(startPaymentProcess));
 ```
 
-Здесь мы используем `BOT_TOKEN` из нашего файла конфигурации, который мы сделали в начале урока.
+Here we use `BOT_TOKEN` from our configuration we created at the beginning of the tutorial.
 
-Мы инициализировали бота, но он все еще пуст. Мы должны добавить несколько функций для взаимодействия с пользователем.
+We have initialized the bot, but it is still empty. We need to add some features to interact with the user.
 
 ```js
   // Register all handelrs
@@ -308,9 +304,9 @@ async function runApp() {
   bot.callbackQuery("check_transaction", checkTransaction);
 ```
 
-В ответ на команду /start, будет выполнена функция handleStart. Если пользователь нажмет на кнопку с параметром callback_data, равным "buy", мы начнем наш "conversation", который мы зарегистрировали чуть выше. А когда мы нажмем на кнопку с callback_data, равным "check_transaction", мы выполним функцию checkTransaction.
+Reacting to the command/start, the handleStart function will be executed. If the user clicks on the button with callback_data equal to "buy", we will start our "conversation", which we registered just above. And when we click on the button with callback_data equal to `"check_transaction"`, we will execute the `checkTransaction` function.
 
-И все, что нам остается, это запустить нашего бота и вывести журнал об успешном запуске
+Finally, launch the bot and output a log a success message.
 
 ```js
   // Start bot
@@ -319,11 +315,11 @@ async function runApp() {
   console.info(`Bot @${bot.botInfo.username} is up and running`);
 ```
 
-### Обработчики сообщений
+### Message handlers
 
-#### Команда /start
+#### /start Command
 
-Давайте начнем с обработчика команды `/start`. Эта функция будет вызвана, когда пользователь запустит бота в первый раз или перезапустит его
+Let's begin with the `/start` command handler. This function is triggered when a user starts or restarts the bot.
 
 ```js
 import { InlineKeyboard } from "grammy";
@@ -342,14 +338,13 @@ Welcome to the best Dumplings Shop in the world <tg-spoiler>and concurrently an 
 }
 ```
 
-Здесь мы сначала импортируем InlineKeyboard из модуля grammy. После этого мы создаем инлайн-клавиатуру в обработчике с предложением купить пельмени и ссылкой на эту статью (здесь немного рекурсии😁).
-.row() - означает перенос следующей кнопки на новую строку.
-После этого мы отправляем приветственное сообщение с текстом (важно - я использую html-разметку в сообщении, чтобы украсить его) вместе с созданной клавиатурой.
-Приветственное сообщение может быть любым, каким вы захотите.
+First, import the InlineKeyboard from the grammy module. Then, create an inline keyboard offering to buy dumplings and linking to this tutorial.
+The `.row()` method places the next button on a new line.
+We send a welcome message (formatted with HTML) along with the keyboard. You can customize this message as needed.
 
-#### Процесс оплаты
+#### Payment process
 
-Как обычно, мы начнем наш файл с необходимых импортов
+We begin by importing the necessary modules:
 
 ```js
 import { InlineKeyboard } from "grammy";
@@ -360,15 +355,15 @@ import {
 } from "../../services/ton.js";
 ```
 
-После этого мы создадим обработчик startPaymentProcess, который мы уже зарегистрировали в app.js для выполнения при нажатии определенной кнопки
+After that, we will create a startPaymentProcess handler, which we have already registered in the `app.js`. This function is executed when a specific button is pressed.
 
-В Telegram при нажатии на инлайн-кнопку появляются крутящиеся часы, чтобы убрать их, мы ответ на callback-запрос
+To remove the spinning watch icon in Telegram, we acknowledge the callback before proceeding.
 
 ```js
   await ctx.answerCallbackQuery();
 ```
 
-После этого нам нужно отправить пользователю картинку с пельменями, попросить его отправить количество пельменей, которые он хочет купить. И дождаться, пока он введет число.
+Next, we need to send the user a picture of dumplings, ask them to send the number of dumplings that they want to buy. Wait for the user to enter this number.
 
 ```js
   await ctx.replyWithPhoto(
@@ -383,7 +378,7 @@ import {
   const count = await conversation.form.number();
 ```
 
-Теперь мы подсчитаем общую сумму заказа и сгенерируем случайную строку, которую мы будем использовать для комментирования транзакции и добавления постфикса пельменей
+Next, we calculate the total amount of the order and generate a random string that we will use for the transaction comment and add the postfix `"dumplings"`.
 
 ```js
   // Get the total cost: multiply the number of portions by the price of the 1 portion
@@ -392,14 +387,14 @@ import {
   const comment = Math.random().toString(36).substring(2, 8) + "dumplings";
 ```
 
-И сохраняем полученные данные в сессии, чтобы потом получить их в следующем обработчике.
+Save the resulting data to the session so that we can get this data in the next handler.
 
 ```js
   conversation.session.amount = amount;
   conversation.session.comment = comment;
 ```
 
-Генерируем ссылки для перехода к быстрой оплате и создаем инлайн-клавиатуру
+We generate links for quick payment and create a built-in keyboard.
 
 ```js
 const tonhubPaymentLink = generatePaymentLink(
@@ -423,7 +418,7 @@ const tonhubPaymentLink = generatePaymentLink(
     .text(`I sent ${amount} TON`, "check_transaction");
 ```
 
-И отправляем наше сообщение с клавиатуры, где мы просим пользователя отправить транзакцию на адрес нашего кошелька со случайно сгенерированным комментарием
+Send the message using the keyboard, in which ask the user to send a transaction to our wallet address with a randomly generated comment.
 
 ```js
   await ctx.reply(
@@ -432,13 +427,13 @@ Fine, all you have to do is transfer ${amount} TON to the wallet <code>${process
 
 <i>WARNING: I am currently working on ${process.env.NETWORK}</i>
 
-P.S. You can conveniently make a transfer by clicking on the appropriate button below and confirm the transaction in the offer`,
+P.S. You can conveniently make a transfer by clicking on the appropriate button below and confirming the transaction in the offer`,
     { reply_markup: menu, parse_mode: "HTML" }
   );
 }
 ```
 
-Теперь нам осталось создать обработчик, который будет проверять наличие транзакции
+Now all we have to do is create a handler to check for the presence of a transaction.
 
 ```js
 export async function checkTransaction(ctx) {
@@ -468,20 +463,23 @@ export async function checkTransaction(ctx) {
 }
 ```
 
-Все, что здесь нужно сделать, это просто проверить наличие транзакции, и если она существует, мы сообщаем об этом пользователю и сбрасываем данные в сессии
+Next, simply check for a transaction, and if it exists, notify the user and flush the data in the session.
 
-### Запуск бота
+### Start of the bot
 
-Для запуска используйте эту команду:
+To start the bot, use this command:
 
 ```bash npm2yarn
 npm run app
 ```
 
-Если ваш бот работает некорректно, сравните свой код с кодом [из этого репозитория](https://github.com/coalus/DumplingShopBot). Если это не помогло, не стесняйтесь написать мне в Telegram. Мой аккаунт в Telegram вы можете найти ниже
+If your bot isn't working correctly, compare your code with the code [from this repository](https://github.com/coalus/DumplingShopBot). If issues persist, feel free to contact me on Telegram. You can find my Telegram account below.
 
-## Ссылки
+## References
 
-- Сделано для TON как часть [ton-footsteps/58] (https://github.com/ton-society/ton-footsteps/issues/58)
-- By Coalus ([Telegram @coalus](https://t.me/coalus), [Coalus на GitHub](https://github.com/coalus))
-- [Источники ботов](https://github.com/coalus/DumplingShopBot)
+- Made for TON as a part of [ton-footsteps/58](https://github.com/ton-society/ton-footsteps/issues/58)
+- [Telegram @coalus](https://t.me/coalus), [Coalus on GitHub](https://github.com/coalus) - _Coalus_
+- [Bot sources](https://github.com/coalus/DumplingShopBot)
+
+<Feedback />
+
