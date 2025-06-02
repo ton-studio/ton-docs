@@ -1,87 +1,85 @@
-# Руководство по добыче TON
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
+# TON mining guide
+
+:::warning deprecated
+This information may be outdated and no longer relevant. You can skip it.
 :::
 
-:::warning устаревшее
-Эта информация может быть устаревшей и больше не актуальной. Вы можете пропустить ее.
-:::
+## <a id="introduction"></a>Introduction
 
-## <a id="introduction"></a>Введение
+This document provides an introduction to the process of mining Toncoin using PoW givers. Please visit [ton.org/mining](https://ton.org/mining) for up-to-date status of TON mining.
 
-Этот документ представляет собой введение в процесс добычи Toncoin с помощью PoW-раздатчиков. Пожалуйста, посетите [ton.org/mining](https://ton.org/mining) для получения актуальной информации о состоянии майнинга TON.
+## <a id="quick-start"></a>Quick start
 
-## <a id="quick-start"></a>Быстрый старт
+To start mining right away:
 
-Чтобы сразу же начать добычу:
+1. Get a [computer suitable for mining](#hardware).
+2. Install [Ubuntu](https://ubuntu.com) 20.04 desktop or server distribution.
+3. Install [mytonctrl](https://github.com/igroman787/mytonctrl#installation-ubuntu) in `lite` mode.
+4. Check your hardware and [expected mining income](/v3/documentation/archive/mining#income-estimates) by running `emi` command within `mytonctrl`.
+5. If you do not yet have one, create `wallet address` using one of the [wallets](https://www.ton.org/wallets).
+6. Define your `wallet address` as a mining target by executing `set minerAddr "..."` in `mytonctrl`.
+7. Chose a giver contract from the list available on [ton.org/mining](https://ton.org/mining) and set your miner to mine it by executing `set powAddr "..."` in `mytonctrl`.
+8. Start mining by executing `mon` in `mytonctrl`
+9. Check the CPU load on your computer; the process called `pow-miner` should use most of your CPU.
+10. Wait to get lucky; the output of step 4 should have told you approximately what your chances are to mine a block.
 
-1. Купите [компьютер, подходящий для майнинга](#hardware).
-2. Установите дистрибутив [Ubuntu](https://ubuntu.com) 20.04 для настольных компьютеров или серверов.
-3. Установите [mytonctrl](https://github.com/igroman787/mytonctrl#installation-ubuntu) в режиме `lite`.
-4. Проверьте свое оборудование и [ожидаемый доход от добычи] (/v3/documentation/archive/mining#income-estimates), выполнив команду `emi` в `mytonctrl`.
-5. Если у Вас его еще нет, создайте `адрес кошелька`, используя один из [кошельков](https://www.ton.org/wallets).
-6. Определите свой `адрес кошелька` в качестве цели для майнинга, выполнив команду `set minerAddr "..."` в `mytonctrl`.
-7. Выберите контракт-даритель из списка, доступного на [ton.org/mining](https://ton.org/mining), и настройте свой майнер на его добычу, выполнив команду `set powAddr "..."` в `mytonctrl`.
-8. Начните добычу, выполнив команду `mon` в `mytonctrl`
-9. Проверьте загрузку процессора на Вашем компьютере; процесс под названием `pow-miner` должен использовать большую часть Вашего процессора.
-10. Дождитесь удачи; результат шага 4 должен был примерно сказать Вам, каковы Ваши шансы добыть блок.
+## <a id="basics"></a>Basics
 
-## <a id="basics"></a>Основы
+Toncoin is distributed by `PoW Givers`, which are smart contracts with specific amounts of Toncoin assigned to them. Currently, there are 10 active PoW givers on the TON Network. Each giver distributes coins in blocks of 100 TON. To earn one of these blocks, your computer must solve a complex mathematical challenge faster than other miners. If another miner solves the problem before you, your machine's work is discarded, and a new round begins.
 
-Toncoin распространяется через `PoW Givers`, которые представляют собой смарт-контракты с определенным количеством Toncoin, закрепленным за ними. В настоящее время в сети TON существует 10 активных PoW Givers. Каждый giver распределяет монеты блоками по 100 TON. Чтобы заработать один из этих блоков, Ваш компьютер должен решить сложную математическую задачу быстрее, чем другие майнеры. Если другой майнер решит задачу раньше Вас, работа Вашей машины будет отброшена, и начнется новый раунд.
+Mining profits are not gradual; they come in batches of 100 TON for each successfully solved giver challenge. This means that if your machine has a 10% chance to calculate a block within 24 hours (see step 4 of [Quick start](/v3/documentation/archive/mining#quick-start)) then you will probably need to wait for ~10 days before you will get a 100 TON reward.
 
-Прибыль от майнинга не является постепенной; она поступает партиями по 100 TON за каждый успешно решенную задачу giver-а. Это означает, что если Ваша машина имеет 10% шанс вычислить блок в течение 24 часов (см. шаг 4 раздела [Быстрый старт](/v3/documentation/archive/mining#quick-start)), то Вам, вероятно, придется подождать ~10 дней, прежде чем Вы получите вознаграждение в размере 100 TON.
+The process of mining is largely automated by `mytonctrl`. Detailed information about the mining process can be found in [PoW givers](https://www.ton.org/#/howto/pow-givers) document.
 
-Процесс добычи в значительной степени автоматизирован с помощью `mytonctrl`. Подробную информацию о процессе майнинга можно найти в документе [PoW givers](https://www.ton.org/#/howto/pow-givers).
+## <a id="advanced"></a>Advanced
 
-## <a id="advanced"></a>Продвинутый
+If you're serious about mining and want to operate multiple machines or a mining farm, it's essential to learn about TON and how mining works. Refer to the [HOWTO](https://ton.org/#/howto/) section for detailed information. Here is some general advice:
 
-Если Вы серьезно настроены к майнингу и хотите управлять несколькими машинами или майнинг-фермой, Вам необходимо узнать о TON и о том, как работает майнинг. За подробной информацией обратитесь к разделу [HOWTO](https://ton.org/#/howto/). Здесь приведены некоторые общие советы:
+- **DO** run your own node / lite server on a separate machine; this will ensure that your mining farm does not depend on external lite servers that can go down or not process your queries in a timely fashion.
+- **DO NOT** bombard public lite servers with `get_pow_params` queries, if you have custom scripts that poll givers status in high frequency you **must** use your own lite server. Clients that violate this rule risk having their IPs blacklisted on public lite servers.
+- **DO** try to understand how [mining process](https://www.ton.org/#/howto/pow-givers) works; most larger miners use their own scripts that offer many advantages over `mytonctrl` in environments with multiple mining machines.
 
-- **ЗАПУСТИТЕ** свой собственный узел / lite-сервер на отдельной машине; это позволит Вашей майнинговой ферме не зависеть от внешних lite-серверов, которые могут выйти из строя или не обрабатывать Ваши запросы своевременно.
-- **НЕ БОМБАРДИРУЙТЕ** публичные lite-серверы запросами `get_pow_params`, если у Вас есть пользовательские скрипты, которые часто опрашивают статус дарителей, Вы **должны** использовать свой собственный lite-сервер. Клиенты, нарушающие это правило, рискуют получить черный список IP-адресов на публичных lite-серверах.
-- **ПОСТАРАЙТЕСЬ ПОНЯТЬ**, как работает [процесс майнинга](https://www.ton.org/#/howto/pow-givers); большинство крупных майнеров используют собственные скрипты, которые дают много преимуществ по сравнению с `mytonctrl` в средах с несколькими майнинговыми машинами.
+## <a id="hardware"></a>Miner hardware
 
-## <a id="hardware"></a>Оборудование для майнинга
-
-Общий хэшрейт сети при добыче TON очень высок; майнерам нужны высокопроизводительные машины, если они хотят добиться успеха. Майнинг на обычных домашних компьютерах и ноутбуках бесполезен, и мы не советуем предпринимать такие попытки.
+The total network hashrate of TON mining is very high; miners need high-performance machines if they wish to succeed. Mining on standard home computers and notebooks is futile, and we advise against such attempts.
 
 #### CPU
 
-Современный процессор с поддержкой [Intel SHA Extension](https://en.wikipedia.org/wiki/Intel_SHA_extensions) является **обязательным**. Большинство майнеров используют машины AMD EPYC или Threadripper с не менее чем 32 ядрами и 64 потоками.
+A modern CPU with [Intel SHA Extension](https://en.wikipedia.org/wiki/Intel_SHA_extensions) support is **essential**. Most miners use AMD EPYC or Threadripper machines with at least 32 cores and 64 threads.
 
 #### GPU
 
-Да! Вы можете добывать TON с помощью GPU. Существует версия майнера PoW, способная использовать GPU как Nvidia, так и AMD; Вы можете найти код и инструкции по его использованию в репозитории [POW Miner GPU](https://github.com/tontechio/pow-miner-gpu/blob/main/crypto/util/pow-miner-howto.md).
+Yes! You can mine TON using GPU. There is a version of a PoW miner that is capable to use both Nvidia and AMD GPUs; you can find the code and instructions on how to use it in the [POW Miner GPU](https://github.com/tontechio/pow-miner-gpu/blob/main/crypto/util/pow-miner-howto.md) repository.
 
-Пока что для использования этой функции нужно быть технически подкованным, но мы работаем над более удобным решением.
+As for now, one needs to be tech-savvy to use this, but we are working on a more user-friendly solution.
 
-#### Память
+#### Memory
 
-Почти весь процесс майнинга происходит в кэше L2 процессора. Это означает, что скорость и объем памяти не играют никакой роли в производительности майнинга. Двойная система AMD EPYC с одним модулем DIMM на одном канале памяти будет майнить так же быстро, как и система с 16 модулями DIMM, занимающими все каналы.
+Almost the entire mining process happens in the L2 cache of the CPU. That means that memory speed and size play no role in mining performance. A dual AMD EPYC system with a single DIMM on one memory channel will mine just as fast as one with 16 DIMMs occupying all channels.
 
-Обратите внимание, что это относится **только** к простому процессу майнинга. Если на Вашей машине также запущен полный узел или другие процессы, то все изменится! Но это выходит за рамки данного руководства.
+Please do note that this applies to the plain mining process **only**, if your machine also runs full node or other processes, then things change! But this is outside the scope of this guide.
 
-#### Хранение
+#### Storage
 
-Майнер, работающий в режиме lite, использует минимальное пространство для хранения данных и не хранит их.
+A miner running in lite mode uses minimal storage space and does not store data.
 
-#### Сеть
+#### Network
 
-Простому майнеру необходима возможность открывать исходящие соединения с Интернетом.
+Plain miner needs the ability to open outgoing connections to the Internet.
 
 #### FPGA / ASIC
 
-Смотрите [могу ли я использовать FPGA / ASIC?](/v3/documentation/archive/mining#can-i-use-my-btceth-rig-to-mine-ton)
+See [can I use FPGA / ASICs?](/v3/documentation/archive/mining#can-i-use-my-btceth-rig-to-mine-ton)
 
-### <a id="hardware-cloud"></a>Облачные машины
+### <a id="hardware-cloud"></a>Cloud machines
 
-Многие люди занимаются майнингом, используя облачные машины AWS или Google. Как указано в спецификациях выше, что действительно важно, так это процессор. Поэтому мы советуем использовать инстансы AWS [c5a.24xlarge](https://aws.amazon.com/ec2/instance-types/c5/) или Google [n2d-highcpu-224](https://cloud.google.com/compute/vm-instance-pricing).
+Many people mine using AWS or Google compute cloud machines. As outlined in the specs above, what really matters is CPU. Therefore, we advise AWS [c5a.24xlarge](https://aws.amazon.com/ec2/instance-types/c5/) or Google [n2d-highcpu-224](https://cloud.google.com/compute/vm-instance-pricing) instances.
 
-### <a id="hardware-estimates"></a>Оценка доходов
+### <a id="hardware-estimates"></a>Income estimates
 
-Формула для расчета дохода довольно проста: `($total_bleed / $total_hashrate) * $your_hashrate`. Это даст Вам **текущую** оценку. Вы можете узнать переменные на [ton.org/mining](https://ton.org/mining) или воспользоваться калькулятором предполагаемого дохода от добычи (команда `emi`) в `mytonctrl`. Вот пример расчета, выполненного 7 августа 2021 года на процессоре i5-11400F:
+The formula for calculating the income is quite simple: `($total_bleed / $total_hashrate) * $your_hashrate`. This will give you a **current** estimate. You can find out the variables on [ton.org/mining](https://ton.org/mining) or use the estimated mining income calculator (`emi` command) in `mytonctrl`. Here is sample output made on August 7th, 2021 using i5-11400F CPU:
 
 ```
 Mining income estimations
@@ -93,111 +91,114 @@ Est. 24h chance to mine a block:    15%
 Est. monthly income:                437.7 TON
 ```
 
-**Важно**: Пожалуйста, обратите внимание, что предоставленная информация основана на *сетевом хэшрейте на момент выполнения*. Ваш реальный доход со временем будет зависеть от многих факторов, таких как изменение хэшрейта сети, выбор дарителя и доля везения.
+**Important**: Please do note that the information provided is based on _network hashrate at the moment of execution_. Your actual income over time will depend on many factors, such as changing network hashrate, the chosen giver, and a good portion of luck.
 
-## <a id="faq"></a>ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
+## <a id="faq"></a>FAQ
 
-### <a id="faq-general"></a>Общие сведения
+### <a id="faq-general"></a>General
 
-#### <a id="faq-general-posorpow"></a>Является ли сеть TON PoS или PoW?
+#### <a id="faq-general-posorpow"></a>Is TON PoS or PoW network?
 
-Блокчейн TON работает на основе консенсуса Proof-of-Stake (PoS). Для создания новых блоков не требуется майнинг.
+TON Blockchain operates on a Proof-of-Stake (PoS) consensus. Mining is not required to create new blocks.
 
-#### <a id="faq-general-pow"></a>Так как же получилось, что TON - это Proof-of-Work?
+#### <a id="faq-general-pow"></a>So how come TON is Proof-of-Work?
 
-Причина в том, что первоначальная эмиссия в 5 миллиардов Тонкоинов была передана специальным смарт-контрактам Proof-of-Work Giver.
-Для получения Тонкоинов из этого смарт-контракта используется майнинг.
+Well, the reason is that the initial issue of 5 billion Toncoins were transferred to ad hoc Proof-of-Work Giver smart contracts.
+Mining is used to obtain Toncoins from this smart contract.
 
-#### <a id="faq-general-supply"></a>Сколько монет осталось для добычи?
+#### <a id="faq-general-supply"></a>How many coins are left for mining?
 
-Самая актуальная информация доступна на сайте [ton.org/mining](https://ton.org/mining), см. графики `bleed`. Контракты PoW Giver имеют свой предел и иссякнут, как только пользователи добывают все доступные Toncoin.
+The most actual information is available on [ton.org/mining](https://ton.org/mining), see `bleed` graphs. PoW Giver contracts have their limits and will dry out once users mine all the available Toncoins.
 
-#### <a id="faq-general-mined"></a>Сколько монет уже добыто?
+#### <a id="faq-general-mined"></a>How many coins have been mined already?
 
-По состоянию на август 2021 года было добыто около 4,9 млрд Toncoin.
+As of August 2021, about 4.9BN Toncoins have been mined.
 
-#### <a id="faq-general-whomined"></a>Кто добыл эти монеты?
+#### <a id="faq-general-whomined"></a>Who has mined those coins?
 
-Монеты были добыты на более чем 70 000 кошельков. Владельцы этих кошельков остаются неизвестными.
+Coins have been mined to over 70,000 wallets. The owners of these wallets remain unknown.
 
-#### <a id="faq-general-elite"></a>Трудно ли начать майнинг?
+#### <a id="faq-general-elite"></a>Is it difficult to start mining?
 
-Вовсе нет. Все, что Вам нужно, это [соответствующее оборудование](#hardware) и следовать шагам, описанным в разделе [быстрый старт](#quick-start).
+Not at all. All you need is [adequate hardware](#hardware) and to follow the steps outlined in the [quick start](#quick-start) section.
 
-#### <a id="faq-general-pissed"></a>Есть ли другой способ майнинга?
+#### <a id="faq-general-pissed"></a>Is there another way to mine?
 
-Да, существует стороннее приложение - [TON Miner Bot](https://t.me/TonMinerBot).
+Yes, there is a third-party app—[TON Miner Bot](https://t.me/TonMinerBot).
 
-#### <a id="faq-general-stats"></a>Где я могу посмотреть статистику добычи?
+#### <a id="faq-general-stats"></a>Where can I see mining statistics?
 
 [ton.org/mining](https://ton.org/mining)
 
-#### <a id="faq-general-howmany"></a>Сколько человек занимается добычей?
+#### <a id="faq-general-howmany"></a>How many miners are out there?
 
-Мы не можем этого сказать. Все, что нам известно, - это общий хэшрейт всех майнеров в сети. Однако на [ton.org/mining](https://ton.org/mining) есть графики, которые пытаются оценить количество машин определенного типа, необходимое для получения приблизительного общего хэшрейта.
+We cannot say this. All we know is the total hashrate of all miners on the network. However, there are graphs on [ton.org/mining](https://ton.org/mining) that attempt to estimate quantity of machines of certain type needed to provide approximate total hashrate.
 
-#### <a id="faq-general-noincome"></a>Нужен ли мне Toncoin, чтобы начать добычу?
+#### <a id="faq-general-noincome"></a>Do I need Toncoin to start mining?
 
-Нет, это не так. Любой может начать добычу, не владея ни одним Toncoin.
+No, you do not. Anyone can start mining without owning a single Toncoin.
 
-#### <a id="faq-mining-noincome"></a>Почему баланс моего кошелька не увеличивается даже после нескольких часов добычи?
+#### <a id="faq-mining-noincome"></a>Why does my wallet balance not increase, even after hours of mining?
 
-TON добываются блоками по 100 штук, Вы либо угадываете блок и получаете 100 TON, либо не получаете ничего. Пожалуйста, ознакомьтесь с [basics](#basics).
+TON are mined in blocks of 100, you either guess a block and receive 100 TON or receive nothing. Please see [basics](#basics).
 
-#### <a id="faq-mining-noblocks"></a>Я занимаюсь добычей уже несколько дней и не вижу никаких результатов, почему?
+#### <a id="faq-mining-noblocks"></a>I've been mining for days and I see no results, why?
 
-Проверяли ли Вы свои текущие [Оценки дохода] (/v3/documentation/archive/mining#income-estimates)? Если поле `Est. 24h chance to mine a block` меньше 100%, то Вам нужно набраться терпения. Также обратите внимание, что 50% шанс добыть блок в течение 24 часов не означает, что Вы автоматически добываете его в течение 2 дней; 50% применяется к каждому дню отдельно.
+Did you check your current [Income estimates](/v3/documentation/archive/mining#income-estimates)? If field `Est. 24h chance to mine a block` is less than 100%, then you need to be patient. Also, please note that a 50% chance to mine a block within 24 hours does not automatically mean that you will mine one within 2 days; 50% applies to each day separately.
 
-#### <a id="faq-mining-pools"></a>Существуют ли пулы для майнинга?
+#### <a id="faq-mining-pools"></a>Are there mining pools?
 
-Нет, на данный момент нет никаких реализаций майнинговых пулов, каждый майнит сам за себя.
+No, as of now there are no implementations of mining pools, everyone mines for themselves.
 
-#### <a id="faq-mining-giver"></a>Какого giver-а мне следует выбрать?
+#### <a id="faq-mining-giver"></a>Which giver should I mine?
 
-Не имеет значения, какого giver-а Вы выберете. Сложность имеет тенденцию колебаться на каждом giver-е, так что текущий самый простой giver на [ton.org/mining](https://ton.org/mining) может стать самым сложным в течение часа. То же самое относится и к противоположному направлению.
+It does not really matter which giver you choose. The difficulty tends to fluctuate on each giver, so the current easiest giver on [ton.org/mining](https://ton.org/mining) might become the most complex within an hour. The same applies in the opposite direction.
 
-### <a id="faq-hw"></a>Оборудование
+### <a id="faq-hw"></a>Hardware
 
-#### <a id="faq-hw-machine"></a>Всегда ли выигрывает более быстрая машина?
+#### <a id="faq-hw-machine"></a>Will a faster machine always win?
 
-Нет, все майнеры идут разными путями, чтобы найти решение. Более быстрая машина повышает вероятность успеха, но это не гарантирует победу!
+No, all miners take different roads to find the solution. A faster machine has a higher probability of success, but it doesn't guarantee victory!
 
-#### <a id="faq-hw-machine"></a>Какой доход будет приносить моя машина?
+#### <a id="faq-hw-machine"></a>How much income will my machine generate?
 
-Пожалуйста, посмотрите [Оценки доходов](/v3/documentation/archive/mining#income-estimates).
+Please see [Income estimates](/v3/documentation/archive/mining#income-estimates).
 
-#### <a id="faq-hw-asic"></a>Могу ли я использовать свою установку BTC/ETH для добычи TON?
+#### <a id="faq-hw-asic"></a>Can I use my BTC/ETH rig to mine TON?
 
-Нет, TON использует единственный метод хеширования SHA256, который отличается от BTC, ETH и других. ASICS или FPGA, созданные для добычи других криптовалют, не помогут.
+No, TON uses a single SHA256 hashing method which is different from BTC, ETH, and others. ASICS or FPGAs which are built for mining other cryptos will not help.
 
-#### <a id="faq-hw-svsm"></a>Что лучше - одна быстрая машина или несколько медленных?
+#### <a id="faq-hw-svsm"></a>What is better, a single fast machine or several slow ones?
 
-Это спорный вопрос. Смотрите: программное обеспечение майнера запускает потоки для каждого ядра системы, и каждое ядро получает свой набор ключей для обработки, поэтому если у Вас есть одна машина, способная выполнять 64 потока, и 4 машины, способные выполнять 16 потоков каждая, то они будут одинаково успешны при условии, что скорость каждого потока одинакова.
+This is controversial. See: miner software launches threads for each core on the system, and each core gets its own set of keys to process, so if you have one machine capable to run 64 threads and 4 x machines capable to run 16 threads each, then they will be exactly as successful assuming that the speed of each thread is the same.
 
-Однако в реальном мире процессоры с меньшим количеством ядер обычно имеют более высокую тактовую частоту, поэтому Вы, вероятно, добьетесь большего успеха при работе с несколькими машинами.
+In the real world, however, CPUs with lower core count are usually clocked higher, so you will probably have better success with multiple machines.
 
-#### <a id="faq-hw-mc"></a>Если я запущу много машин, будут ли они объединены?
+#### <a id="faq-hw-mc"></a>If I run many machines, will they cooperate?
 
-Нет, не будут. Каждая машина майнит сама по себе, но процесс поиска решения носит случайный характер: ни одна машина, даже ни один поток (см. выше), не пойдет по одному и тому же пути. Таким образом, их хэшрейты складываются в Вашу пользу без прямого сотрудничества.
+No, they will not. Each machine mines on its own, but the solution finding process is random: no machine, not even a single thread (see above) will take the same path. Thus, their hashrates add up in your favor without direct cooperation.
 
-#### <a id="faq-hw-CPU"></a>Можно ли добывать, используя процессоры ARM?
+#### <a id="faq-hw-CPU"></a>Can I mine using ARM CPUs?
 
-В зависимости от процессора, инстансы AWS Graviton2 действительно являются очень способными майнерами и способны выдержать соотношение цена/производительность наравне с инстансами на базе AMD EPYC.
+Depending on the CPU, AWS Graviton2 instances are indeed very capable miners and are able to hold price/performance ratio alongside AMD EPYC-based instances.
 
-### <a id="faq-software"></a>Программное обеспечение
+### <a id="faq-software"></a>Software
 
-#### <a id="faq-software-os"></a>Могу ли я добывать, используя Windows/xBSD/другую ОС?
+#### <a id="faq-software-os"></a>Can I mine using Windows/xBSD/some other OS?
 
-Разумеется, [исходный код TON](https://github.com/ton-blockchain/ton) уже собирался под Windows, xBSD и другие ОС. Однако удобной автоматизированной установки, как под Linux с `mytonctrl`, не существует. Вам придется устанавливать программу вручную и создавать собственные скрипты. Для FreeBSD существует исходник [port](https://github.com/sonofmom/freebsd_ton_port), который позволяет быстро установить программу.
+Of course, [TON source code](https://github.com/ton-blockchain/ton) has been known to be built on Windows, xBSD and other OSes. However, there is no comfortable automated installation, as under Linux with `mytonctrl`, you will need to install the software manually and create your own scripts. For FreeBSD, there is a [port](https://github.com/sonofmom/freebsd_ton_port) source code that allows quick installation.
 
-#### <a id="faq-software-node1"></a>Станет ли моя добыча быстрее, если я запущу mytonctrl в режиме full node?
+#### <a id="faq-software-node1"></a>Will my mining become faster if I run mytonctrl in full node mode?
 
-Сам по себе процесс вычислений не станет быстрее, но Вы получите некоторую стабильность и, самое главное, гибкость, если будете управлять собственным сервером full node/lite.
+Calculation process by itself will not be faster, but you will gain some stability and, most importantly, flexibility if you operate your own full node/lite server.
 
-#### <a id="faq-software-node2"></a>Что мне нужно / как я могу управлять full node?
+#### <a id="faq-software-node2"></a>What do I need to / how can I operate a full node?
 
-Это выходит за рамки данного руководства, пожалуйста, обратитесь к [Full node howto](https://ton.org/#/howto/full-node) и/или [mytonctrl instructions](https://github.com/igroman787/mytonctrl).
+This is out of scope of this guide, please consult [Full node howto](https://ton.org/#/howto/full-node) and/or [mytonctrl instructions](https://github.com/igroman787/mytonctrl).
 
-#### <a id="faq-software-build"></a>Можете ли Вы помочь мне создать программное обеспечение на моей ОС?
+#### <a id="faq-software-build"></a>Can you help me to build software on my OS?
 
-Это выходит за рамки данного руководства, пожалуйста, обратитесь к [Full node howto](https://ton.org/#/howto/full-node), а также к [Mytonctrl installation scripts](https://github.com/igroman787/mytonctrl/blob/master/scripts/toninstaller.sh#L44) за информацией о зависимостях и процессе.
+This is out of scope of this guide, please consult [Full node howto](https://ton.org/#/howto/full-node) as well as [Mytonctrl installation scripts](https://github.com/igroman787/mytonctrl/blob/master/scripts/toninstaller.sh#L44) for information about dependencies and process.
+
+<Feedback />
+
