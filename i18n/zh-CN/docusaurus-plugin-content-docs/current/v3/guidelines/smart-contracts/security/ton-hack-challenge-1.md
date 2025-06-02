@@ -1,18 +1,21 @@
-# 从 TON Hack 挑战赛中得出结论
+import Feedback from '@site/src/components/Feedback';
 
-TON Hack挑战赛于10月23日举行。在TON主网上部署了几个带有人为安全漏洞的智能合约。每个合约都有3000或5000 TON的余额，允许参与者攻击它并立即获得奖励。
+# Drawing conclusions from TON Hack Challenge
 
-源代码和比赛规则托管在Github [这里](https://github.com/ton-blockchain/hack-challenge-1)。
+The TON Hack Challenge was held on October 23.
+There were several smart contracts deployed to the TON mainnet with synthetic security breaches. Every contract had a balance of 3000 or 5000 TON, allowing participant to hack it and get rewards immediately.
 
-## 合约
+Source code and contest rules were hosted on GitHub [here](https://github.com/ton-blockchain/hack-challenge-1).
 
-### 1. 互助基金
+## Contracts
 
-:::note 安全规则
-始终检查函数是否有[`impure`](/develop/func/functions#impure-specifier)修饰符。
+### 1. Mutual fund
+
+:::note SECURITY RULE
+Always check functions for [`impure`](/v3/documentation/smart-contracts/func/docs/functions#impure-specifier) modifier.
 :::
 
-第一个任务非常简单。攻击者可以发现`authorize`函数没有`impure`。这个修饰符的缺失允许编译器在函数不返回任何内容或返回值未使用时跳过对该函数的调用。
+The first task was very simple. The attacker could find that `authorize` function was not `impure`. The absence of this modifier allows a compiler to skip calls to that function if it returns nothing or the return value is unused.
 
 ```func
 () authorize (sender) inline {
@@ -20,13 +23,13 @@ TON Hack挑战赛于10月23日举行。在TON主网上部署了几个带有人�
 }
 ```
 
-### 2. 银行
+### 2. Bank
 
-:::note 安全规则
-始终检查[修改/非修改](/develop/func/statements#methods-calls)方法。
+:::note SECURITY RULE
+Always check for [modifying/non-modifying](/v3/documentation/smart-contracts/func/docs/statements#methods-calls) methods.
 :::
 
-使用`.`而不是`~`调用了`udict_delete_get?`，所以真正的 dict 没有被触及。
+`udict_delete_get?` was called with `.` instead `~`, so the real dict was untouched.
 
 ```func
 (_, slice old_balance_slice, int found?) = accounts.udict_delete_get?(256, sender);
@@ -34,11 +37,11 @@ TON Hack挑战赛于10月23日举行。在TON主网上部署了几个带有人�
 
 ### 3. DAO
 
-:::note 安全规则
-如果你真的需要，使用符号整数。
+:::note SECURITY RULE
+Use signed integers if you really need it.
 :::
 
-投票权在消息中以整数形式存储。所以攻击者可以在转移投票权时发送一个负值，并获得无限投票权。
+Voting power was stored in message as an integer. So the attacker could send a negative value during power transfer and get infinite voting power.
 
 ```func
 (cell,()) transfer_voting_power (cell votes, slice from, slice to, int amount) impure {
@@ -57,13 +60,13 @@ TON Hack挑战赛于10月23日举行。在TON主网上部署了几个带有人�
 }
 ```
 
-### 4. 彩票
+### 4. Lottery
 
-:::note 安全规则
-在执行[`rand()`](/develop/func/stdlib#rand)之前，始终随机化seed。
+:::note SECURITY RULE
+Always randomize seed before doing [`rand()`](/v3/documentation/smart-contracts/func/docs/stdlib#rand)
 :::
 
-seed来自交易的逻辑时间，黑客可以通过暴力破解当前区块中的逻辑时间来赢得比赛（因为lt在一个区块的边界内是连续的）。
+Seed was brought from logical time of the transaction, and a hacker can win by bruteforcing the logical time in the current block (cause lt is sequential in the borders of one block).
 
 ```func
 int seed = cur_lt();
@@ -81,23 +84,23 @@ if(balance > 5000 * 1000000000) {
 if(rand(10000) == 7777) { ...send reward... }
 ```
 
-### 5. 钱包
+### 5. Wallet
 
-:::note 安全规则
-记住区块链上存储的一切。
+:::note SECURITY RULE
+Remember that everything is stored in the blockchain.
 :::
 
-钱包受密码保护，其哈希存储在合约数据中。然而，区块链记住一切——密码在交易历史中。
+The wallet was protected with password, it's hash was stored in contract data. However, the blockchain remembers everything—the password was in the transaction history.
 
-### 6. 资金库
+### 6. Vault
 
-:::note 安全规则
-始终检查[bounced](/develop/smart-contracts/guidelines/non-bouncable-messages)消息。
-不要忘记由[标准](/develop/func/stdlib/)函数引起的错误。
-尽可能使条件严格。
+:::note SECURITY RULE
+Always check for [bounced](/v3/documentation/smart-contracts/message-management/non-bounceable-messages) messages.
+Don't forget about errors caused by [standard](/v3/documentation/smart-contracts/func/docs/stdlib/) functions.
+Make your conditions as strict as possible.
 :::
 
-资金库在数据库消息处理程序中有以下代码：
+The vault has the following code in the database message handler:
 
 ```func
 int mode = null();
@@ -110,20 +113,23 @@ if (op == op_not_winner) {
 }
 ```
 
-如果用户发送“支票”，资金库没有弹回处理程序或代理消息到数据库。在数据库中，我们可以设置`msg_addr_none`作为奖励地址，因为`load_msg_address`允许它。我们向资金库请求支票，数据库尝试解析`msg_addr_none`使用[`parse_std_addr`](/develop/func/stdlib#parse_std_addr)，并失败。消息从数据库弹回到金库，并且op不是`op_not_winner`。
+Vault does not have a bounce handler or proxy message to the database if the user sends “check”. In the database we can set `msg_addr_none` as an award address because `load_msg_address` allows it. We are requesting a check from the vault, database tries to parse `msg_addr_none` using [`parse_std_addr`](/v3/documentation/smart-contracts/func/docs/stdlib#parse_std_addr), and fails. Message bounces to the vault from the database and op is not `op_not_winner`.
 
-### 7. 更好的银行
+### 7. Better bank
 
-:::note 安全规则
-永远不要为了好玩而销毁账户。做[`raw_reserve`](/develop/func/stdlib#raw_reserve)而不是把钱发给自己。考虑可能的竞争条件。小心哈希映射的gas费用消耗。
+:::note SECURITY RULE
+Never destroy account for fun.
+Make [`raw_reserve`](/v3/documentation/smart-contracts/func/docs/stdlib#raw_reserve) instead of sending money to yourself.
+Think about possible race conditions.
+Be careful with hashmap gas consumption.
 :::
 
-合约中存在竞争条件：你可以存入钱，然后尝试在并发消息中两次提取它。无法保证保留有资金的消息会被处理，所以银行在第二次提款后可能会关闭。之后，合约可以被重新部署，任何人都可以提取未领取的资金。
+There were race conditions in the contract: you could deposit money, then try to withdraw it twice in concurrent messages. There is no guarantee that a message with reserved money will be processed, so the bank can shut down after a second withdrawal. After that, the contract could be redeployed and anybody could withdraw unclaimed money.
 
-### 8. 驱逐者
+### 8. Dehasher
 
-:::note 安全规则
-避免在合约中执行第三方代码。
+:::note SECURITY RULE
+Avoid executing third-party code in your contract.
 :::
 
 ```func
@@ -143,15 +149,16 @@ slice safe_execute(int image, (int -> slice) dehasher) inline {
 }
 ```
 
-在合约中安全执行第三方代码是不可能的，因为[`out of gas`](/learn/tvm-instructions/tvm-exit-codes#standard-exit-codes)异常不能被`CATCH`处理。攻击者可以简单地[`COMMIT`](/learn/tvm-instructions/instructions#11-application-specific-primitives)合约的任何状态，并引发`out of gas`。
+There is no way to safe execute a third-party code in the contract, because [`out of gas`](/v3/documentation/tvm/tvm-exit-codes#standard-exit-codes) exception cannot be handled by `CATCH`. The attacker simply can [`COMMIT`](/v3/documentation/tvm/instructions#F80F) any state of contract and raise `out of gas`.
 
-## 结论
+## Conclusion
 
-希望这篇文章能对FunC开发者揭示一些不明显的规则。
+Hope this article has shed some light on the non-obvious rules for FunC developers.
 
-## 参考资料
+## References
 
-原文作者 Dan Volkov
+- [dvlkv on GitHub](https://github.com/dvlkv) - _Dan Volkov_
+- [Original article](https://dev.to/dvlkv/drawing-conclusions-from-ton-hack-challenge-1aep) - _Dan Volkov_
 
-- [dvlkv on Github](https://github.com/dvlkv)
-- [原文链接](https://dev.to/dvlkv/drawing-conclusions-from-ton-hack-challenge-1aep)
+<Feedback />
+
