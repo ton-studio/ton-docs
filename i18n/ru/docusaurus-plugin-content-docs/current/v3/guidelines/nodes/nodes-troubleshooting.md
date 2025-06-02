@@ -1,68 +1,75 @@
-# Устранение неполадок
+import Feedback from '@site/src/components/Feedback';
 
-:::warning
-Эта страница переведена сообществом на русский язык, но нуждается в улучшениях. Если вы хотите принять участие в переводе свяжитесь с [@alexgton](https://t.me/alexgton).
-:::
+# Troubleshooting
 
-В этом разделе содержатся ответы на наиболее часто задаваемые вопросы о работе узлов.
+This section provides answers to the most common questions regarding how to run nodes.
 
-## Не удалось получить состояние учетной записи
+## Failed to get account state
 
 ```
 Failed to get account state
 ```
 
-Эта ошибка указывает на то, что при поиске этой учетной записи в состоянии шарда возникли проблемы.
-Скорее всего, это означает, что узел liteserver синхронизируется слишком медленно, а синхронизация Masterchain обгоняет синхронизацию shardchain (Basechain). В этом случае узел знает последний блок Masterchain, но не может проверить состояние учетной записи в последнем блоке shardchain, что приводит к ошибке "Failed to get account state".
+This error suggests that there are problems when trying to search for the account in the shard state. It likely means that the liteserver node is syncing too slowly, causing the MasterChain synchronization to advance faster than the ShardChain (BaseChain) synchronization. As a result, while the node is aware of the latest MasterChain block, it is unable to verify the account state in the most recent ShardChain block, leading to the error.
 
-## Не удалось распаковать состояние учетной записи
+## Failed to unpack account state
 
 ```
 Failed to unpack account state
 ```
 
-Эта ошибка означает, что запрошенная учетная запись не существует в текущем состоянии. Это означает, что эта учетная запись одновременно не развернута и имеет нулевой баланс
+This error means that the requested account doesn't exist in its current state. That means that this account is simultaneously not deployed AND has zero balance
 
-## Отсутствие прогресса в синхронизации узла в течение 3 часов
+## About no progress in node synchronization within 3 hours
 
-Попробуйте выполнить следующие проверки:
+Try to perform the following checks:
 
-1. Запущен ли процесс без сбоев? (Проверьте статус процесса systemd)
-2. Есть ли брандмауэр между узлом и интернетом, если да, будет ли он передавать входящий трафик UDP на порт, указанный в поле `addrs[0].port` файла `/var/ton-work/db/config.json`?
-3. Есть ли NAT между машиной и Интернетом? Если да, убедитесь, что IP-адрес, указанный в поле `addrs[0].ip` файла `/var/ton-work/db/config.json`, соответствует реальному публичному IP машины. Обратите внимание, что значение этого поля задается в виде подписанного INT. Для выполнения преобразований можно использовать скрипты `ip2dec` и `dec2ip`, расположенные в [ton-tools/node](https://github.com/sonofmom/ton-tools/tree/master/node).
+1. Is the process running without crashes? (Check `systemd` process status)
 
-## Архивный узел не синхронизирован даже через 5 дней после процесса синхронизации
+2. Is there a firewall between the node and the internet? If so, will it pass incoming UDP traffic to the port specified in the field `addrs[0].port` of the `/var/ton-work/db/config.json` file?
 
-Пройдитесь по контрольному списку [из этого раздела](/v3/guidelines/nodes/nodes-troubleshooting#about-no-progress-in-node-synchronization-within-3-hours).
+3. Is there a NAT between the machine and the internet? If so, ensure that the IP address defined in the `addrs[0].ip` field of the `/var/ton-work/db/config.json` file corresponds to the real public IP of the machine. Note that the value of this field is specified as a signed INT. The `ip2dec` and `dec2ip` scripts located in [ton-tools/node](https://github.com/sonofmom/ton-tools/tree/master/node) can be used to perform conversions.
 
-## Возможные причины медленной синхронизации
+## Archive node is out of sync even after 5 days of the syncing process
 
-Диск относительно слабый. Рекомендуется проверить IOPS диска (иногда хостинг-провайдеры преувеличивают эти цифры).
+Go through the checklist [from this section](/v3/guidelines/nodes/nodes-troubleshooting#about-no-progress-in-node-synchronization-within-3-hours).
 
-## Не удалось применить внешнее сообщение к текущему состоянию: Внешнее сообщение было отклонено
+## Slow sync potential reasons
+
+The disk is relatively weak, so it’s advisable to check the IOPS, although hosting providers sometimes exaggerate these numbers.
+
+## Cannot apply external message to current state : External message was not accepted
 
 ```
 Cannot apply external message to current state : External message was not accepted
 ```
 
-Эта ошибка означает, что контракт не принял внешнее сообщение. Вам нужно найти exitcode в трассировке. -13 означает, что у аккаунта недостаточно TON для принятия сообщения (или требуется больше, чем gas_credit). В случае контрактов кошельков код выхода=33 означает неверный seqno (вероятно, данные seqno, которые вы используете, устарели), код выхода=34 означает неверный subwallet_id (для старых кошельков v1/v2 это означает неверную подпись), код выхода=35 означает, что либо сообщение устарело, либо подпись неверна.
+This error indicates that the contract did not accept the external messages. You need to look for the **exitcode** in the trace. An exitcode of -13 means that the account does not have enough TON to accept a message, or it requires more than the available **gas_credit**.
 
-## Что означает ошибка 651?
+For wallet contracts:
 
-`[Error : 651 : no nodes]` указывает на то, что ваш узел не может найти другой узел в блокчейне TON.
+- An exitcode of 33 indicates a wrong **seqno**, which likely means the **seqno** data you are using is outdated.
+- An exitcode of 34 indicates a wrong subwallet_id. For older wallet versions (v1/v2), this may mean an incorrect signature.
+- An exitcode of 35 means that the message is either expired or the signature is incorrect.
 
-Иногда этот процесс может занять до 24 часов. Однако, если вы получали эту ошибку в течение нескольких дней, это означает, что ваш узел не может синхронизироваться через текущее сетевое соединение.
+## What does error 651 mean?
 
-:::tip Решение
+`[Error : 651 : no nodes]` indicates that your node cannot locate another node within the TON Blockchain.
 
-Оно должно разрешать входящие соединения на одном определенном порту и исходящие соединения с любого порта.
+This process can sometimes take up to 24 hours. However, if you've been receiving this error for several days, that means that your node cannot synchronize via a current network connection.
+
+:::tip Solution
+You need to check the firewall settings, including any NAT settings if they exist.
+
+It should allow incoming connections on one specific port and outgoing connections from any port.
 :::
 
-## Консоль валидатора не настроена
+## Validator console is not settings
 
-Если Вы столкнулись с ошибкой `Validator console is not settings`, это означает, что вы запускаете MyTonCtrl от имени пользователя, отличного от того, которого вы использовали для установки.
+If you encounter the `Validator console is not settings` error, it indicates that you are running `MyTonCtrl` from a user other than the one you used for the installation.
 
-:::tip Решение
+:::tip Solution
+Run `MyTonCtrl` from [the user you've installed](/v3/guidelines/nodes/running-nodes/full-node#switch-to-non-root-user) it (non-root sudo user).
 
 ```bash
 mytonctrl
@@ -70,81 +77,81 @@ mytonctrl
 
 :::
 
-\###Запуск MyTonCtrl от имени другого пользователя
+### Running MyTonCtrl as different user
 
-Запуск MyTonCtrl от имени другого пользователя может вызвать следующую ошибку:
+Running MyTonCtrl as a different user may trigger the following error:
 
 ```bash
-Error: expected str, bytes or os.PathLike object, not NoneType
+Error:  expected  str,  bytes  or  os.PathLike  object,  not  NoneType
 ```
 
-Чтобы устранить эту ошибку, вы должны запустить MyTonCtrl от имени пользователя, который установил его.
+To resolve this issue, you need to run MyTonCtrl as the user who installed it.
 
-## Что означает "block is not applied"?
+## What does "block is not applied" mean?
 
-**Вопрос:** Иногда мы получаем ошибку `block is not applied` или `block is not ready` для различных запросов - это нормально?
+**Q:** Sometimes we encounter messages like `block is not applied` or `block is not ready` for various requests. Is this normal?
 
-**Ответ:** Это нормально, обычно это означает, что вы пытались получить блок, который не достигает указанного вами узла.
+**A:** Yes, this is normal. Typically, it means that you tried to retrieve a block that has not yet reached the node you requested.
 
-**Вопрос:** Если появляется сравнительная частота, означает ли это, что где-то есть проблема?
+**Q:** If comparative frequency appears, does it indicate there is a problem?
 
-**Ответ:** Нет. Вам нужно проверить значение "Local validator out of sync"" в mytonctrl. Если оно меньше 20 секунд, то все в порядке.
+**A:** No, it does not. You should check the "Local validator out of sync" value in MyTonCtrl. If it is less than 20 seconds, then everything is functioning normally.
 
-Но вам нужно помнить, что узел постоянно синхронизируется. Иногда вы можете попытаться получить блок, который не достиг указанного вами узла.
+**Keep in mind that the node is continuously synchronizing.** There may be times when you attempt to receive a block that has not yet reached the node you are querying.
 
-Вам нужно повторить запрос с небольшой задержкой.
+In such cases, you should repeat the request after a short delay.
 
-## Проблема Out of Sync с флагом -d
+## Out of sync issue with -d flag
 
-Если вы столкнулись с проблемой, когда рассинхронизация равна временной метке после загрузки `MyTonCtrl` с флагом `-d`, возможно, дамп был установлен неправильно (или он уже устарел).
+If you encounter an issue where the `out of sync` equals the timestamp after downloading `MyTonCtrl` with the `-d` flag, it's possible that the dump wasn't installed correctly (or it's already outdated).
 
-:::tip Решение
-Рекомендуемое решение - переустановить `MyTonCtrl` заново с новым дампом.
+:::tip Solution
+The recommended solution is to reinstall `MyTonCtrl` again with the new dump.
 :::
 
-Если синхронизация занимает слишком много времени, возможно, возникли проблемы с дампом. Пожалуйста, [свяжитесь с нами](https://t.me/SwiftAdviser) для получения помощи.
+If synchronization takes an unusually long time, there may be issues with the dump. Please [contact us](https://t.me/SwiftAdviser) for assistance.
 
-Пожалуйста, запустите `mytonctrl` от имени пользователя, под которым вы его установили.
+Execute the `mytonctrl` command using the user account under which it was installed.
 
 ## Error command... timed out after 3 seconds
 
-Эта ошибка означает, что локальный узел еще не синхронизирован (разрыв синхронизации меньше 20 секунд) и используются публичные узлы.
-Публичные узлы не всегда отвечают и заканчиваются ошибкой превышения времени ожидания.
+This error indicates that the local node is not yet synchronized, has been out of sync for less than 20 seconds, and that public nodes are being utilized. Public nodes do not always respond, which can result in a timeout error.
 
-:::tip Решение
-Решение проблемы — дождаться синхронизации локального узла или выполнить одну и ту же команду несколько раз перед выполнением.
+:::tip Solution
+The solution to the problem is to wait for the local node to synchronize or to execute the same command multiple times before proceeding.
 :::
 
-## Команда Status отображается без раздела локального узла
+## Status command displays without local node section
 
 ![](/img/docs/full-node/local-validator-status-absent.png)
 
-Если в статусе узла нет раздела локального узла, обычно это означает, что что-то пошло не так во время установки и шаг создания/назначения кошелька валидатора был пропущен.
-Также проверьте, указан ли кошелек валидатора.
+If there is no local node section in the node status, typically, this means something went wrong during installation, and the step of creating/assigning a validator wallet was skipped.
 
-Проверьте следующее:
+Also, check that the validator wallet is specified.
 
-```bash
-mytonctrl> get validatorWalletName
-```
-
-Если validatorWalletName равен null, выполните следующее:
+Check directly the following:
 
 ```bash
-mytonctrl> set validatorWalletName validator_wallet_001
+MyTonCtrl> get  validatorWalletName
 ```
 
-## Перенос валидатора на новый сервер
+If `validatorWalletName` is null then execute the following:
+
+```bash
+MyTonCtrl> set  validatorWalletName  validator_wallet_001
+```
+
+## Transfer a validator on the new server
 
 :::info
-Перенесите все ключи и конфигурации со старого узла на рабочий узел и запустите его. В случае, если на новом сервере что-то пойдет не так, все равно будет источник, где все уже настроено.
+Transfer all keys and configs from the old to the working node and start it. In case something goes wrong on the new one, the source where everything is set up is still available.
 :::
 
-Лучший способ (хотя штраф за временное отсутствие валидации невелик, это можно сделать без перерыва):
+The best way (while the penalty for temporary non-validation is small, it can be done without interruption):
 
-1. Выполните чистую установку на новом сервере с помощью `mytonctrl` и дождитесь, пока все синхронизируется.
+1. Perform a clean installation on the new server using `mytonctrl` command, and wait until everything is synchronized.
 
-2. Остановите службы `mytoncore` и валидатора `services` на обеих машинах, сделайте резервные копии на исходной машине и на новой:
+2. Stop the `mytoncore` and validator `services` on both machines, and make backups on the source and on the new one:
 
 - 2.1 `/usr/local/bin/mytoncore/...`
 - 2.2 `/home/${user}/.local/share/mytoncore/...`
@@ -153,7 +160,7 @@ mytonctrl> set validatorWalletName validator_wallet_001
 - 2.5 `/var/ton-work/db/keyring`
 - 2.6 `/var/ton-work/keys`
 
-3. Перенесите исходное содержимое на новый узел (замените содержимое):
+3. Transfer from the source to the new one (replace the contents):
 
 - 3.1 `/usr/local/bin/mytoncore/...`
 - 3.2 `/home/${user}/.local/share/mytoncore/...`
@@ -161,58 +168,61 @@ mytonctrl> set validatorWalletName validator_wallet_001
 - 3.4 `/var/ton-work/db/keyring`
 - 3.5 `/var/ton-work/keys`
 
-4. В файле `/var/ton-work/db/config.json` замените `addrs[0].ip` на текущий IP-адрес, который был после установки (его можно увидеть в резервной копии `/ton-work/db/config.json.backup`)
+4. In `/var/ton-work/db/config.json` edit `addrs[0].ip` to the current one, which was after installation (can be seen in the backup `/ton-work/db/config.json.backup`)
 
-5. Проверьте права доступа ко всем замененным файлам
+5. Check the permissions on all replaced files.
 
-6. На новом сервере запустите службы mytoncore и validator. Убедитесь, что узел синхронизируется и выполняет валидацию
+6. On the new one, start the `mytoncore` and `validator` services and check that the node synchronizes and then validates.
 
-7. Создайте резервную копию:
-
-```bash
-cp var/ton-work/db/config.json var/ton-work/db/config.json.backup
-```
-
-## Mytonctrl был установлен другим пользователем. Возможно, вам нужно запустить mtc с помощью пользователя ...
-
-Запустите MyTonCtrl под пользователем, который использовался для его установки.
-
-Например, наиболее распространенным случаем является попытка запуска MyTonCtrl от имени пользователя root, хотя он был установлен другим пользователем. В этом случае вам нужно войти в аккаунт пользователя, который установил Mytonctrl, и запустить MyTonCtrl от этого пользователя.
-
-### Mytonctrl was installed by another user. Probably you need to launch mtc with `validator` user
-
-Выполните команду `sudo chown <user_name>:<user_name> /var/ton-work/keys/*`, где `<user_name>` - это имя пользователя, который установил mytonctrl.
-
-### Mytonctrl was installed by another user. Probably you need to launch mtc with `ubuntu` user
-
-Кроме того, из-за этой ошибки `mytonctrl` может работать неправильно. Например, команда `status` может возвращать пустой результат.
-
-Проверьте владельца `mytonctrl`:
+7. On the new one, make a backup:
 
 ```bash
-ls -lh /var/ton-work/keys/
+cp  var/ton-work/db/config.json  var/ton-work/db/config.json.backup
 ```
 
-Если владелец — пользователь `root`, [удалите](/v3/guidelines/nodes/running-nodes/full-node#uninstall-mytonctrl) `mytonctrl` и [установите](/v3/guidelines/nodes/running-nodes/full-node#run-a-node-text) его снова **используя пользователя без прав root**.
+## MyTonCtrl was installed by another user. Probably you need to launch mtc with ... user
 
-Иначе выйдите из текущего пользователя (если используется ssh-соединение, разорвите его) и войдите в систему под правильным пользователем.
+Run MyTonCtrl with the user that used to install it.
 
-Сообщение должно исчезнуть.
+For example, the most common case is when someone tries to run MyTonCtrl as a root user, even though it was installed under a different user. In this case, you need to log in to the user who installed MyTonCtrl and run MyTonCtrl from that user.
 
-## Запуск консоли MyTonCtrl прерывается после сообщения "Found new version of mytonctrl! Migrating!"
+### MyTonCtrl was installed by another user. Probably you need to launch mtc with `validator` user
 
-Известны два случая, когда эта ошибка появляется:
+Run command `sudo chown <user_name>:<user_name> /var/ton-work/keys/*` where `<user_name>` is user which installed MyTonCtrl.
 
-### Ошибка после обновления MytonCtrl
+### MyTonCtrl was installed by another user. Probably you need to launch mtc with `ubuntu` user
 
-- Если MyTonCtrl был установлен пользователем root: удалите файл `/usr/local/bin/mytonctrl/VERSION`.
-- Если MyTonCtrl был установлен не пользователем root: удалите файл `~/.local/share/mytonctrl/VERSION`.
+Additionally `mytonctrl` command may not work properly with this error. For example, the `status` command may return empty result.
 
-### Ошибка во время установки MytonCtrl
+Check `MyTonCtrl` owner:
 
-`MytonCtrl` может запускаться, но узел будет работать неправильно. Пожалуйста, удалите `MytonCtrl` с вашего компьютера и установите его снова, убедитесь в решении всех ранее возникших ошибок.
+```bash
+ls  -lh  /var/ton-work/keys/
+```
 
-## См. также
+If the owner is the `root` user, [uninstall](/v3/guidelines/nodes/running-nodes/full-node#uninstall-mytonctrl) `MyTonCtrl` and [install](/v3/guidelines/nodes/running-nodes/full-node#run-a-node-text) it again **using non-root user**.
 
-- [Часто задаваемые вопросы по MyTonCtrl](/v3/guidelines/nodes/faq)
-- [Ошибки MyTonCtrl](/v3/documentation/infra/nodes/mytonctrl/mytonctrl-errors)
+Otherwise, log out from the current user and log in as the correct user. If you are using an SSH connection, terminate it to make the message disappear.
+
+## MyTonCtrl's console launch breaks after message "Found new version of mytonctrl! Migrating!"
+
+There are two known cases when this error appears:
+
+### Error after updating MytonCtrl
+
+- If MyTonCtrl was installed by the root user: Delete the file `/usr/local/bin/mytonctrl/VERSION.`
+
+- If MyTonCtrl was installed by a non-root user: Delete the file `~/.local/share/mytonctrl/VERSION.`
+
+### Error during MytonCtrl installation
+
+`MytonCtrl` may be running, but the node won't function properly. Remove `MytonCtrl` from your computer and reinstall it, making sure to address any previous errors encountered.
+
+## See also
+
+- [MyTonCtrl FAQ](/v3/guidelines/nodes/faq)
+
+- [MyTonCtrl errors](/v3/documentation/infra/nodes/mytonctrl/mytonctrl-errors)
+
+<Feedback />
+
